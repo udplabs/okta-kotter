@@ -1,0 +1,27 @@
+body {
+  padding-top: 5rem;
+  /*background-image: url("http://localhost:5000/static/img/bg-masthead.jpg");*/
+}
+.home-body-image {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/static/img/rain.jpg");
+}
+.starter-template {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+pre {
+  white-space:pre-wrap;
+  text-align:left;
+  white-space: -moz-pre-wrap;white-space: -o-pre-wrap;
+  word-wrap:break-word;
+  background-color:#555;
+  color:#eee;
+  padding:10px;
+}
+
+.card-deck {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-gap: .5rem;
+}

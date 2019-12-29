@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card-deck">
+  {% for item in items %}
+  <div class="card">
+    <img class="card-img-top" src="/static/img/themes/books/items/{{ item.image }}" alt="{{ item.title }}">
+    <div class="card-body">
+      <h5 class="card-title">{{ item.title }}</h5>
+      <p class="card-text"></p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted"><span id="itemCt-{{ item.itemId }}">{{ item.count }}</span> available</small>
+      <button id="btn-{{ item.itemId }}"" type="button" class="btn btn-primary btn-sm" style="float:right;" onclick="itemAction({{ item.itemId }});">{{ config.ITEMS_ACTION_TITLE }}</button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}
+{% block add_js %}
+<script src="/static/js/util.js"></script>
+<script>
+// TODO: move to a JS file
+
+// function render(data) {
+//   var content = '';
+//   data.forEach(item => {
+//     content = content + get_card_html(item);
+//   });
+//   var container = document.getElementById('card-container');
+//   container.innerHTML = content;
+// }
+
+// var accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+// var req = new XMLHttpRequest();
+// req.open('GET', 'http://localhost:5000/api/items', true);
+// req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+// req.onreadystatechange = function () {
+//   if (req.readyState != 4 || req.status != 200) return;
+//   render(JSON.parse(req.responseText));
+// };
+// req.send();
+
+function cb(response) {
+  console.log('hello world');
+  console.log(response);
+}
+
+function itemAction(id) {
+  var elem = document.getElementById('itemCt-'+id);
+  var ct = parseInt(elem.innerText);
+  var newCt = ct - 1;
+  elem.innerText = newCt;
+  var btn = document.getElementById('btn-'+id)
+  btn.disabled = true;
+  btn.setAttribute("class", "btn btn-secondary btn-sm");
+  btn.innerHTML = '<span><i class="fa fa-hourglass"></i> Pending</span>';
+  var accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  data = JSON.stringify({x: 'qwe'})
+  var result = ajax('http://localhost:5000/api/orders', 'POST', data, accessToken, cb);
+}
+// var ct = document.getElementById('itemCt-1');
+// console.log(ct.value);
+</script>
+{% endblock %}

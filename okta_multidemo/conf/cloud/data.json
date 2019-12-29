@@ -1,0 +1,32 @@
+[
+    {
+        "itemId": "1",
+        "title": "Linux Server",
+        "description": "",
+        "category": "compute",
+        "count": 10,
+        "price": 0,
+        "image": "",
+        "target": "PUBLIC"
+    },
+    {
+        "itemId": "2",
+        "title": "Elastic Storage",
+        "description": "",
+        "category": "storage",
+        "count": 10,
+        "price": 0,
+        "image": "",
+        "target": "PUBLIC"
+    },
+    {
+        "itemId": "3",
+        "title": "Load Balancer",
+        "description": "",
+        "category": "network",
+        "count": 10,
+        "price": 0,
+        "image": "",
+        "target": "PUBLIC"
+    }
+]

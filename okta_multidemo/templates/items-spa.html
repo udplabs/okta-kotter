@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Items 2</h1>
+
+<div class="card-deck" id="card-container">
+</div>
+
+{% endblock %}
+
+{% block add_js %}
+<script src="/static/js/util.js"></script>
+<script>
+// TODO: move to a JS file
+function get_card_html(item) {
+  var template = `
+    <div class="card">
+      <img class="card-img-top" src="/static/img/themes/books/items/${item.image}" alt="${item.title}">
+      <div class="card-body">
+        <h5 class="card-title">${item.title}</h5>
+        <p class="card-text"></p>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted">Last updated 3 mins ago</small>
+      </div>
+    </div>
+  `;
+  return template;
+}
+
+function render(data) {
+  var content = '';
+  data.forEach(item => {
+    content = content + get_card_html(item);
+  });
+  var container = document.getElementById('card-container');
+  container.innerHTML = content;
+}
+
+var accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+var result = ajax('http://localhost:5000/api/items', 'GET', null, accessToken, render);
+
+</script>
+{% endblock %}

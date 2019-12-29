@@ -1,0 +1,10 @@
+Flask==1.1.1
+flask-talisman==0.7.0
+Flask-WTF==0.14.2
+gunicorn==19.9.0
+mistune==0.8.4
+python-dateutil==2.8.0
+python-dotenv==0.10.3
+pytz==2019.3
+requests==2.22.0
+Flask-Dance==3.0.0

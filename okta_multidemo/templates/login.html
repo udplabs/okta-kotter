@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Login</h1>
+<form action="" method="POST">
+  <div class="form-group">
+    <label for="exampleInputEmail1">Email address</label>
+    {{ form.username(class_="form-control", id="username", placeholder="Enter email") }}
+    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+  </div>
+  <div class="form-group">
+    {{ form.password(class_="form-control", id="password", placeholder="Password", type="password") }}
+  </div>
+  {{ form.csrf_token }}
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
