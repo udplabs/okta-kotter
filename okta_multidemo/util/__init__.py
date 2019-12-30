@@ -1,6 +1,8 @@
 import json
 import os
 
+import jwt
+
 from simple_rest_client.api import API
 from tinydb import TinyDB
 
@@ -31,3 +33,7 @@ class APIClient(object):
             timeout=10,
             json_encode_body=True,
         )
+
+
+def decode_token(token):
+    return jwt.decode(token, verify=False)

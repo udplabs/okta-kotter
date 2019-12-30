@@ -18,7 +18,7 @@ def get_items():
 
 
 @api_blueprint.route('/orders', methods=['POST'])
-@authorize(scopes=['orders:write'])
+@authorize(scopes=['items:read'])
 def create_order():
     order = Order()
     data = json.loads(request.get_data())

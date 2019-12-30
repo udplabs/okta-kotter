@@ -8,34 +8,20 @@
 {% endblock %}
 {% block add_js %}
 <script src="https://global.oktacdn.com/okta-signin-widget/3.1.6/js/okta-sign-in.min.js" type="text/javascript"></script>
+<script src="/static/js/util.js"></script>
 <script type="text/javascript">
-const oktaSignIn = new OktaSignIn({
-  baseUrl: "{{ config.OKTA_BASE_URL }}",
-  redirectUri: '{{ config.OKTA_AUDIENCE }}{{ url_for("okta.login") }}/authorized',
-  clientId: "{{ config.OKTA_CLIENT_ID }}",
-  logo: '/static/img/themes/{{ config.THEME_LABEL }}/icon.png',
-  language: 'en',
-  i18n: {
-    en: {
-      'primaryauth.title': 'Sign in to {{ config.SITE_TITLE }}'
-    }
-  },
-  authParams: {
-      issuer: "{{ config.OKTA_ISSUER }}",
-      responseType: ['code'],
-      display: 'popup', // FIXME: popup not working for social auth
-  }{% if social %},
-  idps: [
-    {type: 'GOOGLE', id: '{{ config.OKTA_GOOGLE_IDP }}'},
-    {type: 'FACEBOOK', id: '{{ config.OKTA_FACEBOOK_IDP }}'}
-  ]{% endif %}
-});
+const oktaSignIn = new OktaSignIn({{ widget_conf|safe }});
+
+function cb(result) {
+  window.location.href = "/";
+}
 
 oktaSignIn.renderEl(
   { el: '#okta-login-container' },
   function success(res) {
-    console.log(res);
-    window.location = '/';
+    var data = JSON.stringify(res);
+    // TODO change "OKTA_AUDIENCE" to APP_URL or something
+    var result = ajax('{{ config.OKTA_AUDIENCE }}/implicit/callback', 'POST', data, cb);
   },
   function error(err) {
     // handle errors as needed

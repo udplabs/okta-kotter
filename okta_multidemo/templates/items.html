@@ -59,7 +59,7 @@ function itemAction(id) {
     itemId: id,
     ct: 1
   });
-  var result = ajax('{{ config.API_URL }}/orders', 'POST', data, accessToken, cb);
+  var result = ajax('{{ config.API_URL }}/orders', 'POST', data, cb, accessToken);
 }
 // var ct = document.getElementById('itemCt-1');
 // console.log(ct.value);

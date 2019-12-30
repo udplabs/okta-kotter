@@ -3,7 +3,7 @@ body {
   /*background-image: url("http://localhost:5000/static/img/bg-masthead.jpg");*/
 }
 .home-body-image {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/static/img/rain.jpg");
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/static/img/bg.jpg");
 }
 .starter-template {
   padding: 3rem 1.5rem;
@@ -25,3 +25,11 @@ pre {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     grid-gap: .5rem;
 }
+
+.navbar {
+/*  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/static/img/themes/books/bg2.jpg");
+  background-size: cover;
+*//*  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);*/
+}
+

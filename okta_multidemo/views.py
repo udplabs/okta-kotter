@@ -4,11 +4,10 @@ import logging
 import feedparser
 import requests
 import pytz
-import jwt
 
 from dateutil.parser import parse
 
-from flask import render_template, request, make_response, url_for, redirect, flash, session, current_app
+from flask import render_template, request, make_response, url_for, redirect, flash, session, current_app, Response
 from werkzeug.exceptions import Unauthorized
 from simple_rest_client import exceptions
 
@@ -17,40 +16,55 @@ from . import filters
 from .forms import LoginForm, ProfileForm
 from .models import Item
 from .logs import format_json_output
-from .util import APIClient
+from .util import APIClient, decode_token
+from .util.widget import get_widget_config
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    token = app.blueprints['okta'].session.token
     token_dict = {}
+    token_main = app.blueprints['okta'].session.token  # only used with authz flow
 
-    if token:
-        access_decoded = jwt.decode(token['access_token'], verify=False)
-        id_decoded = jwt.decode(token['id_token'], verify=False)
+    access_token = None
+    id_token = None
+    if token_main:
+        access_token = token_main['access_token']
+        id_token = token_main['id_token']
+    else:
+        access_token = request.cookies.get('access_token')
+        id_token = request.cookies.get('id_token')
+    if access_token:
+        access_decoded = decode_token(access_token)
+        id_decoded = decode_token(id_token)
         access_payload_fmt = json.dumps(access_decoded, indent=4)
         id_payload_fmt = json.dumps(id_decoded, indent=4)
         token_dict = {
             'id': {
-                'token': token['id_token'],
+                'token': id_token,
                 'payload': id_payload_fmt,
             },
             'access': {
-                'token': token['access_token'],
+                'token': access_token,
                 'payload': access_payload_fmt,
             },
         }
         session['username'] = id_decoded['email']
         session['name'] = id_decoded['name']
         session['user_id'] = id_decoded['sub']
-        logging.debug(format_json_output(id_decoded))
+        # logging.debug(format_json_output(id_decoded))
 
     resp = make_response(render_template(
         'index.html',
         help={'name': 'tokens', 'data': token_dict}
     ))
-    if token:
-        resp.set_cookie('access_token', token_dict['access']['token'])
+    if token_main:
+        # NOTE: we're putting the tokens in the cookie so that the client
+        #   can access API endpoints.  A more secure MVC app might
+        #   manage them on the server side, while a SPA app might
+        #   use the token manager of the Okta Auth SDK to manage them
+        #   in local storage.
+        resp.set_cookie('access_token', access_token)
+        resp.set_cookie('id_token', id_token)
     return resp
 
 
@@ -89,14 +103,36 @@ def login_form():
 
 @app.route('/login-widget', methods=['GET'])
 def login_widget():
-    resp = render_template('login/widget.html')
+    conf = get_widget_config(current_app.config)
+    resp = render_template('login/widget.html',
+        widget_conf=json.dumps(conf, indent=2))
     return resp
 
 
 @app.route('/login-social', methods=['GET'])
 def login_widget_social():
-    social = True
-    resp = render_template('login/widget.html', social=social)
+    conf = get_widget_config(current_app.config, 'social')
+    resp = render_template('login/widget.html',
+        widget_conf=json.dumps(conf, indent=2))
+    return resp
+
+
+@app.route('/login-implicit', methods=['GET'])
+def login_widget_implicit():
+    conf = get_widget_config(current_app.config, 'implicit')
+    resp = render_template('login/widget.html',
+        widget_conf=json.dumps(conf, indent=2))
+    return resp
+
+
+@app.route('/implicit/callback', methods=['POST'])
+def implicit_callback():
+    data = json.loads(request.data)
+    access_token = data[0]['accessToken']
+    id_token = data[1]['idToken']
+    resp = make_response(Response(json.dumps({'status': 'OK'}), 200)) # redirect(url_for('index'))
+    resp.set_cookie('access_token', access_token)
+    resp.set_cookie('id_token', id_token)
     return resp
 
 
@@ -131,8 +167,10 @@ def profile():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
+    resp = make_response(redirect(url_for('index')))
+    resp.set_cookie('access_token', '', expires=0)
+    resp.set_cookie('id_token', '', expires=0)
     session.clear()
-    resp = redirect(url_for('index'))
     return resp
 
 
@@ -140,7 +178,8 @@ def logout():
 def items():
     # NOTE: Here the view calls the REST API, rather than the model directly.
     #   In an MVC app it doesn't have to work this way.
-    client = APIClient(app.config['API_URL'], session['okta_oauth_token']['access_token'])
+    # import pdb;pdb.set_trace()
+    client = APIClient(app.config['API_URL'], request.cookies.get('access_token'))
     client.api.add_resource(resource_name='items')
     try:
         data = client.api.items.list()
