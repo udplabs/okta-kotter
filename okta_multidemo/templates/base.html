@@ -22,7 +22,7 @@
     <link href="/static/css/themes/{{ config.THEME_LABEL }}.css" rel="stylesheet">
   </head>
 
-  <body {% if request.path=="/" %}class="home-body-image" {% endif %}>
+<body {% if request.path in ["/", "/login-widget"] %}class="home-body-image" {% endif %}>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <a class="navbar-brand" href="/">{{ config.SITE_TITLE }}</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,9 +50,9 @@
             <a class="nav-link dropdown-toggle" href="" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Log In</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
               <a class="dropdown-item" href="{{ url_for('okta.login')}}">Log In (Okta-hosted)</a>
-              <a class="dropdown-item" href="#">Log In (Widget)</a>
+              <a class="dropdown-item" href="/login-widget">Log In (Widget)</a>
               <a class="dropdown-item" href="/login">Log In (Custom)</a>
-              <a class="dropdown-item" href="#">Log In (Social)</a>
+              <a class="dropdown-item" href="/login-social">Log In (Social)</a>
               <a class="dropdown-item" href="#">Log In (IdP Disco)</a>
             </div>
           </li>
@@ -72,8 +72,8 @@
               <li class="nav-item">
                 <a class="nav-link" href="/logout">Log out</a>
               </li>
-              <li class="nav-item">
-                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#helpModal">
+              <li class="nav-item" style="margin-left:20px;">
+                <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#helpModal">
                   <i class="fa fa-question-circle"></i> Help
                 </button>
               </li>

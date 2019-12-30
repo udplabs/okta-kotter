@@ -18,17 +18,22 @@ class BaseConfig(object):
     DB_PATH='/tmp/okta-demo-db.json'
     API_URL='http://localhost:5000/api'
     SECRET_KEY = os.getenv('SECRET_KEY')
+
+    OKTA_BASE_URL=os.getenv('OKTA_BASE_URL')
     OKTA_CLIENT_ID=os.getenv('OKTA_CLIENT_ID')
     OKTA_CLIENT_SECRET=os.getenv('OKTA_CLIENT_SECRET')
     OKTA_ISSUER=os.getenv('OKTA_ISSUER')
     OKTA_AUDIENCE=os.getenv('OKTA_AUDIENCE')
+    OKTA_GOOGLE_IDP=os.getenv('OKTA_GOOGLE_IDP')
+    OKTA_FACEBOOK_IDP=os.getenv('OKTA_FACEBOOK_IDP')
 
     theme=os.getenv('THEME', 'default')
     theme_config = get_theme_config(theme)
     THEME_LABEL = theme_config['label']
     SITE_TITLE = theme_config['site-title']
     ITEMS_TITLE = theme_config['items-title']
-    ITEMS_PATH = theme_config['items-path']
+    ITEMS_TITLE_LABEL = theme_config['items-title-label']
+    ITEMS_PATH = '/{}'.format(theme_config['items-title-label'])
     ITEMS_ACTION_TITLE = theme_config['action-title']
 
 

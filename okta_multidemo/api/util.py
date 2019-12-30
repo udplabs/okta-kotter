@@ -35,7 +35,7 @@ def validate_access_token(token, scopes):
     assert claims['aud'] == current_app.config['OKTA_AUDIENCE']
 
 
-def authorization_required(scopes=[]):
+def authorize(scopes=[]):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):

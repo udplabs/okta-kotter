@@ -41,6 +41,8 @@ def index():
             },
         }
         session['username'] = id_decoded['email']
+        session['name'] = id_decoded['name']
+        session['user_id'] = id_decoded['sub']
         logging.debug(format_json_output(id_decoded))
 
     resp = make_response(render_template(
@@ -82,6 +84,19 @@ def login_form():
         else:
             flash('Invalid form data.')
     resp = render_template('login.html', form=form)
+    return resp
+
+
+@app.route('/login-widget', methods=['GET'])
+def login_widget():
+    resp = render_template('login/widget.html')
+    return resp
+
+
+@app.route('/login-social', methods=['GET'])
+def login_widget_social():
+    social = True
+    resp = render_template('login/widget.html', social=social)
     return resp
 
 

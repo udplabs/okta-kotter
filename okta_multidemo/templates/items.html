@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<span id="alert"></span>
 
 <div class="card-deck">
   {% for item in items %}
@@ -22,30 +23,25 @@
 {% block add_js %}
 <script src="/static/js/util.js"></script>
 <script>
-// TODO: move to a JS file
 
-// function render(data) {
-//   var content = '';
-//   data.forEach(item => {
-//     content = content + get_card_html(item);
-//   });
-//   var container = document.getElementById('card-container');
-//   container.innerHTML = content;
-// }
+function showAlert(style, message) {
+  var template = `
+<div class="alert alert-${style} alert-dismissible fade show" role="alert">
+  ${message}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+  `;
+  var elem = document.getElementById('alert');
+  elem.innerHTML = template;
+}
 
-// var accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-// var req = new XMLHttpRequest();
-// req.open('GET', 'http://localhost:5000/api/items', true);
-// req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-// req.onreadystatechange = function () {
-//   if (req.readyState != 4 || req.status != 200) return;
-//   render(JSON.parse(req.responseText));
-// };
-// req.send();
-
-function cb(response) {
-  console.log('hello world');
-  console.log(response);
+function cb(resp) {
+  if (resp.error) {
+    showAlert('danger', 'An error occurred: ' + resp.error.description);
+  }
+  console.log(resp);
 }
 
 function itemAction(id) {
@@ -53,13 +49,17 @@ function itemAction(id) {
   var ct = parseInt(elem.innerText);
   var newCt = ct - 1;
   elem.innerText = newCt;
-  var btn = document.getElementById('btn-'+id)
+  var btn = document.getElementById('btn-'+id);
   btn.disabled = true;
   btn.setAttribute("class", "btn btn-secondary btn-sm");
   btn.innerHTML = '<span><i class="fa fa-hourglass"></i> Pending</span>';
   var accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-  data = JSON.stringify({x: 'qwe'})
-  var result = ajax('http://localhost:5000/api/orders', 'POST', data, accessToken, cb);
+  data = JSON.stringify({
+    userId: '{{ session.user_id }}',
+    itemId: id,
+    ct: 1
+  });
+  var result = ajax('{{ config.API_URL }}/orders', 'POST', data, accessToken, cb);
 }
 // var ct = document.getElementById('itemCt-1');
 // console.log(ct.value);

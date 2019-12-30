@@ -1,30 +1,28 @@
 import json
 
-from flask import Blueprint, request, jsonify, session, current_app
+from flask import Blueprint, request, jsonify, session, current_app, Response
 from tinydb import TinyDB, Query
 
-from ..models import Item
-from .util import authorization_required
+from ..models import Item, Order
+from .util import authorize
 
 api_blueprint = Blueprint('api', 'api', url_prefix='/api')
 
 
 @api_blueprint.route('/items', methods=['GET'])
-@authorization_required(scopes=['items:read'])
-def api_items_get():
-    # validate_access_token(token)
+@authorize(scopes=['items:read'])
+def get_items():
     items = Item()
     data = items.all()
     return jsonify(data)
 
 
 @api_blueprint.route('/orders', methods=['POST'])
+@authorize(scopes=['orders:write'])
 def create_order():
-    req_data = request.get_data()
-    print('############')
-    print(json.loads(req_data))
-    # TODO: get user ID from ID token in session to add to record in DB
-    return jsonify([])
-    # if request.method == 'POST':
-    #     # add an item to DB
-    #     return jsonify({'message': 'OK'})
+    order = Order()
+    data = json.loads(request.get_data())
+    data['status'] = 'pending'
+    result = order.add(data)
+    resp = {'message': 'OK'}
+    return jsonify(data)  # equivalent of Response(json.dumps(resp), 200)

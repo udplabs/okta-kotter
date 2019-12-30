@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block add_css %}
+<link href="https://global.oktacdn.com/okta-signin-widget/3.1.6/css/okta-sign-in.min.css" type="text/css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<div id="okta-login-container"></div>
+{% endblock %}
+{% block add_js %}
+<script src="https://global.oktacdn.com/okta-signin-widget/3.1.6/js/okta-sign-in.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+const oktaSignIn = new OktaSignIn({
+  baseUrl: "{{ config.OKTA_BASE_URL }}",
+  redirectUri: '{{ config.OKTA_AUDIENCE }}{{ url_for("okta.login") }}/authorized',
+  clientId: "{{ config.OKTA_CLIENT_ID }}",
+  logo: '/static/img/themes/{{ config.THEME_LABEL }}/icon.png',
+  language: 'en',
+  i18n: {
+    en: {
+      'primaryauth.title': 'Sign in to {{ config.SITE_TITLE }}'
+    }
+  },
+  authParams: {
+      issuer: "{{ config.OKTA_ISSUER }}",
+      responseType: ['code'],
+      display: 'popup', // FIXME: popup not working for social auth
+  }{% if social %},
+  idps: [
+    {type: 'GOOGLE', id: '{{ config.OKTA_GOOGLE_IDP }}'},
+    {type: 'FACEBOOK', id: '{{ config.OKTA_FACEBOOK_IDP }}'}
+  ]{% endif %}
+});
+
+oktaSignIn.renderEl(
+  { el: '#okta-login-container' },
+  function success(res) {
+    console.log(res);
+    window.location = '/';
+  },
+  function error(err) {
+    // handle errors as needed
+    console.error(err);
+  }
+);
+</script>
+{% endblock %}

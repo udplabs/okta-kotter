@@ -2,5 +2,5 @@
   "label": "default",
   "site-title": "Okta Demo",
   "items-title": "Items",
-  "items-path": "/items"
+  "items-title-label": "items"
 }

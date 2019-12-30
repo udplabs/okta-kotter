@@ -11,17 +11,25 @@ class Model(object):
 
     def __init__(self):
         self.db = TinyDB(current_app.config['DB_PATH'])
+        self.table = self.db.table(self.get_type())
 
     def get_type(self):
         return self.TYPE
 
     def all(self):
-        Item = Query()
-        results = self.db.search(Item.target == 'PUBLIC')
+        # records = Query()
+        # results = self.db.search(records.target == 'PUBLIC')
+        results = self.table.all()
         return results
 
+    def add(self, data):
+        self.table.insert(data)
 
+
+# TODO: are the subclasses really necessary?
 class Item(Model):
-    # TODO: is this really used?
     TYPE = 'items'
 
+
+class Order(Model):
+    TYPE = 'orders'

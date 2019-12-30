@@ -11,11 +11,12 @@ def init_db(path, theme):
     except OSError:
         pass
     db = TinyDB(path)
+    table = db.table('items')
     # TODO: get relative to current module path
     with open('./okta_multidemo/conf/{}/data.json'.format(theme)) as file_:
         data = file_.read()
     items = json.loads(data)
-    db.insert_multiple(items)
+    table.insert_multiple(items)
 
 
 class APIClient(object):

@@ -2,6 +2,6 @@
   "label": "books",
   "site-title": "Okta Cloud Books Warehouse",
   "items-title": "Books",
-  "items-path": "/books",
+  "items-title-label": "books",
   "action-title": "Restock"
 }
