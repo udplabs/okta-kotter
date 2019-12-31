@@ -55,7 +55,8 @@ def index():
 
     resp = make_response(render_template(
         'index.html',
-        help={'name': 'tokens', 'data': token_dict}
+        help={'name': 'tokens', 'data': token_dict},
+        body_class='home-body-image'
     ))
     if token_main:
         # NOTE: we're putting the tokens in the cookie so that the client
@@ -101,28 +102,30 @@ def login_form():
     return resp
 
 
+def render_login_template(conf):
+    resp = render_template(
+        'login/widget.html',
+        widget_conf=json.dumps(conf, indent=2),
+        body_class='home-body-image'
+    )
+    return resp
+
+
 @app.route('/login-widget', methods=['GET'])
 def login_widget():
     conf = get_widget_config(current_app.config)
-    resp = render_template('login/widget.html',
-        widget_conf=json.dumps(conf, indent=2))
-    return resp
-
+    return render_login_template(conf)
 
 @app.route('/login-social', methods=['GET'])
 def login_widget_social():
     conf = get_widget_config(current_app.config, 'social')
-    resp = render_template('login/widget.html',
-        widget_conf=json.dumps(conf, indent=2))
-    return resp
+    return render_login_template(conf)
 
 
 @app.route('/login-implicit', methods=['GET'])
 def login_widget_implicit():
     conf = get_widget_config(current_app.config, 'implicit')
-    resp = render_template('login/widget.html',
-        widget_conf=json.dumps(conf, indent=2))
-    return resp
+    return render_login_template(conf)
 
 
 @app.route('/implicit/callback', methods=['POST'])
@@ -179,6 +182,7 @@ def items():
     # NOTE: Here the view calls the REST API, rather than the model directly.
     #   In an MVC app it doesn't have to work this way.
     # import pdb;pdb.set_trace()
+    # client = APIClient(app.config['API_URL'], session['access_token'])
     client = APIClient(app.config['API_URL'], request.cookies.get('access_token'))
     client.api.add_resource(resource_name='items')
     try:

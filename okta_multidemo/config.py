@@ -15,8 +15,8 @@ class BaseConfig(object):
     DEBUG = False
     TESTING = False
     SITE_NAME = ''
-    DB_PATH='/tmp/okta-demo-db.json'
-    API_URL='http://localhost:5000/api'
+    DB_PATH=os.getenv('DB_PATH')
+    API_URL=os.getenv('API_URL')
     SECRET_KEY = os.getenv('SECRET_KEY')
 
     OKTA_BASE_URL=os.getenv('OKTA_BASE_URL')

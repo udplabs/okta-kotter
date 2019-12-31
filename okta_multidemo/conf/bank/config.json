@@ -2,5 +2,6 @@
   "label": "bank",
   "site-title": "Okta Cloud Bank",
   "items-title": "Products",
-  "items-title-label": "products"
+  "items-title-label": "products",
+  "action-title": "Apply"
 }

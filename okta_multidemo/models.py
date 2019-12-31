@@ -22,8 +22,28 @@ class Model(object):
         results = self.table.all()
         return results
 
+    def get(self, condition=None):
+        print('#########', condition)
+        if condition:
+            records = Query()
+            cond_key = list(condition.keys())[0]
+            cond_val = list(condition.values())[0]
+            results = self.table.search(records[cond_key]==cond_val)
+        else:
+            results = self.table.all()
+        return results
+
     def add(self, data):
         self.table.insert(data)
+
+    def update(self, data, condition=None):
+        if condition:
+            records = Query()
+            cond_key = list(condition.keys())[0]
+            cond_val = list(condition.values())[0]
+            self.table.update(data, records[cond_key]==cond_val)
+        else:
+            self.table.update(data)
 
 
 # TODO: are the subclasses really necessary?

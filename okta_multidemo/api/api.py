@@ -26,3 +26,24 @@ def create_order():
     result = order.add(data)
     resp = {'message': 'OK'}
     return jsonify(data)  # equivalent of Response(json.dumps(resp), 200)
+
+
+@api_blueprint.route('/orders', methods=['GET'])
+# @authorize(scopes=['orders:update'])
+def get_orders():
+    status = request.args.get('status')
+    orders = Order()
+    if status:
+        data = orders.get({'status': status})
+    else:
+        data = orders.get()
+    return jsonify(data)
+
+
+@api_blueprint.route('/orders/<int:order_id>', methods=['PATCH'])
+# @authorize(scopes=['orders:update'])
+def update_order(order_id):
+    order = Order()
+    data = request.get_json()
+    order.update(data)
+    return jsonify([])  # TODO
