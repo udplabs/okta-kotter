@@ -37,7 +37,7 @@
         "count": 10,
         "price": 0,
         "image": "cloud_computing.jpg",
-        "target": "PUBLIC"
+        "target": "PREMIUM"
     },
     {
         "itemId": "5",

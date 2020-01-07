@@ -35,6 +35,7 @@ def validate_access_token(token, scopes):
     # assert claims['cid'] == current_app.config['OKTA_CLIENT_ID']
     # TODO: ^^^ keep whitelist of approved clients?
     assert claims['aud'] == current_app.config['OKTA_AUDIENCE']
+    return claims
 
 
 def authorize(scopes=[]):
@@ -44,12 +45,13 @@ def authorize(scopes=[]):
             try:
                 auth_header = request.headers.get('Authorization')
                 type_, token = auth_header.split(' ')
-                validate_access_token(token, scopes)
+                claims = validate_access_token(token, scopes)
             except Exception as e:
                 logging.exception(str(e))
                 # raise Unauthorized
                 response = {'status': 'UNAUTHORIZED'}
                 return Response(json.dumps(response), 401)
+            kwargs.update({'claims': claims})
             return f(*args, **kwargs)
         return decorated_function
     return decorator
@@ -59,7 +61,9 @@ def mfa():
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            user_id = session['user_id']
+            user_id = session.get('user_id', None)
+            if not user_id:  # must be client credentials; no MFA
+                return f(*args, **kwargs)
             okta = OktaAPIClient(
                 current_app.config['OKTA_BASE_URL'],
                 current_app.config['OKTA_API_KEY']

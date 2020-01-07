@@ -12,15 +12,19 @@ api_blueprint = Blueprint('api', 'api', url_prefix='/api')
 
 @api_blueprint.route('/items', methods=['GET'])
 @authorize(scopes=['items:read'])
-def get_items():
+def get_items(claims={}):
     items = Item()
-    data = items.all()
+    feature_access = claims.get('feature_access', [])
+    if 'premium' in feature_access:
+        data = items.all()
+    else:
+        data = items.get({'target': 'PUBLIC'})
     return jsonify(data)
 
 
 @api_blueprint.route('/orders', methods=['POST'])
 @authorize(scopes=['items:read'])
-def create_order():
+def create_order(claims={}):
     order = Order()
     data = json.loads(request.get_data())
     data['status'] = 'pending'
@@ -31,7 +35,7 @@ def create_order():
 
 @api_blueprint.route('/orders', methods=['GET'])
 @authorize(scopes=['orders:update'])
-def get_orders():
+def get_orders(claims={}):
     status = request.args.get('status')
     orders = Order()
     if status:
@@ -43,8 +47,8 @@ def get_orders():
 
 @api_blueprint.route('/orders/<int:order_id>', methods=['PATCH'])
 @authorize(scopes=['orders:update'])
-# @mfa()
-def update_order(order_id):
+@mfa()
+def update_order(order_id, claims={}):
     data = json.loads(request.get_data())
     order_model = Order()
     item_model = Item()

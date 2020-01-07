@@ -1,11 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <span id="alert"></span>
 
 <div class="card-deck">
   {% for item in items %}
   <div class="card">
+    {% if item.target == 'PREMIUM' %}
+    <div class="ribbon-wrapper">
+        <div class="ribbon green">PREMIUM</div>
+    </div>
+    {% endif %}
     <img class="card-img-top" src="/static/img/themes/books/items/{{ item.image }}" alt="{{ item.title }}">
     <div class="card-body">
       <h5 class="card-title">{{ item.title }}</h5>
