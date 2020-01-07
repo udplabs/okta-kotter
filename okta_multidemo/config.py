@@ -20,6 +20,7 @@ class BaseConfig(object):
     SECRET_KEY = os.getenv('SECRET_KEY')
 
     OKTA_BASE_URL=os.getenv('OKTA_BASE_URL')
+    OKTA_API_KEY=os.getenv('OKTA_API_KEY')
     OKTA_CLIENT_ID=os.getenv('OKTA_CLIENT_ID')
     OKTA_CLIENT_SECRET=os.getenv('OKTA_CLIENT_SECRET')
     OKTA_ISSUER=os.getenv('OKTA_ISSUER')
@@ -27,6 +28,7 @@ class BaseConfig(object):
     OKTA_GOOGLE_IDP=os.getenv('OKTA_GOOGLE_IDP')
     OKTA_FACEBOOK_IDP=os.getenv('OKTA_FACEBOOK_IDP')
     OKTA_SCOPES=os.getenv('OKTA_SCOPES').split(',')
+    OKTA_ADMIN_SCOPES=os.getenv('OKTA_ADMIN_SCOPES').split(',')
 
     theme=os.getenv('THEME', 'default')
     theme_config = get_theme_config(theme)

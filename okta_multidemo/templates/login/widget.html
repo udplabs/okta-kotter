@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block add_css %}
-<link href="https://global.oktacdn.com/okta-signin-widget/3.1.6/css/okta-sign-in.min.css" type="text/css" rel="stylesheet"/>
+<link href="https://global.oktacdn.com/okta-signin-widget/3.1.6/css/okta-sign-in.min.css" type="text/css" rel="stylesheet" />
+{% if custom_css %}<link href="/static/css/{{ custom_css }}.css" rel="stylesheet" />{% endif %}
 {% endblock %}
 
 {% block content %}

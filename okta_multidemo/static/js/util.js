@@ -26,3 +26,16 @@ function ajax(url, method, data, callback, accessToken) {
   };
   req.send(data);
 }
+
+function showAlert(style, message) {
+  var template = `
+<div class="alert alert-${style} alert-dismissible fade show" role="alert">
+  ${message}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+  `;
+  var elem = document.getElementById('alert');
+  elem.innerHTML = template;
+}

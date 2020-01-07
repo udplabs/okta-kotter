@@ -13,7 +13,7 @@
     </div>
     <div class="card-footer">
       <small class="text-muted"><span id="itemCt-{{ item.itemId }}">{{ item.count }}</span> available</small>
-      <button id="btn-{{ item.itemId }}"" type="button" class="btn btn-primary btn-sm" style="float:right;" onclick="itemAction({{ item.itemId }});">{{ config.ITEMS_ACTION_TITLE }}</button>
+      <button id="btn-{{ item.itemId }}" type="button" class="btn btn-primary btn-sm" style="float:right;" onclick="itemAction({{ item.itemId }});">{{ config.ITEMS_ACTION_TITLE }}</button>
     </div>
   </div>
   {% endfor %}
@@ -23,19 +23,6 @@
 {% block add_js %}
 <script src="/static/js/util.js"></script>
 <script>
-
-function showAlert(style, message) {
-  var template = `
-<div class="alert alert-${style} alert-dismissible fade show" role="alert">
-  ${message}
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-  `;
-  var elem = document.getElementById('alert');
-  elem.innerHTML = template;
-}
 
 function cb(resp) {
   if (resp.error) {

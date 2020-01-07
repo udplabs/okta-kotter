@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Admin: Orders</h2>
+
+<span id="alert"></span>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Order ID</th>
+      <th scope="col">Item ID</th>
+      <th scope="col">User ID</th>
+      <th scope="col">Status</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+    <tr>
+      <th scope="row">{{ order.id }}</th>
+      <td>{{ order.itemId }}</td>
+      <td>{{ order.userId }}</td>
+      <td><span class="badge badge-{{ 'success' if order.status == 'complete' else 'secondary' }}">{{ order.status }}</span></td>
+      <td>
+        {% if order.status == 'pending' %}
+        <button id="btn-{{ order.id }}" class="btn btn-danger btn-sm" type="button" onclick="orderAction({{ order.id }});">Fulfill</button>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
+{% block add_js %}
+<script src="/static/js/util.js"></script>
+<script>
+
+function cb(resp) {
+  if (resp.error) {
+    showAlert('danger', 'An error occurred: ' + resp.error.description);
+  } else {
+    location.reload();
+  }
+}
+
+function orderAction(id) {
+  var btn = document.getElementById('btn-'+id);
+  btn.disabled = true;
+  btn.setAttribute("class", "btn btn-secondary btn-sm");
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Fulfill';
+  var accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  data = JSON.stringify({
+    status: 'complete',
+  });
+  var result = ajax('{{ config.API_URL }}/orders/'+id, 'PATCH', data, cb, accessToken);
+}
+</script>
+{% endblock %}

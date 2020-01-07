@@ -3,8 +3,6 @@ from datetime import datetime, timedelta
 from flask import current_app
 from tinydb import TinyDB, Query
 
-# from .app import app
-# from .util import groupsio_api_query
 
 class Model(object):
     TYPE = ''
@@ -17,36 +15,45 @@ class Model(object):
         return self.TYPE
 
     def all(self):
-        # records = Query()
-        # results = self.db.search(records.target == 'PUBLIC')
-        results = self.table.all()
+        results = []
+        for row in self.table.all():
+            row['id'] = row.eid
+            results.append(row)
         return results
 
     def get(self, condition=None):
-        print('#########', condition)
         if condition:
-            records = Query()
-            cond_key = list(condition.keys())[0]
-            cond_val = list(condition.values())[0]
-            results = self.table.search(records[cond_key]==cond_val)
+            if type(condition) == dict:
+                records = Query()
+                cond_key = list(condition.keys())[0]
+                cond_val = list(condition.values())[0]
+                results = self.table.search(records[cond_key]==cond_val)
+            else:  # assume it's a doc ID
+                results = [self.table.get(doc_id=condition)]
         else:
             results = self.table.all()
-        return results
+        updated_results = []
+        for row in results:
+            row['id'] = row.eid
+            updated_results.append(row)
+        return updated_results
 
     def add(self, data):
         self.table.insert(data)
 
     def update(self, data, condition=None):
         if condition:
-            records = Query()
-            cond_key = list(condition.keys())[0]
-            cond_val = list(condition.values())[0]
-            self.table.update(data, records[cond_key]==cond_val)
+            if type(condition) == dict:
+                records = Query()
+                cond_key = list(condition.keys())[0]
+                cond_val = list(condition.values())[0]
+                self.table.update(data, records[cond_key]==cond_val)
+            else:  # it's a list of id(s)
+                self.table.update(data, doc_ids=condition)
         else:
             self.table.update(data)
 
 
-# TODO: are the subclasses really necessary?
 class Item(Model):
     TYPE = 'items'
 

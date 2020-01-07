@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 
 from functools import wraps
 
@@ -7,8 +8,8 @@ import requests
 
 from flask import current_app, Response, session, request
 from jwcrypto import jwt, jwk
-# from werkzeug.exceptions import Unauthorized
 
+from ..util import OktaAPIClient, UserFactorResource
 
 JWK_CACHE = []
 
@@ -31,7 +32,8 @@ def validate_access_token(token, scopes):
     for scope in scopes:
         assert scope in claims['scp']
     assert claims['iss'] == current_app.config['OKTA_ISSUER']
-    assert claims['cid'] == current_app.config['OKTA_CLIENT_ID']
+    # assert claims['cid'] == current_app.config['OKTA_CLIENT_ID']
+    # TODO: ^^^ keep whitelist of approved clients?
     assert claims['aud'] == current_app.config['OKTA_AUDIENCE']
 
 
@@ -46,6 +48,46 @@ def authorize(scopes=[]):
             except Exception as e:
                 logging.exception(str(e))
                 # raise Unauthorized
+                response = {'status': 'UNAUTHORIZED'}
+                return Response(json.dumps(response), 401)
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+
+def mfa():
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            user_id = session['user_id']
+            okta = OktaAPIClient(
+                current_app.config['OKTA_BASE_URL'],
+                current_app.config['OKTA_API_KEY']
+            )
+            okta.api.add_resource(
+                resource_name='factors',
+                resource_class=UserFactorResource
+            )
+            # get factors available for this user -- for now, just grab
+            #   the first one; which factor to use could be part of the
+            #   user's profile admin in the app
+            factors = okta.api.factors.get(user_id)
+            factor = [i for i in factors.body if i['status'] == 'ACTIVE'][0]
+            factor_id = factor['id']
+            challenge = okta.api.factors.issue(user_id, factor_id)
+            poll_link = challenge.body['_links']['poll']['href']
+            transaction_id = poll_link.split('/')[-1]  # not sure why tx ID is not included in payload
+            status = challenge.body['factorResult']
+            wait_ct = 0
+            while status == 'WAITING':
+                time.sleep(2)
+                verify = okta.api.factors.verify(
+                    user_id, factor_id, transaction_id)
+                status = verify.body['factorResult']
+                wait_ct += 1
+                if wait_ct > 15:
+                    break
+            if status != 'SUCCESS':
                 response = {'status': 'UNAUTHORIZED'}
                 return Response(json.dumps(response), 401)
             return f(*args, **kwargs)

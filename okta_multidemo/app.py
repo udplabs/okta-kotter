@@ -9,8 +9,9 @@ from wtforms import StringField, SubmitField, BooleanField, PasswordField
 from wtforms.validators import DataRequired, Length
 
 # TODO: rename/reorg blueprints for consistency
-from .okta import okta_blueprint
+from .okta import okta_blueprint, okta_admin_blueprint
 from .api.api import api_blueprint
+from .admin.admin import admin_blueprint
 from .logs import configure_logging
 from .util import init_db
 
@@ -42,7 +43,9 @@ def unauthorized(e):
 
 
 app.register_blueprint(okta_blueprint, url_prefix='/login')
+app.register_blueprint(okta_admin_blueprint, url_prefix='/login')
 app.register_blueprint(api_blueprint)
+app.register_blueprint(admin_blueprint)
 
 app.register_error_handler(404, page_not_found)
 app.register_error_handler(500, server_error)

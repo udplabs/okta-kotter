@@ -1,10 +1,11 @@
 import json
+import time
 
 from flask import Blueprint, request, jsonify, session, current_app, Response
 from tinydb import TinyDB, Query
 
 from ..models import Item, Order
-from .util import authorize
+from .util import authorize, mfa
 
 api_blueprint = Blueprint('api', 'api', url_prefix='/api')
 
@@ -29,7 +30,7 @@ def create_order():
 
 
 @api_blueprint.route('/orders', methods=['GET'])
-# @authorize(scopes=['orders:update'])
+@authorize(scopes=['orders:update'])
 def get_orders():
     status = request.args.get('status')
     orders = Order()
@@ -41,9 +42,14 @@ def get_orders():
 
 
 @api_blueprint.route('/orders/<int:order_id>', methods=['PATCH'])
-# @authorize(scopes=['orders:update'])
+@authorize(scopes=['orders:update'])
+# @mfa()
 def update_order(order_id):
-    order = Order()
-    data = request.get_json()
-    order.update(data)
-    return jsonify([])  # TODO
+    data = json.loads(request.get_data())
+    order_model = Order()
+    item_model = Item()
+    order = order_model.get(order_id)[0]
+    item = item_model.get(order['itemId'])[0]
+    item_model.update({'count': item['count']-1}, [order['itemId']])
+    order_model.update(data, [order_id])
+    return jsonify({'message': 'OK'})

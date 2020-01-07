@@ -22,17 +22,10 @@ from .util.widget import get_widget_config
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    access_token = session.get('access_token', None)  # TODO: or token from cookie?
+    id_token = session.get('id_token', None)  # TODO: or token from cookie?
+    # access_token = request.cookies.get('access_token')
     token_dict = {}
-    token_main = app.blueprints['okta'].session.token  # only used with authz flow
-
-    access_token = None
-    id_token = None
-    if token_main:
-        access_token = token_main['access_token']
-        id_token = token_main['id_token']
-    else:
-        access_token = request.cookies.get('access_token')
-        id_token = request.cookies.get('id_token')
     if access_token:
         access_decoded = decode_token(access_token)
         id_decoded = decode_token(id_token)
@@ -48,24 +41,42 @@ def index():
                 'payload': access_payload_fmt,
             },
         }
-        session['username'] = id_decoded['email']
-        session['name'] = id_decoded['name']
-        session['user_id'] = id_decoded['sub']
-        # logging.debug(format_json_output(id_decoded))
-
     resp = make_response(render_template(
         'index.html',
         help={'name': 'tokens', 'data': token_dict},
         body_class='home-body-image'
     ))
-    if token_main:
-        # NOTE: we're putting the tokens in the cookie so that the client
-        #   can access API endpoints.  A more secure MVC app might
-        #   manage them on the server side, while a SPA app might
-        #   use the token manager of the Okta Auth SDK to manage them
-        #   in local storage.
-        resp.set_cookie('access_token', access_token)
-        resp.set_cookie('id_token', id_token)
+    return resp
+
+
+@app.route('/authorization/redirect')
+def authorization_redirect():
+    # authz flow only
+    blueprint = request.args.get('conf')
+    token_dict = {}
+    # import pdb;pdb.set_trace()
+    token_main = app.blueprints[blueprint].session.token
+    access_token = token_main['access_token']
+    id_token = token_main['id_token']
+    access_decoded = decode_token(access_token)
+    id_decoded = decode_token(id_token)
+    session['username'] = id_decoded['email']
+    session['name'] = id_decoded['name']
+    session['user_id'] = id_decoded['sub']
+    session['is_admin'] = 'Admin' in id_decoded['groups']
+    session['access_token'] = access_token
+    session['id_token'] = id_token
+    if blueprint == 'okta-admin':
+        resp = redirect(url_for('admin.index'))
+    else:
+        resp = redirect(url_for('index'))
+    # NOTE: we're putting the tokens in the cookie so that the client
+    #   can access API endpoints.  A more secure MVC app might
+    #   manage them on the server side, while a SPA app might
+    #   use the token manager of the Okta Auth SDK to manage them
+    #   in local storage.
+    resp.set_cookie('access_token', access_token)
+    resp.set_cookie('id_token', id_token)
     return resp
 
 
@@ -102,11 +113,12 @@ def login_form():
     return resp
 
 
-def render_login_template(conf):
+def render_login_template(conf, css=None):
     resp = render_template(
         'login/widget.html',
         widget_conf=json.dumps(conf, indent=2),
-        body_class='home-body-image'
+        body_class='home-body-image' if not css else 'home-body-bgcolor',
+        custom_css=css
     )
     return resp
 
@@ -115,6 +127,7 @@ def render_login_template(conf):
 def login_widget():
     conf = get_widget_config(current_app.config)
     return render_login_template(conf)
+
 
 @app.route('/login-social', methods=['GET'])
 def login_widget_social():
@@ -126,6 +139,18 @@ def login_widget_social():
 def login_widget_implicit():
     conf = get_widget_config(current_app.config, 'implicit')
     return render_login_template(conf)
+
+
+@app.route('/login-custom-css', methods=['GET'])
+def login_widget_custom_css():
+    conf = get_widget_config(current_app.config)
+    return render_login_template(conf, css='okta-signin-custom')
+
+
+@app.route('/login-noprompt', methods=['GET'])
+def login_noprompt():
+    resp = render_template('login/noprompt.html')
+    return resp
 
 
 @app.route('/implicit/callback', methods=['POST'])
@@ -181,8 +206,6 @@ def logout():
 def items():
     # NOTE: Here the view calls the REST API, rather than the model directly.
     #   In an MVC app it doesn't have to work this way.
-    # import pdb;pdb.set_trace()
-    # client = APIClient(app.config['API_URL'], session['access_token'])
     client = APIClient(app.config['API_URL'], request.cookies.get('access_token'))
     client.api.add_resource(resource_name='items')
     try:
