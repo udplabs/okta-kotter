@@ -61,6 +61,7 @@ def mfa():
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
+            # NOTE: this has only been tested with Okta Verify Push
             user_id = session.get('user_id', None)
             if not user_id:  # must be client credentials; no MFA
                 return f(*args, **kwargs)

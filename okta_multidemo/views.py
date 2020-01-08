@@ -16,16 +16,27 @@ from . import filters
 from .forms import LoginForm, ProfileForm
 from .models import Item
 from .logs import format_json_output
-from .util import APIClient, decode_token
+from .util import APIClient, decode_token, OktaAPIClient
 from .util.widget import get_widget_config
+
+
+def set_session_vars(access_token, id_token):
+    access_decoded = decode_token(access_token)
+    id_decoded = decode_token(id_token)
+    session['username'] = id_decoded['email']
+    session['name'] = id_decoded['name']
+    session['user_id'] = id_decoded['sub']
+    session['is_admin'] = 'Admin' in id_decoded['groups']
+    session['access_token'] = access_token
+    session['id_token'] = id_token
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    access_token = session.get('access_token', None)  # TODO: or token from cookie?
-    id_token = session.get('id_token', None)  # TODO: or token from cookie?
-    # access_token = request.cookies.get('access_token')
+    access_token = session.get('access_token', request.cookies.get('access_token'))
+    id_token = session.get('id_token', request.cookies.get('id_token'))
     token_dict = {}
+    print('>>>>>>>', access_token)
     if access_token:
         access_decoded = decode_token(access_token)
         id_decoded = decode_token(id_token)
@@ -58,14 +69,7 @@ def authorization_redirect():
     token_main = app.blueprints[blueprint].session.token
     access_token = token_main['access_token']
     id_token = token_main['id_token']
-    access_decoded = decode_token(access_token)
-    id_decoded = decode_token(id_token)
-    session['username'] = id_decoded['email']
-    session['name'] = id_decoded['name']
-    session['user_id'] = id_decoded['sub']
-    session['is_admin'] = 'Admin' in id_decoded['groups']
-    session['access_token'] = access_token
-    session['id_token'] = id_token
+    set_session_vars(access_token, id_token)
     if blueprint == 'okta-admin':
         resp = redirect(url_for('admin.index'))
     else:
@@ -158,6 +162,7 @@ def implicit_callback():
     data = json.loads(request.data)
     access_token = data[0]['accessToken']
     id_token = data[1]['idToken']
+    set_session_vars(access_token, id_token)
     resp = make_response(Response(json.dumps({'status': 'OK'}), 200)) # redirect(url_for('index'))
     resp.set_cookie('access_token', access_token)
     resp.set_cookie('id_token', id_token)
@@ -204,7 +209,7 @@ def logout():
 
 @app.route(app.config['ITEMS_PATH'], methods=('GET',))
 def items():
-    # NOTE: Here the view calls the REST API, rather than the model directly.
+    # NOTE: Here the view calls the REST API, rather than importing the model directly.
     #   In an MVC app it doesn't have to work this way.
     client = APIClient(app.config['API_URL'], request.cookies.get('access_token'))
     client.api.add_resource(resource_name='items')
@@ -215,6 +220,20 @@ def items():
     return render_template(
         'items.html',
         items=data.body
+    )
+
+
+@app.route('/tools', methods=('GET',))
+def tools():
+    okta = OktaAPIClient(
+        current_app.config['OKTA_BASE_URL'],
+        current_app.config['OKTA_API_KEY']
+    )
+    okta.api.add_resource(resource_name='apps')
+    data = okta.api.apps.list(params={'filter': 'user.id eq "{}"'.format(session['user_id'])})
+    return render_template(
+        'tools.html',
+        apps=data.body
     )
 
 
