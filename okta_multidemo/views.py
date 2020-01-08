@@ -245,6 +245,6 @@ def apps():
     )
 
 
-@app.route('{}-spa'.format(app.config['ITEMS_PATH']), methods=('GET',))
+@app.route('{}-rest'.format(app.config['ITEMS_PATH']), methods=('GET',))
 def items_spa():
-    return render_template('items-spa.html')
+    return render_template('items-rest.html')

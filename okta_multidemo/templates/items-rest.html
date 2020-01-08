@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h1>Items 2</h1>
-
 <div class="card-deck" id="card-container">
 </div>
 
@@ -21,7 +18,8 @@ function get_card_html(item) {
         <p class="card-text"></p>
       </div>
       <div class="card-footer">
-        <small class="text-muted">Last updated 3 mins ago</small>
+        <small class="text-muted"><span id="itemCt-${item.itemId}">${item.count}</span> available</small>
+        <button id="btn-${item.itemId}" type="button" class="btn btn-primary btn-sm" style="float:right;" onclick="itemAction(${item.itemId}, '{{ config.API_URL }}', '{{ session.user_id }}');">{{ config.ITEMS_ACTION_TITLE }}</button>
       </div>
     </div>
   `;

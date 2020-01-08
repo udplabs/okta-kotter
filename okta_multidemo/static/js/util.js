@@ -39,3 +39,28 @@ function showAlert(style, message) {
   var elem = document.getElementById('alert');
   elem.innerHTML = template;
 }
+
+function cb(resp) {
+  if (resp.error) {
+    showAlert('danger', 'An error occurred: ' + resp.error.description);
+  }
+  console.log(resp);
+}
+
+function itemAction(id, apiUrl, userId) {
+  var elem = document.getElementById('itemCt-'+id);
+  var ct = parseInt(elem.innerText);
+  var newCt = ct - 1;
+  elem.innerText = newCt;
+  var btn = document.getElementById('btn-'+id);
+  btn.disabled = true;
+  btn.setAttribute("class", "btn btn-secondary btn-sm");
+  btn.innerHTML = '<span><i class="fa fa-hourglass"></i> Pending</span>';
+  var accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  data = JSON.stringify({
+    userId: userId,
+    itemId: id,
+    ct: 1
+  });
+  var result = ajax(apiUrl + '/orders', 'POST', data, cb, accessToken);
+}

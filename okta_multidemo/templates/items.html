@@ -19,7 +19,7 @@
     </div>
     <div class="card-footer">
       <small class="text-muted"><span id="itemCt-{{ item.itemId }}">{{ item.count }}</span> available</small>
-      <button id="btn-{{ item.itemId }}" type="button" class="btn btn-primary btn-sm" style="float:right;" onclick="itemAction({{ item.itemId }});">{{ config.ITEMS_ACTION_TITLE }}</button>
+      <button id="btn-{{ item.itemId }}" type="button" class="btn btn-primary btn-sm" style="float:right;" onclick="itemAction({{ item.itemId }}, '{{ config.API_URL }}', '{{ session.user_id }}');">{{ config.ITEMS_ACTION_TITLE }}</button>
     </div>
   </div>
   {% endfor %}
@@ -28,33 +28,4 @@
 {% endblock %}
 {% block add_js %}
 <script src="/static/js/util.js"></script>
-<script>
-
-function cb(resp) {
-  if (resp.error) {
-    showAlert('danger', 'An error occurred: ' + resp.error.description);
-  }
-  console.log(resp);
-}
-
-function itemAction(id) {
-  var elem = document.getElementById('itemCt-'+id);
-  var ct = parseInt(elem.innerText);
-  var newCt = ct - 1;
-  elem.innerText = newCt;
-  var btn = document.getElementById('btn-'+id);
-  btn.disabled = true;
-  btn.setAttribute("class", "btn btn-secondary btn-sm");
-  btn.innerHTML = '<span><i class="fa fa-hourglass"></i> Pending</span>';
-  var accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-  data = JSON.stringify({
-    userId: '{{ session.user_id }}',
-    itemId: id,
-    ct: 1
-  });
-  var result = ajax('{{ config.API_URL }}/orders', 'POST', data, cb, accessToken);
-}
-// var ct = document.getElementById('itemCt-1');
-// console.log(ct.value);
-</script>
 {% endblock %}
