@@ -3,10 +3,7 @@
 {% block content %}
 <div class="card-deck">
 {% for app in apps %}
-<!-- <span style="padding:10px;margin-bottom:10px;">
-<button type="button" class="btn btn-outline-secondary btn-lg"><img src="{{ app._links.logo.0.href }}" /> {{ app.label }}</button>
-</span>
- -->
+
   <a href="{{ app._links.appLinks.0.href }}" target="_NEW">
   <span style="display: block;" class="card">
 
@@ -16,11 +13,6 @@
 
   </span>
   </a>
-<!--
-  <div class="card">
-    <img src="{{ app._links.logo.0.href }}" /> {{ app.label }}
-  </div>
- -->
 
 {% endfor %}
 </div>

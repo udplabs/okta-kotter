@@ -24,7 +24,7 @@
       <td><span class="badge badge-{{ 'success' if order.status == 'complete' else 'secondary' }}">{{ order.status }}</span></td>
       <td>
         {% if order.status == 'pending' %}
-        <button id="btn-{{ order.id }}" class="btn btn-danger btn-sm" type="button" onclick="orderAction({{ order.id }});">Fulfill</button>
+        <button id="btn-{{ order.id }}" class="btn btn-danger btn-sm" type="button" onclick="orderAction({{ order.id }});">Approve</button>
         {% endif %}
       </td>
     </tr>
@@ -49,7 +49,7 @@ function orderAction(id) {
   var btn = document.getElementById('btn-'+id);
   btn.disabled = true;
   btn.setAttribute("class", "btn btn-secondary btn-sm");
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Fulfill';
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Approve';
   var accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
   data = JSON.stringify({
     status: 'complete',

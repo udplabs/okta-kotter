@@ -27,6 +27,7 @@ class BaseConfig(object):
     OKTA_AUDIENCE=os.getenv('OKTA_AUDIENCE')
     OKTA_GOOGLE_IDP=os.getenv('OKTA_GOOGLE_IDP')
     OKTA_FACEBOOK_IDP=os.getenv('OKTA_FACEBOOK_IDP')
+    OKTA_SAML_IDP=os.getenv('OKTA_SAML_IDP')
     OKTA_SCOPES=os.getenv('OKTA_SCOPES').split(',')
     OKTA_ADMIN_SCOPES=os.getenv('OKTA_ADMIN_SCOPES').split(',')
 

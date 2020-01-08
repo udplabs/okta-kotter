@@ -2,20 +2,19 @@ import json
 import logging
 
 import feedparser
-import requests
 import pytz
+import requests
 
 from dateutil.parser import parse
-
 from flask import render_template, request, make_response, url_for, redirect, flash, session, current_app, Response
-from werkzeug.exceptions import Unauthorized
 from simple_rest_client import exceptions
+from werkzeug.exceptions import Unauthorized
 
-from .app import app
 from . import filters
+from .app import app
 from .forms import LoginForm, ProfileForm
-from .models import Item
 from .logs import format_json_output
+from .models import Item
 from .util import APIClient, decode_token, OktaAPIClient
 from .util.widget import get_widget_config
 
@@ -36,7 +35,6 @@ def index():
     access_token = session.get('access_token', request.cookies.get('access_token'))
     id_token = session.get('id_token', request.cookies.get('id_token'))
     token_dict = {}
-    print('>>>>>>>', access_token)
     if access_token:
         access_decoded = decode_token(access_token)
         id_decoded = decode_token(id_token)
@@ -63,7 +61,7 @@ def index():
 @app.route('/authorization/redirect')
 def authorization_redirect():
     # authz flow only
-    blueprint = request.args.get('conf')
+    blueprint = request.args.get('conf', 'okta')
     token_dict = {}
     # import pdb;pdb.set_trace()
     token_main = app.blueprints[blueprint].session.token
@@ -151,9 +149,15 @@ def login_widget_custom_css():
     return render_login_template(conf, css='okta-signin-custom')
 
 
-@app.route('/login-noprompt', methods=['GET'])
-def login_noprompt():
-    resp = render_template('login/noprompt.html')
+@app.route('/login-idp-disco', methods=['GET'])
+def login_idp_disco():
+    conf = get_widget_config(current_app.config, 'idp-disco')
+    return render_login_template(conf)
+
+
+@app.route('/login-custom', methods=['GET'])
+def login_custom():
+    resp = render_template('login/custom.html', form=LoginForm())
     return resp
 
 
@@ -223,16 +227,20 @@ def items():
     )
 
 
-@app.route('/tools', methods=('GET',))
-def tools():
+@app.route('/apps', methods=('GET',))
+def apps():
     okta = OktaAPIClient(
         current_app.config['OKTA_BASE_URL'],
         current_app.config['OKTA_API_KEY']
     )
     okta.api.add_resource(resource_name='apps')
-    data = okta.api.apps.list(params={'filter': 'user.id eq "{}"'.format(session['user_id'])})
+    print(session['user_id'])
+    data = okta.api.apps.list(params={
+        'filter': 'user.id eq "{}"'.format(session['user_id']),
+        'limit': 100
+    })
     return render_template(
-        'tools.html',
+        'apps.html',
         apps=data.body
     )
 
