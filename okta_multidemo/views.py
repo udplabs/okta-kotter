@@ -63,8 +63,9 @@ def authorization_redirect():
     # authz flow only
     blueprint = request.args.get('conf', 'okta')
     token_dict = {}
-    # import pdb;pdb.set_trace()
     token_main = app.blueprints[blueprint].session.token
+    if not token_main:
+        raise Unauthorized
     access_token = token_main['access_token']
     id_token = token_main['id_token']
     set_session_vars(access_token, id_token)

@@ -65,8 +65,7 @@ def update_orders():
             headers=headers,
             data=json.dumps(order)
         )
-        print(json.loads(req.content))
-    logging.debug('Processed %d orders.' % len(orders))
+    logging.info('Processed %d orders.' % len(orders))
 
 if __name__ == '__main__':
     update_orders()
