@@ -21,8 +21,7 @@ oktaSignIn.renderEl(
   { el: '#okta-login-container' },
   function success(res) {
     var data = JSON.stringify(res);
-    // TODO change "OKTA_AUDIENCE" to APP_URL or something
-    var result = ajax('{{ config.OKTA_AUDIENCE }}/implicit/callback', 'POST', data, cb);
+    var result = ajax('{{ config.APP_URL }}/implicit/callback', 'POST', data, cb);
   },
   function error(err) {
     // handle errors as needed

@@ -31,8 +31,7 @@ def get_widget_config(app_conf, type_=None):
     elif type_ == 'idp-disco':
         widget_conf['authParams']['display'] = 'page'
         widget_conf.update({'features': {'idpDiscovery': True}})
-        widget_conf.update({'idpDiscovery': {'requestContext': '/home/oidc_client/0oaarkncuf66O1gKd356/aln177a159h7Zf52X0g8'}})
-        # TODO: ^^^ put value in config
+        widget_conf.update({'idpDiscovery': {'requestContext': app_conf['OKTA_IDP_REQUEST_CONTEXT']}})
         widget_conf['redirectUri'] = '{}{}/authorized'.format(
             app_conf['OKTA_AUDIENCE'], url_for('okta.login')
         )

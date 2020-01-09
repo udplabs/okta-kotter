@@ -8,10 +8,10 @@
 {% block add_js %}
 <script src="/static/js/util.js"></script>
 <script>
-// TODO: move to a JS file
+// TODO: move to a JS file?
 function get_card_html(item) {
   var template = `
-    <div class="card">
+    <div class="card" style="max-width:300px">
       ${item.target === 'PREMIUM' ? '<div class="ribbon-wrapper"><div class="ribbon green">PREMIUM</div></div>' : ''}
       <img class="card-img-top img-fluid" src="/static/img/{{ config.THEME_MODE }}/{{ config.THEME }}/items/${item.image}" alt="${item.title}" style="max-width:200px;height:auto">
       <div class="card-body">

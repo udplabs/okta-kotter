@@ -1,6 +1,8 @@
 import json
 import os
 
+from pathlib import Path
+
 import jwt
 
 from simple_rest_client.api import API
@@ -16,16 +18,18 @@ def init_db(path, theme_mode, theme):
         pass
     db = TinyDB(path)
     table = db.table('items')
-    # TODO: get relative to current module path
-    # from pathlib import Path
-    # path = Path(__file__).parent.absolute()
-    with open('./okta_multidemo/conf/{}/{}/data.json'.format(theme_mode, theme)) as file_:
+    path = Path(__file__).parent.absolute()
+    with open(os.path.join(
+            path, '..', 'conf/{}/{}/data.json'.format(theme_mode, theme)
+        )) as file_:
         data = file_.read()
     items = json.loads(data)
     table.insert_multiple(items)
 
     table = db.table('orders')
-    with open('./okta_multidemo/conf/orders.json') as file_:
+    with open(os.path.join(
+            path, '..', 'conf/orders.json'.format(theme_mode, theme)
+        )) as file_:
         data = file_.read()
     items = json.loads(data)
     table.insert_multiple(items)

@@ -18,7 +18,7 @@ OKTA_ADMIN_CLIENT_SECRET=os.getenv('OKTA_ADMIN_CLIENT_SECRET')
 OKTA_ADMIN_SCOPES=os.getenv('OKTA_ADMIN_SCOPES')
 API_URL=os.getenv('API_URL')
 
-# TODO: log activity to console
+
 def update_orders():
     # get token using CC flow
     url = '{}/v1/token'.format(OKTA_ISSUER)

@@ -32,8 +32,7 @@ def validate_access_token(token, scopes):
     for scope in scopes:
         assert scope in claims['scp']
     assert claims['iss'] == current_app.config['OKTA_ISSUER']
-    # assert claims['cid'] == current_app.config['OKTA_CLIENT_ID']
-    # TODO: ^^^ keep whitelist of approved clients?
+    assert claims['cid'] in [current_app.config['OKTA_CLIENT_ID'], current_app.config['OKTA_ADMIN_CLIENT_ID']]
     assert claims['aud'] == current_app.config['OKTA_AUDIENCE']
     return claims
 

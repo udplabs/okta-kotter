@@ -1,14 +1,17 @@
 import json
 import os
 
+from pathlib import Path
+
 from dotenv import load_dotenv
 load_dotenv()
 
 
 def get_theme_config(theme_mode, theme):
-    # TODO: get relative to current module path
-    with open('./okta_multidemo/conf/{}/{}/config.json'.format(
-        theme_mode, theme)) as file_:
+    path = Path(__file__).parent.absolute()
+    with open(os.path.join(
+            path, 'conf/{}/{}/config.json'.format(theme_mode, theme)
+        )) as file_:
         data = file_.read()
     return json.loads(data)
 
@@ -16,6 +19,7 @@ class BaseConfig(object):
     DEBUG = False
     TESTING = False
     SITE_NAME = ''
+    APP_URL=os.getenv('APP_URL')
     DB_PATH=os.getenv('DB_PATH')
     API_URL=os.getenv('API_URL')
     SECRET_KEY = os.getenv('SECRET_KEY')
@@ -31,6 +35,8 @@ class BaseConfig(object):
     OKTA_SAML_IDP=os.getenv('OKTA_SAML_IDP')
     OKTA_SCOPES=os.getenv('OKTA_SCOPES').split(',')
     OKTA_ADMIN_SCOPES=os.getenv('OKTA_ADMIN_SCOPES').split(',')
+    OKTA_ADMIN_CLIENT_ID=os.getenv('OKTA_ADMIN_CLIENT_ID')
+    OKTA_IDP_REQUEST_CONTEXT=os.getenv('OKTA_IDP_REQUEST_CONTEXT')
 
     THEME=os.getenv('THEME', 'default')
     THEME_MODE=os.getenv('THEME_MODE', 'default')
