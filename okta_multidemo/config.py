@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def get_theme_config(theme):
+def get_theme_config(theme_mode, theme):
     # TODO: get relative to current module path
-    with open('./okta_multidemo/conf/{}/config.json'.format(theme)) as file_:
+    with open('./okta_multidemo/conf/{}/{}/config.json'.format(
+        theme_mode, theme)) as file_:
         data = file_.read()
     return json.loads(data)
 
@@ -31,8 +32,9 @@ class BaseConfig(object):
     OKTA_SCOPES=os.getenv('OKTA_SCOPES').split(',')
     OKTA_ADMIN_SCOPES=os.getenv('OKTA_ADMIN_SCOPES').split(',')
 
-    theme=os.getenv('THEME', 'default')
-    theme_config = get_theme_config(theme)
+    THEME=os.getenv('THEME', 'default')
+    THEME_MODE=os.getenv('THEME_MODE', 'default')
+    theme_config = get_theme_config(THEME_MODE, THEME)
     THEME_LABEL = theme_config['label']
     SITE_TITLE = theme_config['site-title']
     ITEMS_TITLE = theme_config['items-title']

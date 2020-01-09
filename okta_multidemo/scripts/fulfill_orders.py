@@ -9,6 +9,7 @@ from requests.auth import HTTPBasicAuth
 
 from dotenv import load_dotenv
 load_dotenv()
+logging.basicConfig(level=logging.INFO)
 
 OKTA_BASE_URL=os.getenv('OKTA_BASE_URL')
 OKTA_ISSUER=os.getenv('OKTA_ISSUER')
@@ -38,6 +39,7 @@ def update_orders():
     )
     authn_response = json.loads(req.content)
     access_token = authn_response['access_token']
+    logging.info('Got access token: %s' % access_token)
 
     # get pending orders
     url = '{}/orders?status=pending'.format(API_URL)
@@ -51,10 +53,11 @@ def update_orders():
         headers=headers
     )
     orders = json.loads(req.content)
+    logging.info('Got %d orders for processing.' % len(orders))
 
     # update pending orders
     for order in orders:
-        url = '{}/orders/{}'.format(API_URL, order['itemId'])
+        url = '{}/orders/{}'.format(API_URL, order['id'])
         order.update({'status': 'complete'})
         # headers.update({'content-type': 'application/x-www-form-urlencoded'})
         req = requests.patch(
@@ -63,6 +66,7 @@ def update_orders():
             data=json.dumps(order)
         )
         print(json.loads(req.content))
+    logging.debug('Processed %d orders.' % len(orders))
 
 if __name__ == '__main__':
     update_orders()

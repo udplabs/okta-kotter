@@ -9,7 +9,7 @@ from simple_rest_client.resource import Resource
 from tinydb import TinyDB
 
 
-def init_db(path, theme):
+def init_db(path, theme_mode, theme):
     try:
         os.remove(path)
     except OSError:
@@ -19,13 +19,13 @@ def init_db(path, theme):
     # TODO: get relative to current module path
     # from pathlib import Path
     # path = Path(__file__).parent.absolute()
-    with open('./okta_multidemo/conf/{}/data.json'.format(theme)) as file_:
+    with open('./okta_multidemo/conf/{}/{}/data.json'.format(theme_mode, theme)) as file_:
         data = file_.read()
     items = json.loads(data)
     table.insert_multiple(items)
 
     table = db.table('orders')
-    with open('./okta_multidemo/conf/orders.json'.format(theme)) as file_:
+    with open('./okta_multidemo/conf/orders.json') as file_:
         data = file_.read()
     items = json.loads(data)
     table.insert_multiple(items)

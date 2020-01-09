@@ -12,7 +12,7 @@
         <div class="ribbon green">PREMIUM</div>
     </div>
     {% endif %}
-    <img class="card-img-top" src="/static/img/themes/books/items/{{ item.image }}" alt="{{ item.title }}">
+    <img class="card-img-top img-fluid" src="/static/img/{{ config.THEME_MODE }}/{{ config.THEME }}/items/{{ item.image }}" alt="{{ item.title }}" style="max-width:200px;height:auto">
     <div class="card-body">
       <h5 class="card-title">{{ item.title }}</h5>
       <p class="card-text"></p>

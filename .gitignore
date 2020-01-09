@@ -130,3 +130,4 @@ cookies.curl
 README.local.md
 .env*
 !.env.example
+_customers/

@@ -4,7 +4,7 @@ def get_widget_config(app_conf, type_=None):
     widget_conf = {
         'baseUrl': app_conf['OKTA_BASE_URL'],
         'clientId': app_conf['OKTA_CLIENT_ID'],
-        'logo': '/static/img/themes/{}/icon.png'.format(app_conf['THEME_LABEL']),
+        'logo': '/static/img/{}/{}/icon.png'.format(app_conf['THEME_MODE'], app_conf['THEME_LABEL']),
         'language': 'en',
         'i18n': {
             'en': {
