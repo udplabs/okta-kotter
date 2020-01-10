@@ -8,8 +8,8 @@
         <br /><br />
         <p>If you do not have an account, click <a href="/subscribe">here</a> to join.</p>
         {% else %}
-        {% include 'help/tokens.html' %}
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#helpModal">
+        {% include 'partials/tokens.html' %}
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tokenModal">
           Tokens
         </button>
         {% endif %}

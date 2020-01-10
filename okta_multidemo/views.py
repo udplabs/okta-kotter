@@ -15,7 +15,7 @@ from .app import app
 from .forms import LoginForm, ProfileForm
 from .logs import format_json_output
 from .models import Item
-from .util import APIClient, decode_token, OktaAPIClient
+from .util import APIClient, decode_token, OktaAPIClient, get_help_markdown
 from .util.widget import get_widget_config
 
 
@@ -52,7 +52,7 @@ def index():
         }
     resp = make_response(render_template(
         'index.html',
-        help={'name': 'tokens', 'data': token_dict},
+        data=token_dict,
         body_class='home-body-image'
     ))
     return resp

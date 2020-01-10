@@ -3,6 +3,7 @@ import os
 
 from pathlib import Path
 
+import mistune
 import jwt
 
 from simple_rest_client.api import API
@@ -104,3 +105,10 @@ class UserFactorResource(Resource):
 
 def decode_token(token):
     return jwt.decode(token, verify=False)
+
+
+def get_help_markdown(view_name):
+    path = Path(__file__).parent.absolute()
+    with open(os.path.join(path, '..', 'help/{}.md'.format(view_name))) as file_:
+        data = file_.read()
+    return mistune.markdown(data)
