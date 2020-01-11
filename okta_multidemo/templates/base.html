@@ -70,8 +70,8 @@
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
  -->
-          {% if session.username %}
           <ul style="float:right" class="navbar-nav mr-auto" >
+          {% if session.username %}
               <li class="nav-item" style="color:#fff">
                 <a class="nav-link" href="/profile"><i class="fa fa-user"></i> {{ session.name }}</a>
               </li>
@@ -81,14 +81,15 @@
               <li class="nav-item">
                 <a class="nav-link" href="/logout">Log out</a>
               </li>
+          {% else %}
+            <span style="width:300px"></span><!-- FIXME: why doesn't Help button flush right -->
+          {% endif %}
               <li class="nav-item" style="margin-left:20px;">
                 <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#helpModal" style="margin-top:5px">
                   <i class="fa fa-question-circle"></i> Help
                 </button>
               </li>
-
           </ul>
-          {% endif %}
 
 </div>
     </nav>

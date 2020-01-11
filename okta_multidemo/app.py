@@ -33,6 +33,8 @@ from okta_multidemo import views
 
 @app.before_request
 def before_request():
+    if request.path.startswith('/static'):
+        return
     if request.path == '/':
         path = 'index'
     else:

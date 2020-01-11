@@ -19,7 +19,7 @@ def get_widget_config(app_conf, type_=None):
     if type_ in ['implicit', 'social']:
         # TODO: is is necessary to use implicit for social? probably not
         widget_conf['redirectUri'] = '{}/implicit/callback'.format(
-            app_conf['OKTA_AUDIENCE'])
+            app_conf['APP_URL'])
         widget_conf['authParams']['responseType'] = ['token', 'id_token']
         if type_ == 'social':
             widget_conf['idps'] = [
@@ -33,11 +33,11 @@ def get_widget_config(app_conf, type_=None):
         widget_conf.update({'features': {'idpDiscovery': True}})
         widget_conf.update({'idpDiscovery': {'requestContext': app_conf['OKTA_IDP_REQUEST_CONTEXT']}})
         widget_conf['redirectUri'] = '{}{}/authorized'.format(
-            app_conf['OKTA_AUDIENCE'], url_for('okta.login')
+            app_conf['APP_URL'], url_for('okta.login')
         )
     else:
         widget_conf['redirectUri'] = '{}{}/authorized'.format(
-            app_conf['OKTA_AUDIENCE'], url_for('okta.login')
+            app_conf['APP_URL'], url_for('okta.login')
         )
         widget_conf['authParams']['responseType'] = ['code']
     return widget_conf
