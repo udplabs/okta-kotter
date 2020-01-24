@@ -131,3 +131,4 @@ README.local.md
 .env*
 !.env.example
 _customers/
+_chrome-overrides/

@@ -205,7 +205,15 @@ def profile():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    resp = make_response(redirect(url_for('index')))
+    id_token = session.get('id_token', request.cookies.get('id_token'))
+    logout_url = '{}/v1/logout?id_token_hint={}&post_logout_redirect_uri={}'.format(
+        app.config['OKTA_ISSUER'],
+        id_token,
+        app.config['APP_URL']
+    )
+    resp = redirect(logout_url)
+    # resp = make_response(redirect(url_for('index')))
+    # ^^^ use this instead to avoid killing Okta session
     resp.set_cookie('access_token', '', expires=0)
     resp.set_cookie('id_token', '', expires=0)
     session.clear()

@@ -33,7 +33,7 @@ from okta_multidemo import views
 
 @app.before_request
 def before_request():
-    if request.path.startswith('/static'):
+    if request.path.startswith('/static') or request.path.startswith('/api'):
         return
     if request.path == '/':
         path = 'index'
