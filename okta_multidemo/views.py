@@ -164,6 +164,10 @@ def login_custom():
 
 @app.route('/implicit/callback', methods=['POST'])
 def implicit_callback():
+    # if request.form:
+    #     access_token = request.form['access_token']
+    #     id_token = request.form['id_token']
+    # else:
     data = json.loads(request.data)
     access_token = data[0]['accessToken']
     id_token = data[1]['idToken']

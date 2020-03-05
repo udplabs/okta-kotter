@@ -45,7 +45,6 @@ def users():
     okta.api.add_resource(resource_name='users')
     # TODO: get only users assigned to app
     data = okta.api.users.list()
-    print(data.body)
     return render_template(
         'admin/users.html',
         users=data.body

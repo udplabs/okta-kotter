@@ -7,7 +7,7 @@ from functools import wraps
 import requests
 
 from flask import current_app, Response, session, request
-from jwcrypto import jwt, jwk
+from jwcrypto import jwt, jwk, jws
 
 from ..util import OktaAPIClient, UserFactorResource
 
@@ -22,11 +22,19 @@ def validate_access_token(token, scopes):
         keys = json.loads(resp.content)['keys']
     else:
         keys = JWK_CACHE
-    # TODO: use keyset 'add' since there could be multiple keys: jwk.JWKSet()
-    key = jwk.JWK(**keys[0])
-    # verify token and check claims
-    # NOTE: .verify() is implied by checking the claims with the key
-    verified_token = jwt.JWT(key=key, jwt=token)
+    # verify token
+    # TODO: use keyset 'add' since there could be multiple keys: jwk.JWKSet() (instead of using loop)
+    for k in keys:
+        try:
+            key = jwk.JWK(**k)
+            # NOTE: .verify() is implied by checking the claims with the key
+            verified_token = jwt.JWT(key=key, jwt=token)
+            break
+        except jws.InvalidJWSSignature:
+            # TODO: warning?
+            pass
+
+    # check claims
     claims = json.loads(verified_token.claims)
     # TODO: raise custom error to indicate scopes didn't match, other failures
     for scope in scopes:
