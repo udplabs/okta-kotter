@@ -107,8 +107,17 @@ def decode_token(token):
     return jwt.decode(token, verify=False)
 
 
-def get_help_markdown(view_name):
+def get_help_markdown(view_name, session):
+    logged_in_ext = ''
+    if session.get('username'):
+        logged_in_ext = '-logged-in'
     path = Path(__file__).parent.absolute()
-    with open(os.path.join(path, '..', 'help/{}.md'.format(view_name))) as file_:
-        data = file_.read()
+    if view_name.endswith('/'):
+        view_name = view_name + 'index'
+    try:
+        with open(os.path.join(path, '..', 'help/{}{}.md'.format(view_name, logged_in_ext))) as file_:
+            data = file_.read()
+    except:  # TODO: specify exception class
+        with open(os.path.join(path, '..', 'help/{}.md'.format(view_name))) as file_:
+            data = file_.read()
     return mistune.markdown(data)

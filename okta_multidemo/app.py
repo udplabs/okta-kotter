@@ -40,7 +40,7 @@ def before_request():
     else:
         path = request.path[1:]
     try:
-        g.help = get_help_markdown(path)
+        g.help = get_help_markdown(path, session)
     except FileNotFoundError:
         logging.warning('No help file found for {} view'.format(path))
 
