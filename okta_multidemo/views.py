@@ -14,7 +14,7 @@ from . import filters
 from .app import app
 from .forms import LoginForm, ProfileForm
 from .logs import format_json_output
-from .models import Item
+from .models import Product
 from .util import APIClient, decode_token, OktaAPIClient, get_help_markdown
 from .util.widget import get_widget_config
 
@@ -225,17 +225,17 @@ def logout():
 
 
 @app.route(app.config['ITEMS_PATH'], methods=('GET',))
-def items():
+def products():
     # NOTE: Here the view calls the REST API, rather than importing the model directly.
     #   In an MVC app it doesn't have to work this way.
     client = APIClient(app.config['API_URL'], request.cookies.get('access_token'))
-    client.api.add_resource(resource_name='items')
+    client.api.add_resource(resource_name='products')
     try:
-        data = client.api.items.list()
+        data = client.api.products.list()
     except exceptions.AuthError:
         raise Unauthorized
     return render_template(
-        'items.html',
+        'products.html',
         items=data.body
     )
 
@@ -259,5 +259,5 @@ def apps():
 
 
 @app.route('{}-rest'.format(app.config['ITEMS_PATH']), methods=('GET',))
-def items_spa():
-    return render_template('items-rest.html')
+def products_rest():
+    return render_template('products-rest.html')

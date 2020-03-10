@@ -37,7 +37,7 @@ function render(data) {
 }
 
 var accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-var result = ajax('http://localhost:5000/api/items', 'GET', null, render, accessToken);
+var result = ajax('http://localhost:5000/api/products', 'GET', null, render, accessToken);
 
 </script>
 {% endblock %}

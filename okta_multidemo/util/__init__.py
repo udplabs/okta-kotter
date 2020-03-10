@@ -18,22 +18,22 @@ def init_db(path, theme_mode, theme):
     except OSError:
         pass
     db = TinyDB(path)
-    table = db.table('items')
+    table = db.table('products')
     path = Path(__file__).parent.absolute()
     with open(os.path.join(
             path, '..', 'conf/{}/{}/data.json'.format(theme_mode, theme)
         )) as file_:
         data = file_.read()
-    items = json.loads(data)
-    table.insert_multiple(items)
+    products = json.loads(data)
+    table.insert_multiple(products)
 
     table = db.table('orders')
     with open(os.path.join(
             path, '..', 'conf/orders.json'.format(theme_mode, theme)
         )) as file_:
         data = file_.read()
-    items = json.loads(data)
-    table.insert_multiple(items)
+    products = json.loads(data)
+    table.insert_multiple(products)
 
 
 # NOTE: this is a simple_rest_client kludge
@@ -107,17 +107,27 @@ def decode_token(token):
     return jwt.decode(token, verify=False)
 
 
-def get_help_markdown(view_name, session):
+def get_help_markdown(view_name, session, request):
     logged_in_ext = ''
     if session.get('username'):
         logged_in_ext = '-logged-in'
     path = Path(__file__).parent.absolute()
-    if view_name.endswith('/'):
-        view_name = view_name + 'index'
-    try:
-        with open(os.path.join(path, '..', 'help/{}{}.md'.format(view_name, logged_in_ext))) as file_:
-            data = file_.read()
-    except:  # TODO: specify exception class
-        with open(os.path.join(path, '..', 'help/{}.md'.format(view_name))) as file_:
-            data = file_.read()
+    file_not_found = False
+    file_paths = [
+        os.path.join(path, '..', 'help/{}.md'.format(view_name)),
+        os.path.join(path, '..', 'help/{}{}.md'.format(view_name, logged_in_ext)),
+        os.path.join(path, '..', 'help/{}.md'.format(request.endpoint)),
+        os.path.join(path, '..', 'help/{}.md'.format(request.endpoint, logged_in_ext)),
+    ]
+    data = None
+    for filepath in file_paths:
+        file = Path(filepath)
+        print('>>>>>>>', filepath)
+        if file.exists():
+            file.exists()
+            with open(filepath) as file_:
+                data = file_.read()
+            break
+    if not data:
+        raise FileNotFoundError
     return mistune.markdown(data)

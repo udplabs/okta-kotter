@@ -35,12 +35,13 @@ from okta_multidemo import views
 def before_request():
     if request.path.startswith('/static') or request.path.startswith('/api'):
         return
-    if request.path == '/':
-        path = 'index'
+    if request.path.endswith('/'):
+        path = request.path + 'index'
     else:
         path = request.path[1:]
     try:
-        g.help = get_help_markdown(path, session)
+        g.help = get_help_markdown(path, session, request)
+
     except FileNotFoundError:
         logging.warning('No help file found for {} view'.format(path))
 

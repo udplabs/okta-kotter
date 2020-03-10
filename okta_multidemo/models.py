@@ -54,8 +54,8 @@ class Model(object):
             self.table.update(data)
 
 
-class Item(Model):
-    TYPE = 'items'
+class Product(Model):
+    TYPE = 'products'
 
 
 class Order(Model):

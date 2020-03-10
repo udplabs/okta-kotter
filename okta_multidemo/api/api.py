@@ -4,26 +4,26 @@ import time
 from flask import Blueprint, request, jsonify, session, current_app, Response
 from tinydb import TinyDB, Query
 
-from ..models import Item, Order
+from ..models import Product, Order
 from .util import authorize, mfa
 
 api_blueprint = Blueprint('api', 'api', url_prefix='/api')
 
 
-@api_blueprint.route('/items', methods=['GET'])
-@authorize(scopes=['items:read'])
-def get_items(claims={}):
-    items = Item()
+@api_blueprint.route('/products', methods=['GET'])
+@authorize(scopes=['products:read'])
+def get_products(claims={}):
+    products = Product()
     feature_access = claims.get('feature_access', [])
     if 'premium' in feature_access:
-        data = items.all()
+        data = products.all()
     else:
-        data = items.get({'target': 'PUBLIC'})
+        data = products.get({'target': 'PUBLIC'})
     return jsonify(data)
 
 
 @api_blueprint.route('/orders', methods=['POST'])
-@authorize(scopes=['items:read'])
+@authorize(scopes=['products:read'])
 def create_order(claims={}):
     order = Order()
     data = json.loads(request.get_data())
@@ -51,9 +51,9 @@ def get_orders(claims={}):
 def update_order(order_id, claims={}):
     data = json.loads(request.get_data())
     order_model = Order()
-    item_model = Item()
+    product_model = Product()
     order = order_model.get(order_id)[0]
-    item = item_model.get(order['itemId'])[0]
-    item_model.update({'count': item['count']-1}, [order['itemId']])
+    product = product_model.get(order['itemId'])[0]
+    product_model.update({'count': product['count']-1}, [order['itemId']])
     order_model.update(data, [order_id])
     return jsonify({'message': 'OK'})
