@@ -3,5 +3,6 @@
   "site-title": "Okta Cloud Books Warehouse",
   "items-title": "Books",
   "items-title-label": "books",
-  "action-title": "Restock"
+  "action-title": "Restock",
+  "img-items": true
 }

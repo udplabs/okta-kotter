@@ -132,3 +132,4 @@ README.local.md
 !.env.example
 _customers/
 _chrome-overrides/
+okta_multidemo/static/themes/_*

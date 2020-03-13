@@ -9,11 +9,11 @@
 <script src="/static/js/util.js"></script>
 <script>
 // TODO: move to a JS file?
-function get_card_html(item, theme_mode, theme) {
+function get_card_html(item, theme_uri, img_path) {
   var template = `
     <div class="card" style="max-width:300px">
       ${item.target === 'PREMIUM' ? '<div class="ribbon-wrapper"><div class="ribbon green">PREMIUM</div></div>' : ''}
-      <img class="card-img-top img-fluid" src="/static/img/${theme_mode}/${theme}/items/${item.image}" alt="${item.title}" style="max-width:150px;height:auto">
+      <img class="card-img-top img-fluid" src="${img_path}/${item.image}" alt="${item.title}" style="max-width:150px;height:auto">
       <div class="card-body">
         <h5 class="card-title">${item.title}</h5>
         <p class="card-text"></p>
@@ -30,7 +30,7 @@ function get_card_html(item, theme_mode, theme) {
 function render(data) {
   var content = '';
   data.data.forEach(item => {
-    content = content + get_card_html(item, '{{ config.THEME_MODE }}', '{{ config.THEME_LABEL }}');
+    content = content + get_card_html(item, '{{ config.THEME_URI }}', '{{ img_path }}');
   });
   var container = document.getElementById('card-container');
   container.innerHTML = content;

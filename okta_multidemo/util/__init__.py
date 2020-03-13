@@ -5,6 +5,7 @@ from pathlib import Path
 
 import mistune
 import jwt
+import requests
 
 from simple_rest_client.api import API
 from simple_rest_client.resource import Resource
@@ -12,7 +13,7 @@ from simple_rest_client.resource import Resource
 from tinydb import TinyDB
 
 
-def init_db(path, theme_mode, theme):
+def init_db(path, theme_uri, app_url):
     try:
         os.remove(path)
     except OSError:
@@ -20,17 +21,22 @@ def init_db(path, theme_mode, theme):
     db = TinyDB(path)
     table = db.table('products')
     path = Path(__file__).parent.absolute()
-    with open(os.path.join(
-            path, '..', 'conf/{}/{}/data.json'.format(theme_mode, theme)
-        )) as file_:
-        data = file_.read()
+
+    if not theme_uri.startswith(app_url):
+        resp = requests.get('{}/data.json'.format(theme_uri))
+        data = resp.content
+    else:
+        # get local theme data from filesystem instead of remote URL
+        theme = theme_uri.split('/')[-1]
+        with open(os.path.join(
+                path, '..', 'static/themes/{}/data.json'.format(theme)
+            )) as file_:
+            data = file_.read()
     products = json.loads(data)
     table.insert_multiple(products)
 
     table = db.table('orders')
-    with open(os.path.join(
-            path, '..', 'conf/orders.json'.format(theme_mode, theme)
-        )) as file_:
+    with open(os.path.join(path, '..', 'conf/orders.json')) as file_:
         data = file_.read()
     products = json.loads(data)
     table.insert_multiple(products)
@@ -122,7 +128,6 @@ def get_help_markdown(view_name, session, request):
     data = None
     for filepath in file_paths:
         file = Path(filepath)
-        print('>>>>>>>', filepath)
         if file.exists():
             file.exists()
             with open(filepath) as file_:

@@ -234,9 +234,14 @@ def products():
         data = client.api.products.list()
     except exceptions.AuthError:
         raise Unauthorized
+    if current_app.config['ITEMS_IMG']:
+        img_path = '{}/img-items/'.format(current_app.config['THEME_URI'])
+    else:
+        img_path = '{}/static/img/items/'.format(current_app.config['APP_URL'])
     return render_template(
         'products.html',
-        items=data.body
+        items=data.body,
+        img_path=img_path
     )
 
 
@@ -260,4 +265,8 @@ def apps():
 
 @app.route('{}-rest'.format(app.config['ITEMS_PATH']), methods=('GET',))
 def products_rest():
-    return render_template('products-rest.html')
+    if current_app.config['ITEMS_IMG']:
+        img_path = '{}/img-items/'.format(current_app.config['THEME_URI'])
+    else:
+        img_path = '{}/static/img/items/'.format(current_app.config['APP_URL'])
+    return render_template('products-rest.html', img_path=img_path)

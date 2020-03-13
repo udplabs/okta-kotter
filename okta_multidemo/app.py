@@ -25,7 +25,7 @@ if app.config['ENV'] == 'production':  # reads from FLASK_ENV env variable
     # Talisman(app, content_security_policy=None)
 else:
     app.config.from_object('okta_multidemo.config.DevelopmentConfig')
-init_db(app.config['DB_PATH'], app.config['THEME_MODE'], app.config['THEME'])
+init_db(app.config['DB_PATH'], app.config['THEME_URI'], app.config['APP_URL'])
 
 # TODO: need to import after app.config takes place -- is this ok?
 from okta_multidemo import views

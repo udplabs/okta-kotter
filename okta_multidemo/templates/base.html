@@ -19,12 +19,26 @@
 
     <!-- Custom styles for this template -->
     <link href="/static/css/starter-template.css" rel="stylesheet">
-    <link href="/static/css/{{ config.THEME_MODE }}/{{ config.THEME_LABEL }}.css" rel="stylesheet">
+    <style>
+    .home-body-image {
+      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("{{ config.THEME_URI }}/bg.jpg");
+    }
+    .navbar {
+      /* BELOW USES BG IMAGE FOR NAV BAR */
+      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("{{ config.THEME_URI }}/bg-nav.jpg");
+      background-size: cover;
+      /* BELOW MAKES NAV BG IMAGE GRAYSCALE */
+      /* -webkit-filter: grayscale(100%); filter: grayscale(100%); */
+      /* BELOW USES GRADIENT COLOR INSTEAD OF IMAGE */
+      /*background-image: linear-gradient(15deg, #13547a 0%, #80d0c7 100%);*/
+    }
+    </style>
+
   </head>
 
 <body class="{{ body_class }}">
     <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
-      <a class="navbar-brand" href="/"><img src="/static/img/{{ config.THEME_MODE }}/{{ config.THEME_LABEL }}/icon.png" class="img-fluid" style="max-height:25px" />&nbsp;{{ config.SITE_TITLE }}</a>
+      <a class="navbar-brand" href="/"><img src="{{ config.THEME_URI }}/icon.png" class="img-fluid" style="max-height:25px" />&nbsp;{{ config.SITE_TITLE }}</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>

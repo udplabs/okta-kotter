@@ -3,14 +3,22 @@ import os
 
 from pathlib import Path
 
+import requests
+
 from dotenv import load_dotenv
 load_dotenv()
 
 
-def get_theme_config(theme_mode, theme):
+def get_theme_config(theme_uri, app_url):
+    if not theme_uri.startswith(app_url):
+        resp = requests.get('{}/config.json'.format(theme_uri))
+        data = json.loads(resp.content)
+        return data
+    # get local theme from filesystem instead of remote URL
+    theme = theme_uri.split('/')[-1]
     path = Path(__file__).parent.absolute()
     with open(os.path.join(
-            path, 'conf/{}/{}/config.json'.format(theme_mode, theme)
+            path, 'static/themes/{}/config.json'.format(theme)
         )) as file_:
         data = file_.read()
     return json.loads(data)
@@ -38,15 +46,15 @@ class BaseConfig(object):
     OKTA_ADMIN_CLIENT_ID=os.getenv('OKTA_ADMIN_CLIENT_ID')
     OKTA_IDP_REQUEST_CONTEXT=os.getenv('OKTA_IDP_REQUEST_CONTEXT')
 
-    THEME=os.getenv('THEME', 'default')
-    THEME_MODE=os.getenv('THEME_MODE', 'default')
-    theme_config = get_theme_config(THEME_MODE, THEME)
+    THEME_URI=os.getenv('THEME_URI', 'http://localhost:5000/static/themes/default')
+    theme_config = get_theme_config(THEME_URI, APP_URL)
     THEME_LABEL = theme_config['label']
     SITE_TITLE = theme_config['site-title']
     ITEMS_TITLE = theme_config['items-title']
     ITEMS_TITLE_LABEL = theme_config['items-title-label']
     ITEMS_PATH = '/{}'.format(theme_config['items-title-label'])
     ITEMS_ACTION_TITLE = theme_config['action-title']
+    ITEMS_IMG = theme_config.get('img-items', False)  # whether items have custom images in img-items dir
 
 
 class DevelopmentConfig(BaseConfig):
