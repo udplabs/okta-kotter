@@ -17,3 +17,4 @@ requests==2.22.0
 setuptools==41.2.0
 simple-rest-client==1.0.2
 tinydb==3.15.2
+werkzeug==0.16.1
