@@ -33,6 +33,7 @@ docker run --env-file PATH_TO_YOUR_ENV_FILE --name okta-multidemo -p 5000:5000 m
 
 The demo app expects a few configuration details in your Okta org (TODO: automate configuration with Terraform):
 
+- Create an "Admin" group.
 - An "Web" OpenID Connect application with:
   - both Authorization Code and Implicit grant types enabled
   - Login redirect URI: http://localhost:5000
@@ -75,7 +76,7 @@ The demo app expects a few configuration details in your Okta org (TODO: automat
   - For social auth, Google and Facebook are supported -- set your `OKTA_GOOGLE_IDP` and `OKTA_FACEBOOK_IDP` env vars to the appropriate IDs once you've set them up in Okta.
   - For SAML/IdP discovery, set the `OKTA_SAML_IDP` value to the ID of the provider once you've set it up.  Additionally you'll need to set the `OKTA_IDP_REQUEST_CONTEXT` to a value taken from the embed link of your OIDC client, e.g. `/home/oidc_client/0oaar.../aln17...`
 
-It's up to you to configure additional rules for MFA, etc. to demonstrate in conjunction with the sign-in widget or Okta-hosted sign-in.
+It's up to you to configure additional rules for MFA, which users belong to the "Admin" group, etc. to demonstrate in conjunction with the sign-in widget or Okta-hosted sign-in.
 
 ### Themes
 
@@ -102,7 +103,7 @@ my_theme
   \- product-image-2.png
 ```
 
-- `bg.jpg`:  A background image for the home page; use either a customer-specific image or a royalty image e.g. from [pexels.com](https://www.pexels.com/).
+- `bg.jpg`:  A background image for the home page; use either a customer-specific image or a royalty-free image e.g. from [pexels.com](https://www.pexels.com/).
  - `icon-square.png`: A small square icon that will be displayed in the upper left corner of the nav bar, and possibly elsewhere.
 - `logo.png`: A small horizontal logo, similar to what you'd see in the upper left of an Okta end user dashboard.
 - `config.json`: Configuration details of your theme, including the name/label of the "product" or "service" that is being offered.  If the configuration has `img-items` set to `true`, then the app will expect some custom images in the `img-items` directory of your theme corresopnding to the products/services in `data.json`.  Otherwise `data.json` can reference the stock images found in `okta_multidemo/static/img/items`.  Here's an example from the `books` theme:
@@ -147,6 +148,8 @@ A good way to host your theme is simply to drop the files into a publicly access
     aws s3 sync ./path/to/theme_folder s3://S3_BUCKET_NAME/theme_folder --acl public-read
 
 Then you can set your `THEME_URI` to `https://S3_BUCKET_NAME.s3-us-west-2.amazonaws.com/theme_folder`.
+
+> **NOTE:** if you're running the app locally, you can also simply put your theme in e.g. `okta_multidemo/static/themes/_MY_THEME` and set your `THEME_URI` to `http://localhost:5000/static/themes/_MY_THEME`.
 
 ### Acknowledgments
 

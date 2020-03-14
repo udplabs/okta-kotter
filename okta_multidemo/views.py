@@ -14,7 +14,7 @@ from .app import app
 from .forms import LoginForm, ProfileForm
 from .logs import format_json_output
 from .models import Product
-from .util import APIClient, decode_token, OktaAPIClient, get_help_markdown
+from .util import APIClient, decode_token, OktaAPIClient, get_help_markdown, init_db
 from .util.widget import get_widget_config
 
 
@@ -269,3 +269,13 @@ def products_rest():
     else:
         img_path = '{}/static/img/items/'.format(current_app.config['APP_URL'])
     return render_template('products-rest.html', img_path=img_path)
+
+
+@app.route('/_reset', methods=('GET',))
+def reset():
+    init_db(
+        current_app.config['DB_PATH'],
+        current_app.config['THEME_URI'],
+        current_app.config['APP_URL']
+    )
+    return redirect(url_for('index'))

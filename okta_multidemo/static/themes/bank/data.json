@@ -1,1 +1,22 @@
-[]
+[
+    {
+        "itemId": "1",
+        "title": "Replacement Card",
+        "description": "",
+        "category": "",
+        "count": 10,
+        "price": 0,
+        "image": "card.png",
+        "target": "PUBLIC"
+    },
+    {
+        "itemId": "2",
+        "title": "Statement",
+        "description": "",
+        "category": "",
+        "count": 10,
+        "price": 0,
+        "image": "report.png",
+        "target": "PREMIUM"
+    }
+]

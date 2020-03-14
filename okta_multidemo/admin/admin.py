@@ -49,3 +49,10 @@ def users():
         'admin/users.html',
         users=data.body
     )
+
+@admin_blueprint.route('/config', methods=('GET',))
+@auth_admin()
+def config():
+    return render_template(
+        'admin/config.html'
+    )
