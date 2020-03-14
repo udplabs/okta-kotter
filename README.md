@@ -10,7 +10,7 @@ Once you install the application and configure an environment variables file, yo
 
 Assuming you have Python 3 installed (tested with v3.7):
 
-```
+```bash
 git clone https://github.com/mdorn/python-okta-multidemo
 cd python-okta-multidemo
 python3 -m venv env
@@ -24,7 +24,7 @@ flask run  # or "FLASK_DEBUG=1 FLASK_ENV=development flask run" for debugging et
 
 Once you've pulled the image, be sure to set up a local environment file with the expected values (see `.env.example` at root of the project).  You can then reference that file when you `docker run`.
 
-```
+```bash
 docker pull mdorn/okta-multidemo
 docker run --env-file PATH_TO_YOUR_ENV_FILE --name okta-multidemo -p 5000:5000 mdorn/okta-multidemo
 ```
@@ -33,8 +33,9 @@ docker run --env-file PATH_TO_YOUR_ENV_FILE --name okta-multidemo -p 5000:5000 m
 
 The demo app expects a few configuration details in your Okta org (TODO: automate configuration with Terraform):
 
-- Create an "Admin" group.
-- An "Web" OpenID Connect application with:
+- A group called "Admin" -- you'll want to assign at least one user to it.
+- API key.
+- A "Web" OpenID Connect application with:
   - both Authorization Code and Implicit grant types enabled
   - Login redirect URI: `http://localhost:5000`
   - Initiate login URI: `http://localhost:5000/login/okta/authorized`
@@ -45,6 +46,7 @@ The demo app expects a few configuration details in your Okta org (TODO: automat
     - `app_features`: with members:
       - display: `Regular`, value: `regular`
       - display: `Premium`, value: `premium`
+- (Optionally) an "OAuth Service" or Client Credentials client.
 - An Authorization Server for audience `http://localhost:5000`:
   - Custom scopes:
     - `products:read`
@@ -92,7 +94,7 @@ To create your own theme, see the `okta_multidemo/static/themes/books` folder fo
 Themes are structured as follows:
 
 ```
-my_theme
+theme_folder
 \- bg.jpg
 \- icon.png
 \- config.json
@@ -106,7 +108,7 @@ my_theme
 - `bg.jpg`:  A background image for the home page; use either a customer-specific image or a royalty-free image e.g. from [pexels.com](https://www.pexels.com/).
  - `icon.png`: A small square icon that will be displayed in the upper left corner of the nav bar and the sign-in widget.
 - `config.json`: Configuration details of your theme, including the name/label of the "product" or "service" that is being offered.  If the configuration has `img-items` set to `true`, then the app will expect some custom images in the `img-items` directory of your theme corresopnding to the products/services in `data.json`.  Otherwise `data.json` can reference the stock images found in `okta_multidemo/static/img/items`.  Here's an example from the `books` theme:
-```
+```json
 {
   "label": "books",
   "site-title": "Okta Cloud Books Warehouse",
@@ -117,7 +119,7 @@ my_theme
 }
 ```
 - `data.json`: Defines the products/services that will be listed on the site.  Here's a partial example from the `books` theme:
-```
+```json
 [
     {
         "itemId": "1",
@@ -138,10 +140,10 @@ my_theme
         "price": 0,
         "image": "cloud_of_unknowing.jpg",
         "target": "PREMIUM"
-    },
-    ...
-- `logo.png` (optional, not currently used in app): A small horizontal logo, similar to what you'd see in the upper left of an Okta end user dashboard.
+    }
+]
 ```
+- `logo.png` (optional, not currently used in app): A small horizontal logo, similar to what you'd see in the upper left of an Okta end user dashboard.
 
 A good way to host your theme is simply to drop the files into a publicly accessible AWS S3 bucket, and use the AWS CLI:
 

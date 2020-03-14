@@ -7,3 +7,7 @@ In the MVC version of this view, the token is stored on the server side, and a s
 In this demo app, the token is stored in memory in a session object provided by the Flask framework.  In a production deployment, it would likely be persisted in a database instead.
 
 `TODO: diagram`
+
+See also:
+
+- [API Access Management](https://help.okta.com/en/prod/Content/Topics/Security/API_Access.htm)

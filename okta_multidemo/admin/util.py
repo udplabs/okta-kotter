@@ -7,9 +7,7 @@ def auth_admin():
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            # import pdb;pdb.set_trace()
             if not current_app.blueprints['okta-admin'].token:
-                # resp = redirect('/authorization/redirect?conf=okta-admin')
                 resp = redirect(url_for('okta-admin.login'))
                 return resp
             return f(*args, **kwargs)

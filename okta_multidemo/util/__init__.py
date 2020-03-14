@@ -120,8 +120,8 @@ def get_help_markdown(view_name, session, request):
     path = Path(__file__).parent.absolute()
     file_not_found = False
     file_paths = [
-        os.path.join(path, '..', 'help/{}.md'.format(view_name)),
         os.path.join(path, '..', 'help/{}{}.md'.format(view_name, logged_in_ext)),
+        os.path.join(path, '..', 'help/{}.md'.format(view_name)),
         os.path.join(path, '..', 'help/{}.md'.format(request.endpoint)),
         os.path.join(path, '..', 'help/{}.md'.format(request.endpoint, logged_in_ext)),
     ]
