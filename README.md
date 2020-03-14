@@ -36,8 +36,8 @@ The demo app expects a few configuration details in your Okta org (TODO: automat
 - Create an "Admin" group.
 - An "Web" OpenID Connect application with:
   - both Authorization Code and Implicit grant types enabled
-  - Login redirect URI: http://localhost:5000
-  - Initiate login URI: http://localhost:5000/login/okta/authorized
+  - Login redirect URI: `http://localhost:5000`
+  - Initiate login URI: `http://localhost:5000/login/okta/authorized`
   - App Profile custom attributes (group type):
     - `app_permissions` with members:
       - display: `Admin`, value: `admin`
@@ -153,4 +153,13 @@ Then you can set your `THEME_URI` to `https://S3_BUCKET_NAME.s3-us-west-2.amazon
 
 ### Acknowledgments
 
-- Bank image by Adrien Coquet from the Noun Project
+[Noun Project](https://thenounproject.com/) images:
+
+- Bank by Adrien Coquet from the Noun Project: `okta_multidemo/static/themes/bank/icon.png` and `logo.png`
+- Cloud by Kmg Design from the Noun Project: `okta_multidemo/static/themes/cloud/icon.png` and `logo.png`
+- Anvil by Michael Wohlwend from the Noun Project: `okta_multidemo/static/img/items/anvil.png`
+- storage by Gregor Cresnar from the Noun Project: `okta_multidemo/static/img/items/storage.png`
+- Server by Begin sapdian from the Noun Project: `okta_multidemo/static/img/items/server.png`
+- Load Balancer by Mani Cheng from the Noun Project: `okta_multidemo/static/img/items/load-balancer.png`
+- Card by Daily Icons from the Noun Project: `okta_multidemo/static/img/items/card.png`
+- Report by Alfredo at IconsAlfredo.com from the Noun Project: `okta_multidemo/static/img/items/report.png`
