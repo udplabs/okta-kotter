@@ -1,7 +1,6 @@
 import json
 import logging
 
-import feedparser
 import pytz
 import requests
 
