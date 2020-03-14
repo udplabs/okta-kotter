@@ -58,9 +58,6 @@ class BaseConfig(object):
 
 
 class DevelopmentConfig(BaseConfig):
-    SECRET_KEY = os.getenv('SECRET_KEY')
-    SITE_NAME = os.getenv('SITE_NAME')
-    HOME_HTML = os.getenv('HOME_HTML')
     DEBUG = True
     TESTING = True
 
@@ -71,7 +68,4 @@ class TestingConfig(BaseConfig):
 
 
 class ProductionConfig(BaseConfig):
-    SECRET_KEY = os.getenv('SECRET_KEY')
-    SITE_NAME = os.getenv('SITE_NAME')
-    HOME_HTML = os.getenv('HOME_HTML')
-    GROUP_ID="1"
+    pass
