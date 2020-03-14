@@ -94,18 +94,17 @@ Themes are structured as follows:
 ```
 my_theme
 \- bg.jpg
-\- icon-square.png
-\- logo.png
+\- icon.png
 \- config.json
 \- data.json
 \- img-items (optional)
   \- product-image-1.png
   \- product-image-2.png
+\- logo.png (optional)
 ```
 
 - `bg.jpg`:  A background image for the home page; use either a customer-specific image or a royalty-free image e.g. from [pexels.com](https://www.pexels.com/).
- - `icon-square.png`: A small square icon that will be displayed in the upper left corner of the nav bar, and possibly elsewhere.
-- `logo.png`: A small horizontal logo, similar to what you'd see in the upper left of an Okta end user dashboard.
+ - `icon.png`: A small square icon that will be displayed in the upper left corner of the nav bar and the sign-in widget.
 - `config.json`: Configuration details of your theme, including the name/label of the "product" or "service" that is being offered.  If the configuration has `img-items` set to `true`, then the app will expect some custom images in the `img-items` directory of your theme corresopnding to the products/services in `data.json`.  Otherwise `data.json` can reference the stock images found in `okta_multidemo/static/img/items`.  Here's an example from the `books` theme:
 ```
 {
@@ -141,6 +140,7 @@ my_theme
         "target": "PREMIUM"
     },
     ...
+- `logo.png` (optional, not currently used in app): A small horizontal logo, similar to what you'd see in the upper left of an Okta end user dashboard.
 ```
 
 A good way to host your theme is simply to drop the files into a publicly accessible AWS S3 bucket, and use the AWS CLI:
