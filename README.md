@@ -2,6 +2,8 @@
 
 The purpose of this application is to demonstrate the integration of a custom app with [Okta](https://www.okta.com/) for identity management and API access management.  Two key features are 1) contextual help: a "Help" button on each page gives technical information about some key aspect of the integration, and 2) themes: you can choose from an included theme or easily create and use a custom theme.
 
+![gif](okta_multidemo/static/img/okta-multidemo-screencast.gif)
+
 ### Install and run
 
 Once you install the application and configure an environment variables file, you can run it and visit http://localhost:5000 in your browser.
