@@ -39,7 +39,12 @@ The demo app expects a few configuration details in your Okta org (TODO: automat
 - API key.
 - A "Web" OpenID Connect application with:
   - both Authorization Code and Implicit grant types enabled
-  - Login redirect URI: `http://localhost:5000`
+  - Login redirect URI:
+    - `http://localhost:5000`
+    - `http://localhost:5000/login/okta/authorized`
+    - `http://localhost:5000/login/okta-admin/authorized`
+    - `http://localhost:5000/implicit/callback`
+    - `http://localhost:5000/widget`
   - Initiate login URI: `http://localhost:5000/login/okta/authorized`
   - App Profile custom attributes (group type):
     - `app_permissions` with members:
@@ -49,6 +54,7 @@ The demo app expects a few configuration details in your Okta org (TODO: automat
       - display: `Regular`, value: `regular`
       - display: `Premium`, value: `premium`
 - (Optionally) an "OAuth Service" or Client Credentials client.
+- Be sure to add `http://localhost:5000` as a Trusted Origin in Security > API.
 - An Authorization Server for audience `http://localhost:5000`:
   - Custom scopes:
     - `products:read`
@@ -84,7 +90,7 @@ It's up to you to configure additional rules for MFA, which users belong to the 
 
 ### Themes
 
-A theme is a set of files used to customize your demo instance.  They should at a publicly accessible URI, to which you point your `THEME_URI` env variable.  The following built-in themes are available, and can be set by using the localhost URI e.g. `http://localhost:5000/static/themes/books`:
+A theme is a set of files used to customize your demo instance.  Theme files should reside at a publicly accessible URI, to which you point your `THEME_URI` env variable.  The following built-in themes are available, and can be set by using the localhost URI e.g. `http://localhost:5000/static/themes/books`:
 
 - `books`
 - `bank`
@@ -147,7 +153,7 @@ theme_folder
 ```
 - `logo.png` (optional, not currently used in app): A small horizontal logo, similar to what you'd see in the upper left of an Okta end user dashboard.
 
-A good way to host your theme is simply to drop the files into a publicly accessible AWS S3 bucket, and use the AWS CLI:
+A good way to host your theme is simply to drop the files into a publicly accessible AWS S3 bucket using the AWS CLI:
 
     aws s3 sync ./path/to/theme_folder s3://S3_BUCKET_NAME/theme_folder --acl public-read
 
