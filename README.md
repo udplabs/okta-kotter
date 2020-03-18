@@ -64,15 +64,17 @@ The demo app expects a few configuration details in your Okta org (TODO: automat
     - `orders:update`
   - Custom claims:
     - Any custom attributes you might have in your user profile(s) that you want to show in the tokens
-    - `feature_access`: `appuser.app_features`
-    - `role`: `appuser.app_permissions`
-    - `groups`: `groups: matches regex .*`
+    - Access token (Expressions):
+      - `feature_access`: `appuser.app_features`
+      - `role`: `appuser.app_permissions`
+    - ID token (make this one a `Groups` value type which `Matches regex`):
+      - `groups`: `.*`
   - Access policies:
     - In your Default Policy set up two rules:
       - Default:
         - If Grant type is Authz Code or Implicit
         - following scopes are requested: `orders:create`, `products:read`, `openid`, `profile`, `email`.
-      - Admin:
+      - Admin (**IMPORTANT**: drag this rule to the top so that it's the first rule evaluated):
         - If Grant type is Authz Code or Implicit
         - Group is `Admin`
         - following scopes are requested: `orders:create`, `products:read`, `openid`, `profile`, `email`, `orders:read`, `orders:update`, `products:update`
