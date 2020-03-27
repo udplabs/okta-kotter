@@ -5,7 +5,7 @@ from tinydb import TinyDB, Query
 from simple_rest_client.exceptions import AuthError
 from werkzeug.exceptions import Unauthorized
 
-from ..util import APIClient, OktaAPIClient, decode_token
+from ...util import APIClient, OktaAPIClient, decode_token
 
 from .util import auth_admin
 

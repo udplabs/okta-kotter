@@ -4,7 +4,7 @@ import time
 from flask import Blueprint, request, jsonify, session, current_app, Response
 from tinydb import TinyDB, Query
 
-from ..models import Product, Order
+from ...models import Product, Order
 from .util import authorize, mfa
 
 api_blueprint = Blueprint('api', 'api', url_prefix='/api')

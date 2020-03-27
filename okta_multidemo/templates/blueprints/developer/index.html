@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Developer</h2>
+
+<a href="{{ url_for('developer.create_client') }}"><button class="btn btn-success" type="submit">Add OAuth 2.0 client</button></a>
+<br /><br />
+
+<span id="alert"></span>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Client ID</th>
+      <th scope="col">Client Secret</th>
+      <th scope="col">OAuth 2.0 Grant Type</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for client in clients %}
+    <tr>
+      <td>{{ client.client_name }}</td>
+      <td>{{ client.client_id }}</th>
+      <td>{{ client.client_secret }}</th>
+      <td>{{ client.grant_types.0 }}</th>
+      <td>
+        <a href="{{ url_for('developer.delete_client', id=client.id, client_id=client.client_id) }}" class="btn btn-danger" role="button" aria-pressed="true"><i class="fa fa-remove"></i></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

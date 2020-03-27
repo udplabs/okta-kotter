@@ -87,9 +87,9 @@ class APIClient(object):
 
 
 class OktaAPIClient(object):
-    def __init__(self, org_url, api_key):
+    def __init__(self, org_url, api_key, api_type='api'):
         self.api = API(
-            api_root_url='{}/api/v1'.format(org_url),
+            api_root_url='{}/{}/v1'.format(org_url, api_type),
             headers={
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',

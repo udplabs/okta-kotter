@@ -11,8 +11,9 @@ from wtforms.validators import DataRequired, Length
 
 # TODO: rename/reorg blueprints for consistency
 from .okta import okta_blueprint, okta_admin_blueprint
-from .api.api import api_blueprint
-from .admin.admin import admin_blueprint
+from .blueprints.api.api import api_blueprint
+from .blueprints.admin.views import admin_blueprint
+from .blueprints.developer.views import developer_blueprint
 from .logs import configure_logging
 from .util import init_db, get_help_markdown
 
@@ -25,7 +26,8 @@ if app.config['ENV'] == 'production':  # reads from FLASK_ENV env variable
     # Talisman(app, content_security_policy=None)
 else:
     app.config.from_object('okta_multidemo.config.DevelopmentConfig')
-init_db(app.config['DB_PATH'], app.config['THEME_URI'], app.config['APP_URL'])
+if not app.config['PERSIST_DB']:
+    init_db(app.config['DB_PATH'], app.config['THEME_URI'], app.config['APP_URL'])
 
 # TODO: need to import after app.config takes place -- is this ok?
 from okta_multidemo import views
@@ -60,8 +62,15 @@ def unauthorized(e):
 
 app.register_blueprint(okta_blueprint, url_prefix='/login')
 app.register_blueprint(okta_admin_blueprint, url_prefix='/login')
-app.register_blueprint(api_blueprint)
-app.register_blueprint(admin_blueprint)
+blueprints = [
+    api_blueprint,
+    admin_blueprint,
+]
+if app.config['FF_DEVELOPER']:
+    blueprints.append(developer_blueprint)
+# TODO: ^^^ refactor as additional FF's are added
+for blueprint in blueprints:
+    app.register_blueprint(blueprint)
 
 app.register_error_handler(404, page_not_found)
 app.register_error_handler(500, server_error)

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from flask import current_app
-from tinydb import TinyDB, Query
+from tinydb import TinyDB, Query, where
 
 
 class Model(object):
@@ -52,6 +52,11 @@ class Model(object):
                 self.table.update(data, doc_ids=condition)
         else:
             self.table.update(data)
+
+    def delete(self, key, value):
+        self.table.remove(where(key) == value)
+        # FIXME: below should work
+        # self.table.remove(doc_ids=[key])
 
 
 class Product(Model):

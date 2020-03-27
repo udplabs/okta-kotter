@@ -56,16 +56,23 @@
               <a class="dropdown-item" href="{{ config.ITEMS_PATH }}-rest">{{ config.ITEMS_TITLE }} (REST)</a>
             </div>
           </li>
-          {% if session.is_admin %}
-          <li class="nav-item">
-            <a class="nav-link" href="/admin/">Admin</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Tools</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown02">
+              {% if session.is_admin %}<a class="dropdown-item" href="{{ url_for('admin.index') }}">Admin</a>{% endif %}
+              {% if config.FF_DEVELOPER %}<a class="dropdown-item" href="{{ url_for('developer.index') }}">Developer</a>{% endif %}
+            </div>
           </li>
-          {% endif %}
+
+
+
+
+
           {% else %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Log In</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="{{ url_for('okta.login')}}">Log In (Okta-hosted)</a>
+              <a class="dropdown-item" href="{{ url_for('okta.login') }}">Log In (Okta-hosted)</a>
               <h6 class="dropdown-header">OKTA SIGN IN WIDGET</h6>
               <a class="dropdown-item" href="/login-widget">Log In (Authz Code)</a>
               <a class="dropdown-item" href="/login-implicit">Log In (Implicit)</a>

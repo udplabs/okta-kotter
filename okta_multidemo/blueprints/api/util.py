@@ -9,7 +9,7 @@ import requests
 from flask import current_app, Response, session, request
 from jwcrypto import jwt, jwk, jws
 
-from ..util import OktaAPIClient, UserFactorResource
+from ...util import OktaAPIClient, UserFactorResource
 
 JWK_CACHE = []
 
@@ -39,8 +39,11 @@ def validate_access_token(token, scopes):
     # TODO: raise custom error to indicate scopes didn't match, other failures
     for scope in scopes:
         assert scope in claims['scp']
+
+    allowed_clients = [current_app.config['OKTA_CLIENT_ID'], current_app.config['OKTA_ADMIN_CLIENT_ID']]
+    # assert claims['cid'] in allowed_clients
+    # TODO/FIXME: if using "developer" Blueprint, consult database of allowed clients
     assert claims['iss'] == current_app.config['OKTA_ISSUER']
-    assert claims['cid'] in [current_app.config['OKTA_CLIENT_ID'], current_app.config['OKTA_ADMIN_CLIENT_ID']]
     assert claims['aud'] == current_app.config['OKTA_AUDIENCE']
     return claims
 
