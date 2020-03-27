@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Create client</h2>
+<form action="" method="POST">
+  <div class="form-group">
+    <label for="name">Name</label>
+    {{ form.name(class_="form-control", id="name", placeholder="Enter client name") }}
+    <small id="emailHelp" class="form-text text-muted"></small>
+  </div>
+  <div class="form-group">
+    <label for="grant_type">Grant type</label>
+    {{ form.grant_type(class_="form-control", id="grant_type", placeholder="") }}
+  </div>
+  <div class="form-group">
+    <label for="redirect_uri">Redirect URI</label>
+    {{ form.redirect_uri(class_="form-control", id="name", placeholder="Enter Redirect URI (Auth Code)") }}
+    <small id="emailHelp" class="form-text text-muted"></small>
+  </div>
+  {{ form.csrf_token }}
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

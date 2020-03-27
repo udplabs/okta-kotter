@@ -27,10 +27,14 @@ class BaseConfig(object):
     DEBUG = False
     TESTING = False
     SITE_NAME = ''
+    SECRET_KEY = os.getenv('SECRET_KEY')
     APP_URL=os.getenv('APP_URL')
     DB_PATH=os.getenv('DB_PATH')
     API_URL=os.getenv('API_URL')
-    SECRET_KEY = os.getenv('SECRET_KEY')
+    PERSIST_DB=True if os.getenv('PERSIST_DB') == 'true' else False
+
+    FF_DEVELOPER=True if os.getenv('FF_DEVELOPER') == 'true' else False
+    FF_DEVELOPER_CC_POLICY_ID=os.getenv('FF_DEVELOPER_CC_POLICY_ID')
 
     OKTA_BASE_URL=os.getenv('OKTA_BASE_URL')
     OKTA_API_KEY=os.getenv('OKTA_API_KEY')
