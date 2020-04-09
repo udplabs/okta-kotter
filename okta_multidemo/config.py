@@ -23,6 +23,13 @@ def get_theme_config(theme_uri, app_url):
         data = file_.read()
     return json.loads(data)
 
+
+def is_true(var):
+    if not os.getenv(var):
+        return False
+    return True if os.getenv(var).lower() == 'true' else False
+
+
 class BaseConfig(object):
     DEBUG = False
     TESTING = False
@@ -31,9 +38,9 @@ class BaseConfig(object):
     APP_URL=os.getenv('APP_URL')
     DB_PATH=os.getenv('DB_PATH')
     API_URL=os.getenv('API_URL')
-    PERSIST_DB=True if os.getenv('PERSIST_DB') == 'true' else False
+    PERSIST_DB=is_true('PERSIST_DB')
 
-    FF_DEVELOPER=True if os.getenv('FF_DEVELOPER') == 'true' else False
+    FF_DEVELOPER=is_true('FF_DEVELOPER')
     FF_DEVELOPER_CC_POLICY_ID=os.getenv('FF_DEVELOPER_CC_POLICY_ID')
 
     OKTA_BASE_URL=os.getenv('OKTA_BASE_URL')
@@ -49,6 +56,21 @@ class BaseConfig(object):
     OKTA_ADMIN_SCOPES=os.getenv('OKTA_ADMIN_SCOPES').split(',')
     OKTA_ADMIN_CLIENT_ID=os.getenv('OKTA_ADMIN_CLIENT_ID')
     OKTA_IDP_REQUEST_CONTEXT=os.getenv('OKTA_IDP_REQUEST_CONTEXT')
+
+    # START widget config
+    OKTA_PASSWORDLESS=is_true('OKTA_PASSWORDLESS')
+    OKTA_ROUTER=is_true('OKTA_ROUTER')
+    OKTA_REGISTRATION=is_true('OKTA_REGISTRATION')
+    OKTA_REMEMBERME=is_true('OKTA_REMEMBERME')
+    OKTA_MULTIOPTIONALFACTORENROLL=is_true('OKTA_MULTIOPTIONALFACTORENROLL')
+    OKTA_SELFSERVICEUNLOCK=is_true('OKTA_SELFSERVICEUNLOCK')
+    OKTA_SMSRECOVERY=is_true('OKTA_SMSRECOVERY')
+    OKTA_CALLRECOVERY=is_true('OKTA_CALLRECOVERY')
+    OKTA_USERNAMEPLACEHOLDER=os.getenv('OKTA_USERNAMEPLACEHOLDER')
+    OKTA_PASSWORDPLACEHOLDER=os.getenv('OKTA_PASSWORDPLACEHOLDER')
+    OKTA_USERNAMETOOLTIP=os.getenv('OKTA_USERNAMETOOLTIP')
+    OKTA_PASSWORDTOOLTIP=os.getenv('OKTA_PASSWORDTOOLTIP')
+    # END widget config
 
     THEME_URI=os.getenv('THEME_URI', 'http://localhost:5000/static/themes/default')
     theme_config = get_theme_config(THEME_URI, APP_URL)
