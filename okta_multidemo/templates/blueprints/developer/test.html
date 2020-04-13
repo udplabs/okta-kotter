@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Test client: {{ client_name }}</h2>
+<pre style="background-color:#555;font-size:12px;" id="output">
+</pre>
+{% endblock %}
+{% block add_js %}
+<script src="/static/js/util.js"></script>
+<script>
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function render(data) {
+  output.innerHTML += '\n<span style="color:aqua;font-weight:bold;">' + JSON.stringify(data.data, null, 4) + '</span>';
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+  var outputElem = document.getElementById('output');
+  outputElem.innerHTML = `$ export TEMP_B64_AUTH=\`echo -n {{ client_id }}:{{ client_secret }} | base64\`
+$ curl -X POST {{ config.OKTA_ISSUER }}/v1/token \\
+-H 'Accept:application/json' \\
+-H "Authorization:Basic $TEMP_B64_AUTH" \\
+-H 'Content-type:application/x-www-form-urlencoded' \\
+-d 'grant_type=client_credentials' \ \\
+-d 'scope=products:read'
+`;
+  await sleep(1500);
+  var token_data = JSON.parse('{{ token_resp|safe }}');
+  outputElem.innerHTML += '\n<span style="color:aqua;font-weight:bold;">' + JSON.stringify(token_data, null, 4) + '</span>';
+  await sleep(1500);
+  outputElem.innerHTML += "\n\n$ curl -X GET http://localhost:5000/api/products \\\n-H 'Authorization:Bearer " +  token_data.access_token + "'\n"
+  await sleep(1500);
+  var result = ajax('{{ config.API_URL }}/products', 'GET', null, render, token_data.access_token);
+
+});
+</script>
+{% endblock %}

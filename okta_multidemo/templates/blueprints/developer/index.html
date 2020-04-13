@@ -15,7 +15,7 @@
       <th scope="col">Client ID</th>
       <th scope="col">Client Secret</th>
       <th scope="col">OAuth 2.0 Grant Type</th>
-      <th scope="col">Actions</th>
+      <th scope="col" colspan="2">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -28,9 +28,28 @@
       <td>
         <a href="{{ url_for('developer.delete_client', id=client.id, client_id=client.client_id) }}" class="btn btn-danger" role="button" aria-pressed="true"><i class="fa fa-remove"></i></a>
       </td>
+      <td>
+        <button class="btn btn-dark" role="button" aria-pressed="true" onClick="redirect('{{ client.client_id }}', '{{ client.client_secret }}', '{{ client.client_name }}');"><i class="fa fa-desktop"></i></button>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+<form id="redirForm" method="POST" action="{{ url_for('developer.test_client') }}">
+  <input type="hidden" name="client_id" value="" />
+  <input type="hidden" name="client_secret" value="" />
+  <input type="hidden" name="client_name" value="" />
+</form>
+{% endblock %}
+{% block add_js %}
+<script>
+  function redirect(clientId, clientSecret, clientName) {
+    var form = document.getElementById("redirForm");
+    form.elements[0].value = clientId;
+    form.elements[1].value = clientSecret;
+    form.elements[2].value = clientName;
+    form.submit();
+  }
+</script>
 
 {% endblock %}

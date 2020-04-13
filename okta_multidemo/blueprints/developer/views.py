@@ -1,10 +1,12 @@
 import json
+import requests
 
 from flask import Blueprint, request, jsonify, session, current_app, Response, render_template, redirect, url_for, flash
 from tinydb import TinyDB, Query
 from simple_rest_client.exceptions import AuthError
 from werkzeug.exceptions import Unauthorized
 from tinydb import TinyDB
+from requests.auth import HTTPBasicAuth
 
 from ...util import APIClient, OktaAPIClient, decode_token
 
@@ -119,3 +121,35 @@ def delete_client(user_id=None):
     print(result)
 
     return redirect(url_for('developer.index'))
+
+
+@developer_blueprint.route('/test-client', methods=('POST',))
+@authorize()
+def test_client(user_id=None):
+    client_id = request.form['client_id']
+    client_secret = request.form['client_secret']
+    client_name = request.form['client_name']
+    url = '{}/v1/token'.format(current_app.config['OKTA_ISSUER'])
+    auth = HTTPBasicAuth(client_id, client_secret)
+    headers = {
+        'accept': 'application/json',
+        'content-type': 'application/x-www-form-urlencoded',
+    }
+    data = {
+        'grant_type': 'client_credentials',
+        'scope': 'products:read',
+    }
+    req = requests.post(
+        url,
+        headers=headers,
+        data=data,
+        auth=auth
+    )
+    resp = render_template(
+        'blueprints/developer/test.html',
+        token_resp=json.dumps(req.json()),
+        client_id=client_id,
+        client_secret=client_secret,
+        client_name=client_name
+    )
+    return resp

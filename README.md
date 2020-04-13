@@ -90,6 +90,17 @@ The demo app expects a few configuration details in your Okta org (TODO: automat
 
 It's up to you to configure additional rules for MFA, which users belong to the "Admin" group, etc. to demonstrate in conjunction with the sign-in widget or Okta-hosted sign-in.
 
+#### Optional configuration
+
+##### Developer
+
+- In your Authorization Server, create an Access Policy with a Rule that allows `Client Credentials` clients to access the `products:read` scope.  Get the ID of that access policy and assign it in your `.env` file:
+
+```
+FF_DEVELOPER=true
+FF_DEVELOPER_CC_POLICY_ID=00p...
+```
+
 ### Themes
 
 A theme is a set of files used to customize your demo instance.  Theme files should reside at a publicly accessible URI, to which you point your `THEME_URI` env variable.  The following built-in themes are available, and can be set by using the localhost URI e.g. `http://localhost:5000/static/themes/books`:
@@ -162,6 +173,14 @@ A good way to host your theme is simply to drop the files into a publicly access
 Then you can set your `THEME_URI` to `https://S3_BUCKET_NAME.s3-us-west-2.amazonaws.com/theme_folder`.
 
 > **NOTE:** if you're running the app locally, you can also simply put your theme in e.g. `okta_multidemo/static/themes/_MY_THEME` and set your `THEME_URI` to `http://localhost:5000/static/themes/_MY_THEME`.
+
+### Troubleshooting
+
+You may occasionally see a `oauthlib.oauth2.rfc6749.errors.MismatchingStateError` with the following warning::
+
+    oauthlib.oauth2.rfc6749.errors.MismatchingStateError: (mismatching_state) CSRF Warning! State not equal in request and response.
+
+This may happen as a result of various demo login configurations using different state variables.  If this happens, ensure you're using a browser session with no cookies set for your local app's domain -- either clear the cookies manually or restart a new browser session (e.g. using incognito or private browsing mode).
 
 ### Acknowledgments
 
