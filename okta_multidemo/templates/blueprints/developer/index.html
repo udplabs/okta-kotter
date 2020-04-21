@@ -28,8 +28,9 @@
       <td>
         <a href="{{ url_for('developer.delete_client', id=client.id, client_id=client.client_id) }}" class="btn btn-danger" role="button" aria-pressed="true"><i class="fa fa-remove"></i></a>
       </td>
-      <td>
+      <td>{% if client.grant_types.0 == 'client_credentials' %}
         <button class="btn btn-dark" role="button" aria-pressed="true" onClick="redirect('{{ client.client_id }}', '{{ client.client_secret }}', '{{ client.client_name }}');"><i class="fa fa-desktop"></i></button>
+        {% endif %}
       </td>
     </tr>
     {% endfor %}

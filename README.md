@@ -194,3 +194,4 @@ This may happen as a result of various demo login configurations using different
 - Load Balancer by Mani Cheng from the Noun Project: `okta_multidemo/static/img/items/load-balancer.png`
 - Card by Daily Icons from the Noun Project: `okta_multidemo/static/img/items/card.png`
 - Report by Alfredo at IconsAlfredo.com from the Noun Project: `okta_multidemo/static/img/items/report.png`
+- Plunger TNT by Creaticca Creative Agency from the Noun Project: `okta_multidemo/static/img/items/tnt.png`

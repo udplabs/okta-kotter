@@ -10,6 +10,7 @@
     <tr>
       <th scope="col">Order ID</th>
       <th scope="col">Product ID</th>
+      <th scope="col">Product</th>
       <th scope="col">User ID</th>
       <th scope="col">Status</th>
       <th scope="col">Action</th>
@@ -20,6 +21,7 @@
     <tr>
       <th scope="row">{{ order.id }}</th>
       <td>{{ order.itemId }}</td>
+      <td>{{ order.productTitle }}</td>
       <td>{{ order.userId }}</td>
       <td><span class="badge badge-{{ 'success' if order.status == 'complete' else 'secondary' }}">{{ order.status }}</span></td>
       <td>

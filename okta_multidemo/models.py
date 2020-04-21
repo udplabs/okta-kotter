@@ -24,10 +24,11 @@ class Model(object):
     def get(self, condition=None):
         if condition:
             if type(condition) == dict:
+                # FIXME: can only filter on one key/value pair for condition
                 records = Query()
                 cond_key = list(condition.keys())[0]
                 cond_val = list(condition.values())[0]
-                results = self.table.search(records[cond_key]==cond_val)
+                results = self.table.search((records[cond_key]==cond_val))
             else:  # assume it's a doc ID
                 results = [self.table.get(doc_id=condition)]
         else:

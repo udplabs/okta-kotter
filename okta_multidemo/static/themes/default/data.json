@@ -8,5 +8,15 @@
         "price": 0,
         "image": "anvil.png",
         "target": "PUBLIC"
+    },
+    {
+        "itemId": "2",
+        "title": "TNT",
+        "description": "",
+        "category": "",
+        "count": 10,
+        "price": 0,
+        "image": "tnt.png",
+        "target": "PREMIUM"
     }
 ]

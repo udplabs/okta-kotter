@@ -2,10 +2,12 @@ import json
 import time
 
 from flask import Blueprint, request, jsonify, session, current_app, Response
+from flask_cors import cross_origin
 from tinydb import TinyDB, Query
+from werkzeug.exceptions import Unauthorized
 
 from ...models import Product, Order
-from .util import authorize, mfa
+from .util import authorize, mfa, validate_access_token, get_token_from_header
 
 api_blueprint = Blueprint('api', 'api', url_prefix='/api')
 
@@ -23,11 +25,14 @@ def get_products(claims={}):
 
 
 @api_blueprint.route('/orders', methods=['POST'])
-@authorize(scopes=['products:read'])
+@authorize(scopes=['orders:create'])
 def create_order(claims={}):
     order = Order()
+    prod_obj = Product()
     data = json.loads(request.get_data())
+    product = prod_obj.get(data['itemId'])[0]
     data['status'] = 'pending'
+    data['productTitle'] = product['title']
     result = order.add(data)
     resp = {'message': 'OK'}
     return jsonify(data)  # equivalent of Response(json.dumps(resp), 200)
@@ -42,6 +47,24 @@ def get_orders(claims={}):
         data = orders.get({'status': status})
     else:
         data = orders.get()
+    return jsonify(data)
+
+
+# NOTE: this endpoint is used by external applications only;
+#   the intention is to require consent for the scope
+@api_blueprint.route('/orders/<user_id>', methods=['GET', 'POST'])
+@cross_origin()  # NOTE: the idea here would be to allow requests from registered clients; i.e. whitelist their domains
+def get_user_orders(user_id, claims={}):
+    # validating token without decorator because of user_id
+    scopes = ['orders:read:user']
+    token = get_token_from_header()
+    try:
+        validate_access_token(token, scopes, user_id)
+    except AssertionError:
+        raise Unauthorized
+    order = Order()
+    data = order.get({'userId': user_id})
+    # TODO: only return items with status "complete"?
     return jsonify(data)
 
 

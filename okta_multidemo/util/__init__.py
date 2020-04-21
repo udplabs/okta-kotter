@@ -33,13 +33,21 @@ def init_db(path, theme_uri, app_url):
             )) as file_:
             data = file_.read()
     products = json.loads(data)
+    product_map = dict([(i['itemId'], i['title']) for i in products])
     table.insert_multiple(products)
 
     table = db.table('orders')
     with open(os.path.join(path, '..', 'conf/orders.json')) as file_:
         data = file_.read()
-    products = json.loads(data)
-    table.insert_multiple(products)
+    orders = json.loads(data)
+    for i in orders:
+        try:
+            i.update({'productTitle': product_map[str(i['itemId'])]})
+        except KeyError:
+            # might not be available in product_map if order data is out of sync
+            pass
+    table.insert_multiple(orders)
+
 
 
 # NOTE: this is a simple_rest_client kludge

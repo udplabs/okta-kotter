@@ -6,7 +6,12 @@ from pathlib import Path
 import requests
 
 from dotenv import load_dotenv
-load_dotenv()
+alt_env = os.getenv('OKTA_ALT_ENV', None)
+if alt_env:
+    env_path = Path('.') / alt_env
+    load_dotenv(dotenv_path=env_path, override=True)
+else:
+    load_dotenv()
 
 
 def get_theme_config(theme_uri, app_url):
@@ -42,6 +47,9 @@ class BaseConfig(object):
 
     FF_DEVELOPER=is_true('FF_DEVELOPER')
     FF_DEVELOPER_CC_POLICY_ID=os.getenv('FF_DEVELOPER_CC_POLICY_ID')
+    FF_DEVELOPER_PKCE_POLICY_ID=os.getenv('FF_DEVELOPER_PKCE_POLICY_ID')
+    FF_PORTFOLIO=is_true('FF_PORTFOLIO')
+    FF_PORTFOLIO_CLIENT_GROUP = os.getenv('FF_PORTFOLIO_CLIENT_GROUP')
 
     OKTA_BASE_URL=os.getenv('OKTA_BASE_URL')
     OKTA_API_KEY=os.getenv('OKTA_API_KEY')
@@ -56,6 +64,7 @@ class BaseConfig(object):
     OKTA_ADMIN_SCOPES=os.getenv('OKTA_ADMIN_SCOPES').split(',')
     OKTA_ADMIN_CLIENT_ID=os.getenv('OKTA_ADMIN_CLIENT_ID')
     OKTA_IDP_REQUEST_CONTEXT=os.getenv('OKTA_IDP_REQUEST_CONTEXT')
+    OKTA_RESOURCE_PREFIX=os.getenv('OKTA_RESOURCE_PREFIX', '')
 
     # START widget config
     OKTA_PASSWORDLESS=is_true('OKTA_PASSWORDLESS')

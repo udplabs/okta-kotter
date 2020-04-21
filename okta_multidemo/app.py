@@ -14,6 +14,7 @@ from .okta import okta_blueprint, okta_admin_blueprint
 from .blueprints.api.api import api_blueprint
 from .blueprints.admin.views import admin_blueprint
 from .blueprints.developer.views import developer_blueprint
+from .blueprints.portfolio.views import portfolio_blueprint
 from .logs import configure_logging
 from .util import init_db, get_help_markdown
 
@@ -68,6 +69,8 @@ blueprints = [
 ]
 if app.config['FF_DEVELOPER']:
     blueprints.append(developer_blueprint)
+if app.config['FF_PORTFOLIO']:
+    blueprints.append(portfolio_blueprint)
 # TODO: ^^^ refactor as additional FF's are added
 for blueprint in blueprints:
     app.register_blueprint(blueprint)

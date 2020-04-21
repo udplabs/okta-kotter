@@ -251,7 +251,6 @@ def apps():
         current_app.config['OKTA_API_KEY']
     )
     okta.api.add_resource(resource_name='apps')
-    print(session['user_id'])
     data = okta.api.apps.list(params={
         'filter': 'user.id eq "{}"'.format(session['user_id']),
         'limit': 100

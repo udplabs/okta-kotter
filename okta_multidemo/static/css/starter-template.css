@@ -15,10 +15,10 @@ body {
 
 pre {
   white-space:pre-wrap;
-  text-align:left;
+  text-align:left !important;
   white-space: -moz-pre-wrap;white-space: -o-pre-wrap;
   word-wrap:break-word;
-  background-color:#555;
+  background-color:#555 !important;
   color:#eee;
   padding:10px;
 }
