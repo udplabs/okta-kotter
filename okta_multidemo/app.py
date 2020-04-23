@@ -1,16 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-import os
 
-from flask import Flask, render_template, request, session, flash, redirect, url_for, g
-
-from flask_talisman import Talisman
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, BooleanField, PasswordField
-from wtforms.validators import DataRequired, Length
+from flask import Flask, render_template, request, session, g
 
 # TODO: rename/reorg blueprints for consistency
-from .okta import okta_blueprint, okta_admin_blueprint
 from .blueprints.api.api import api_blueprint
 from .blueprints.admin.views import admin_blueprint
 from .blueprints.developer.views import developer_blueprint
@@ -31,7 +24,8 @@ if not app.config['PERSIST_DB']:
     init_db(app.config['DB_PATH'], app.config['THEME_URI'], app.config['APP_URL'])
 
 # TODO: need to import after app.config takes place -- is this ok?
-from okta_multidemo import views
+from .okta import okta_blueprint, okta_admin_blueprint
+from . import views
 
 
 @app.before_request

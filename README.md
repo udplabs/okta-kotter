@@ -94,12 +94,16 @@ It's up to you to configure additional rules for MFA, which users belong to the 
 
 ##### Developer
 
-- In your Authorization Server, create an Access Policy with a Rule that allows `Client Credentials` clients to access the `products:read` scope.  Get the ID of that access policy and assign it in your `.env` file:
+For Client Credentials clients, in your Authorization Server, create an Access Policy with a Rule that allows `Client Credentials` clients to access the `products:read` scope.  Get the ID of that access policy and assign it in your `.env` file:
 
 ```
 FF_DEVELOPER=true
 FF_DEVELOPER_CC_POLICY_ID=00p...
 ```
+
+For Authorization Code (PKCE) flow clients, and to demonstrate consent, create a policy with a rule for the `orders:read:user` scope.  Assign that policy ID to `FF_DEVELOPER_PKCE_POLICY_ID`.  Any users who will authenticate using an app that connects with your Okta tenant using this newly created client should belong to a group whose ID has been assigne to `FF_PORTFOLIO_CLIENT_GROUP`.
+
+See [this repo](https://github.com/mdorn/pkce-vanilla-js/blob/consent-demo/index.html) for an example app to use this client.
 
 ### Themes
 
