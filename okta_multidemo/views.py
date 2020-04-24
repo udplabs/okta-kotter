@@ -82,39 +82,6 @@ def authorization_redirect():
     return resp
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login_form():
-    form = LoginForm()
-    if request.method == 'POST':
-        if form.validate():
-            params = {
-                'email': form.username.data,
-                'password': form.password.data,
-            }
-            req = requests.post('https://groups.io/api/v1/login', data=params)
-            if req.status_code != 200:
-                flash('Login failed.')
-            else:
-                resp = redirect(url_for('index'))
-                cookies = dict(zip(req.cookies.keys(), req.cookies.values()))
-                for key in cookies.keys():
-                    resp.set_cookie(key, cookies[key])
-                session['username'] = req.json()['user']['email']
-                session['full_name'] = req.json()['user']['full_name']
-                session['csrf'] = req.json()['user']['csrf_token']
-                flash('Welcome {}!'.format(req.json()['user']['email']))
-                if not session['full_name']:
-                    flash(
-                        'You have not yet set your display name. Please click on your email address in the upper right.',
-                        'warning'
-                    )
-                return resp
-        else:
-            flash('Invalid form data.')
-    resp = render_template('login.html', form=form)
-    return resp
-
-
 def render_login_template(conf, css=None):
     resp = render_template(
         'login/widget.html',
@@ -189,19 +156,10 @@ def profile():
     if request.method == 'POST':
         if form.validate():
             params = {
-                'full_name': form.display_name.data,
+                # ...
                 'csrf': session['csrf'],
             }
-            req = requests.post('https://groups.io/api/v1/updateprofile', data=params, cookies=request.cookies)
-            if req.status_code != 200:
-                flash('Update failed.')
-            else:
-                resp = redirect(url_for('profile'))
-                session['full_name'] = form.display_name.data
-                flash('Profile updated!')
-                return resp
-        else:
-            flash('Invalid form data.')
+            pass
     resp = render_template('profile.html', form=form)
     return resp
 
