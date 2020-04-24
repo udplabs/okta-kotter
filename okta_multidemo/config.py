@@ -44,6 +44,7 @@ class BaseConfig(object):
     DB_PATH=os.getenv('DB_PATH')
     API_URL=os.getenv('API_URL')
     PERSIST_DB=is_true('PERSIST_DB')
+    REST_API=is_true('REST_API')
 
     FF_DEVELOPER=is_true('FF_DEVELOPER')
     FF_DEVELOPER_CC_POLICY_ID=os.getenv('FF_DEVELOPER_CC_POLICY_ID')

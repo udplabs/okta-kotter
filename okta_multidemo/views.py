@@ -183,6 +183,12 @@ def logout():
 
 @app.route(app.config['ITEMS_PATH'], methods=('GET',))
 def products():
+    if app.config['REST_API']:
+        return products_rest()
+    return products_mvc()
+
+
+def products_mvc():
     # NOTE: Here the view calls the REST API, rather than importing the model directly.
     #   In an MVC app it doesn't have to work this way.
     client = APIClient(app.config['API_URL'], request.cookies.get('access_token'))
@@ -202,6 +208,14 @@ def products():
     )
 
 
+def products_rest():
+    if current_app.config['ITEMS_IMG']:
+        img_path = '{}/img-items/'.format(current_app.config['THEME_URI'])
+    else:
+        img_path = '{}/static/img/items/'.format(current_app.config['APP_URL'])
+    return render_template('products-rest.html', img_path=img_path)
+
+
 @app.route('/apps', methods=('GET',))
 def apps():
     okta = OktaAPIClient(
@@ -217,15 +231,6 @@ def apps():
         'apps.html',
         apps=data.body
     )
-
-
-@app.route('{}-rest'.format(app.config['ITEMS_PATH']), methods=('GET',))
-def products_rest():
-    if current_app.config['ITEMS_IMG']:
-        img_path = '{}/img-items/'.format(current_app.config['THEME_URI'])
-    else:
-        img_path = '{}/static/img/items/'.format(current_app.config['APP_URL'])
-    return render_template('products-rest.html', img_path=img_path)
 
 
 @app.route('/_reset', methods=('GET',))
