@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from flask import current_app
 from tinydb import TinyDB, Query, where
 

@@ -15,6 +15,7 @@ SILENCE_LOGS = [
     'urllib3.connectionpool',
     'simple_rest_client.request',
     'faker.factory',
+    'hpack.hpack',
 ]
 
 

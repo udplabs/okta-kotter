@@ -61,11 +61,14 @@ def index():
 def authorization_redirect():
     # authz flow only
     blueprint = request.args.get('conf', 'okta')
-    token_dict = {}
     token_main = app.blueprints[blueprint].session.token
     if not token_main:
         raise Unauthorized
     access_token = token_main['access_token']
+    if blueprint == 'okta-o4o':
+        resp = redirect(url_for('admin.users'))
+        resp.set_cookie('o4o_token', access_token)
+        return resp
     id_token = token_main['id_token']
     set_session_vars(access_token, id_token)
     if blueprint == 'okta-admin':

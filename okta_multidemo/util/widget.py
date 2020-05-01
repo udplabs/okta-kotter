@@ -16,7 +16,7 @@ def get_widget_config(app_conf, type_=None):
             'issuer': app_conf['OKTA_ISSUER'],
             'scopes': app_conf['OKTA_SCOPES'],
         },
-         'features': {
+        'features': {
             'router': app_conf['OKTA_ROUTER'],
             'registration': app_conf['OKTA_REGISTRATION'],
             'rememberMe': app_conf['OKTA_REMEMBERME'],
@@ -24,7 +24,7 @@ def get_widget_config(app_conf, type_=None):
             'selfServiceUnlock': app_conf['OKTA_SELFSERVICEUNLOCK'],
             'smsRecovery': app_conf['OKTA_SMSRECOVERY'],
             'callRecovery': app_conf['OKTA_CALLRECOVERY'],
-            'passwordlessAuth' : app_conf['OKTA_PASSWORDLESS'],
+            'passwordlessAuth': app_conf['OKTA_PASSWORDLESS'],
         },
     }
 

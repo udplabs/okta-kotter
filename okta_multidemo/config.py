@@ -82,7 +82,7 @@ class BaseConfig(object):
     OKTA_PASSWORDTOOLTIP=os.getenv('OKTA_PASSWORDTOOLTIP')
     # END widget config
 
-    THEME_URI=os.getenv('THEME_URI', 'http://localhost:5000/static/themes/default')
+    THEME_URI=os.getenv('THEME_URI', 'http://{}/static/themes/default'.format(APP_URL))
     theme_config = get_theme_config(THEME_URI, APP_URL)
     THEME_LABEL = theme_config['label']
     SITE_TITLE = theme_config['site-title']

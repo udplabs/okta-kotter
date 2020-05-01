@@ -24,7 +24,7 @@ if not app.config['PERSIST_DB']:
     init_db(app.config['DB_PATH'], app.config['THEME_URI'], app.config['APP_URL'])
 
 # TODO: need to import after app.config takes place -- is this ok?
-from .okta import okta_blueprint, okta_admin_blueprint
+from .okta import okta_blueprint, okta_admin_blueprint, okta_o4o_blueprint
 from . import views
 
 
@@ -57,6 +57,7 @@ def unauthorized(e):
 
 app.register_blueprint(okta_blueprint, url_prefix='/login')
 app.register_blueprint(okta_admin_blueprint, url_prefix='/login')
+app.register_blueprint(okta_o4o_blueprint, url_prefix='/login')
 blueprints = [
     api_blueprint,
     admin_blueprint,

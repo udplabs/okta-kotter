@@ -46,6 +46,8 @@ The demo app expects a few configuration details in your Okta org (TODO: automat
     - `http://localhost:5000/implicit/callback`
     - `http://localhost:5000/widget`
   - Initiate login URI: `http://localhost:5000/login/okta/authorized`
+  - Okta API Scopes:
+    - Grant the `okta.users.read` scope. Users who are both in the "Admin" group and who have an appropriate Okta Administrative role will be able to get a list of users in the app's administrative section using OAuth for Okta.
   - App Profile custom attributes (group type):
     - `app_permissions` with members:
       - display: `Admin`, value: `admin`
@@ -178,13 +180,19 @@ Then you can set your `THEME_URI` to `https://S3_BUCKET_NAME.s3-us-west-2.amazon
 
 > **NOTE:** if you're running the app locally, you can also simply put your theme in e.g. `okta_multidemo/static/themes/_MY_THEME` and set your `THEME_URI` to `http://localhost:5000/static/themes/_MY_THEME`.
 
-### Troubleshooting
+### Troubleshooting and limitations
+
+#### Mismatching State Error
 
 You may occasionally see a `oauthlib.oauth2.rfc6749.errors.MismatchingStateError` with the following warning::
 
     oauthlib.oauth2.rfc6749.errors.MismatchingStateError: (mismatching_state) CSRF Warning! State not equal in request and response.
 
 This may happen as a result of various demo login configurations using different state variables.  If this happens, ensure you're using a browser session with no cookies set for your local app's domain -- either clear the cookies manually or restart a new browser session (e.g. using incognito or private browsing mode).
+
+#### Expiring access tokens
+
+As of this writing, refresh tokens have not been implemented, so calls to the API backend may fail (possibly silently) after the token has expired.  You may need to logout and hit the API with a fresh session.
 
 ### Acknowledgments
 

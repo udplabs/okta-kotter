@@ -7,7 +7,7 @@ from werkzeug.exceptions import Unauthorized
 
 from ...util import APIClient, OktaAPIClient, decode_token
 
-from .util import auth_admin
+from .util import auth_admin, auth_o4o
 
 admin_blueprint = Blueprint('admin', 'admin', url_prefix='/admin')
 
@@ -36,12 +36,11 @@ def orders():
 
 
 @admin_blueprint.route('/users', methods=('GET',))
-@auth_admin()
+@auth_o4o()
 def users():
-    okta = OktaAPIClient(
-        current_app.config['OKTA_BASE_URL'],
-        current_app.config['OKTA_API_KEY']
-    )
+    # get users via OAuth for Okta instread of SSWS API key
+    api_url = '{}/api/v1'.format(current_app.config['OKTA_BASE_URL'])
+    okta = APIClient(api_url, request.cookies.get('o4o_token'))
     okta.api.add_resource(resource_name='users')
     # TODO: get only users assigned to app
     data = okta.api.users.list()
@@ -49,6 +48,7 @@ def users():
         'admin/users.html',
         users=data.body
     )
+
 
 @admin_blueprint.route('/config', methods=('GET',))
 @auth_admin()
