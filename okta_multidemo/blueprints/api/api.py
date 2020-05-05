@@ -1,9 +1,7 @@
 import json
-import time
 
-from flask import Blueprint, request, jsonify, session, current_app, Response
+from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
-from tinydb import TinyDB, Query
 from werkzeug.exceptions import Unauthorized
 
 from ...models import Product, Order
@@ -33,6 +31,7 @@ def create_order(claims={}):
     product = prod_obj.get(data['itemId'])[0]
     data['status'] = 'pending'
     data['productTitle'] = product['title']
+    data['productImage'] = product['image']
     result = order.add(data)
     resp = {'message': 'OK'}
     return jsonify(data)  # equivalent of Response(json.dumps(resp), 200)

@@ -24,7 +24,7 @@ def set_session_vars(access_token, id_token):
     session['username'] = id_decoded['email']
     session['name'] = id_decoded['name']
     session['user_id'] = id_decoded['sub']
-    session['is_admin'] = 'Admin' in id_decoded['groups']
+    session['is_admin'] = 'Admin' in id_decoded.get('groups', [])
     session['access_token'] = access_token
     session['id_token'] = id_token
 
@@ -212,11 +212,7 @@ def products_mvc():
 
 
 def products_rest():
-    if current_app.config['ITEMS_IMG']:
-        img_path = '{}/img-items/'.format(current_app.config['THEME_URI'])
-    else:
-        img_path = '{}/static/img/items/'.format(current_app.config['APP_URL'])
-    return render_template('products-rest.html', img_path=img_path)
+    return render_template('products-rest.html')
 
 
 @app.route('/apps', methods=('GET',))
@@ -241,6 +237,7 @@ def reset():
     init_db(
         current_app.config['DB_PATH'],
         current_app.config['THEME_URI'],
-        current_app.config['APP_URL']
+        current_app.config['APP_URL'],
+        app.config['ITEMS_IMG']
     )
     return redirect(url_for('index'))

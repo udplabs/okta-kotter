@@ -6,6 +6,7 @@
 <table class="table table-striped">
   <thead>
     <tr>
+      <th scope="col"></th>
       <th scope="col">Name</th>
       <th scope="col">Quantity</th>
     </tr>
@@ -13,6 +14,7 @@
   <tbody>
     {% for order in orders %}
     <tr>
+      <td><img src="{{ images[order.0] }}" style="max-height:50px;"/></td>
       <td>{{ order.0 }}</td>
       <td>{{ order.1 }}</td>
     </tr>

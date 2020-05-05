@@ -13,7 +13,7 @@ from simple_rest_client.resource import Resource
 from tinydb import TinyDB
 
 
-def init_db(path, theme_uri, app_url):
+def init_db(path, theme_uri, app_url, items_img=None):
     try:
         os.remove(path)
     except OSError:
@@ -30,10 +30,22 @@ def init_db(path, theme_uri, app_url):
         theme = theme_uri.split('/')[-1]
         with open(os.path.join(
                 path, '..', 'static/themes/{}/data.json'.format(theme)
-            )) as file_:
+        )) as file_:
             data = file_.read()
     products = json.loads(data)
-    product_map = dict([(i['itemId'], i['title']) for i in products])
+    if items_img:
+        img_path = '{}/img-items/'.format(theme_uri)
+    else:
+        img_path = '{}/static/img/items/'.format(app_url)
+
+    product_map = {}
+    for ct, i in enumerate(products):
+        img = '{}{}'.format(img_path, i['image'])
+        product_map[i['itemId']] = {
+            'title': i['title'],
+            'image': img
+        }
+        products[ct]['image'] = img
     table.insert_multiple(products)
 
     table = db.table('orders')
@@ -42,12 +54,14 @@ def init_db(path, theme_uri, app_url):
     orders = json.loads(data)
     for i in orders:
         try:
-            i.update({'productTitle': product_map[str(i['itemId'])]})
+            i.update({
+                'productTitle': product_map[str(i['itemId'])]['title'],
+                'productImage': product_map[str(i['itemId'])]['image'],
+            })
         except KeyError:
             # might not be available in product_map if order data is out of sync
             pass
     table.insert_multiple(orders)
-
 
 
 # NOTE: this is a simple_rest_client kludge
