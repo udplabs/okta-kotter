@@ -1,3 +1,20 @@
+## Table of Contents
+
+- [Okta Multidemo](#okta-multidemo)
+  * [Install and run](#install-and-run)
+    + [Run locally](#run-locally)
+    + [Run in a Docker container](#run-in-a-docker-container)
+  * [Okta org configuration](#okta-org-configuration)
+    + [Optional configuration](#optional-configuration)
+      - [Developer](#developer)
+      - [Portfolio](#portfolio)
+  * [Themes](#themes)
+  * [Troubleshooting and limitations](#troubleshooting-and-limitations)
+    + [Mismatching State Error](#mismatching-state-error)
+    + [Expiring access tokens](#expiring-access-tokens)
+    + [Step-up MFA in Admin](#step-up-mfa-in-admin)
+  * [Acknowledgments](#acknowledgments)
+
 ## Okta Multidemo
 
 The purpose of this application is to demonstrate the integration of a custom app with [Okta](https://www.okta.com/) for identity management and API access management.  Two key features are 1) contextual help: a "Help" button on each page gives technical information about some key aspect of the integration, and 2) themes: you can choose from an included theme or easily create and use a custom theme.
@@ -94,6 +111,8 @@ It's up to you to configure additional rules for MFA, which users belong to the 
 
 #### Optional configuration
 
+Configuration for optional "Tools" enabled by environment feature flags follows.
+
 ##### Developer
 
 For Client Credentials clients, in your Authorization Server, create an Access Policy with a Rule that allows `Client Credentials` clients to access the `products:read` scope.  Get the ID of that access policy and assign it in your `.env` file:
@@ -106,6 +125,10 @@ FF_DEVELOPER_CC_POLICY_ID=00p...
 For Authorization Code (PKCE) flow clients, and to demonstrate consent, create a policy with a rule for the `orders:read:user` scope.  Assign that policy ID to `FF_DEVELOPER_PKCE_POLICY_ID`.  Any users who will authenticate using an app that connects with your Okta tenant using this newly created client should belong to a group whose ID has been assigne to `FF_PORTFOLIO_CLIENT_GROUP`.
 
 See [this repo](https://github.com/mdorn/pkce-vanilla-js/blob/consent-demo/index.html) for an example app to use this client.
+
+##### Portfolio
+
+See note about `FF_PORTFOLIO_CLIENT_GROUP` above.
 
 ### Themes
 
@@ -193,6 +216,10 @@ This may happen as a result of various demo login configurations using different
 #### Expiring access tokens
 
 As of this writing, refresh tokens have not been implemented, so calls to the API backend may fail (possibly silently) after the token has expired.  You may need to logout and hit the API with a fresh session.
+
+#### Step-up MFA in Admin
+
+In order for the step-up MFA challenge to trigger (when you click the "approve" button on an order in the Admin tool), the admin user used for demoing needs to have *only* the Okta Verify factor enrolled.  Ensure this is the case by checking the API `{{url}}/api/v1/users/{{userId}}/factors`.
 
 ### Acknowledgments
 
