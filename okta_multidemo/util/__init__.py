@@ -10,15 +10,8 @@ import requests
 from simple_rest_client.api import API
 from simple_rest_client.resource import Resource
 
-from tinydb import TinyDB
 
-
-def init_db(path, theme_uri, app_url, items_img=None):
-    try:
-        os.remove(path)
-    except OSError:
-        pass
-    db = TinyDB(path)
+def init_db(db, theme_uri, app_url, items_img=None):
     table = db.table('products')
     path = Path(__file__).parent.absolute()
 

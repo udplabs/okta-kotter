@@ -1,7 +1,4 @@
-import json
 from collections import Counter
-
-import requests
 
 from flask import session, render_template, Blueprint
 
@@ -20,7 +17,6 @@ def index(user_id=None):
     orders = []
     images = {}
     for i in order.get({'userId': session['user_id']}):
-        print(i)
         images[i['productTitle']] = i['productImage']
         # FIXME: ^^^ ugh kludgy way of getting images into page
         orders.append(i['productTitle'])

@@ -6,7 +6,7 @@ class Model(object):
     TYPE = ''
 
     def __init__(self):
-        self.db = TinyDB(current_app.config['DB_PATH'])
+        self.db = current_app.config['DB_CONN']
         self.table = self.db.table(self.get_type())
 
     def get_type(self):

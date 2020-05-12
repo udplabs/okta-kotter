@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from pathlib import Path
 
 from flask import Flask, render_template, request, session, g
 
@@ -20,9 +21,10 @@ if app.config['ENV'] == 'production':  # reads from FLASK_ENV env variable
     # Talisman(app, content_security_policy=None)
 else:
     app.config.from_object('okta_multidemo.config.DevelopmentConfig')
-if not app.config['PERSIST_DB']:
+
+if not len(app.config['DB_CONN'].tables()) > 1:
     init_db(
-        app.config['DB_PATH'],
+        app.config['DB_CONN'],
         app.config['THEME_URI'],
         app.config['APP_URL'],
         app.config['ITEMS_IMG']

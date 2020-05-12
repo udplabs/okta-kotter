@@ -1,8 +1,5 @@
 import json
-import logging
-
-import pytz
-import requests
+import os
 
 from dateutil.parser import parse
 from flask import render_template, request, make_response, url_for, redirect, flash, session, current_app, Response
@@ -234,8 +231,9 @@ def apps():
 
 @app.route('/_reset', methods=('GET',))
 def reset():
+    current_app.config['DB_CONN'].purge_tables()
     init_db(
-        current_app.config['DB_PATH'],
+        current_app.config['DB_CONN'],
         current_app.config['THEME_URI'],
         current_app.config['APP_URL'],
         app.config['ITEMS_IMG']
