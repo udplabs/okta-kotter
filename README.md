@@ -25,6 +25,14 @@ The purpose of this application is to demonstrate the integration of a custom ap
 
 Once you install the application and configure an environment variables file, you can run it and visit http://localhost:5000 in your browser.
 
+> **NOTE:** Minimally populate at least the following block in your `.env` (for more see [Okta org configuration](#okta-org-configuration) below):
+
+    OKTA_BASE_URL=
+    OKTA_API_KEY=
+    OKTA_CLIENT_ID=
+    OKTA_CLIENT_SECRET=
+    OKTA_ISSUER=
+
 #### Run locally
 
 Assuming you have Python 3 installed (tested with v3.7):
