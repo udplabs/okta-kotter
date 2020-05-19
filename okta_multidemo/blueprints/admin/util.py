@@ -15,11 +15,12 @@ def auth_admin():
     return decorator
 
 
-def auth_o4o():
+def auth_o4o(state):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if not current_app.blueprints['okta-o4o'].token:
+                current_app.blueprints['okta-o4o'].state = state
                 resp = redirect(url_for('okta-o4o.login'))
                 return resp
             return f(*args, **kwargs)

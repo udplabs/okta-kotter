@@ -36,7 +36,7 @@ def orders():
 
 
 @admin_blueprint.route('/users', methods=('GET',))
-@auth_o4o()
+@auth_o4o('admin.users')
 def users():
     # get users via OAuth for Okta instread of SSWS API key
     api_url = '{}/api/v1'.format(current_app.config['OKTA_BASE_URL'])

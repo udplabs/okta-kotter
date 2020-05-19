@@ -71,7 +71,7 @@ def authorization_redirect():
         raise Unauthorized
     access_token = token_main['access_token']
     if blueprint == 'okta-o4o':
-        resp = redirect(url_for('admin.users'))
+        resp = redirect(url_for(app.blueprints[blueprint].state))
         resp.set_cookie('o4o_token', access_token)
         return resp
     id_token = token_main['id_token']

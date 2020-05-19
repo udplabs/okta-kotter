@@ -57,6 +57,9 @@ class Model(object):
         # FIXME: below should work
         # self.table.remove(doc_ids=[key])
 
+    def purge(self):
+        self.table.purge()
+
 
 class Product(Model):
     TYPE = 'products'
