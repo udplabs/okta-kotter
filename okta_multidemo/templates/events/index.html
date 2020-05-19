@@ -2,12 +2,10 @@
 {% block content %}
 <h2>Events</h2>
 
-<span class="badge badge-dark">Listening:</span> {% for hook in hooks %}
+<span class="badge badge-dark">Listening:</span>
+{% for hook in hooks %}
 <span class="badge badge-pill badge-warning">{{ hook }}</span>
 {% endfor %}
-
-<ul id="events_OLD">
-</ul>
 
 <table class="table table-striped">
   <thead>
@@ -50,21 +48,16 @@ function get_row_html(item) {
 function render(data) {
   var container = document.getElementById('events');
   var items = container.getElementsByTagName('li');
-  console.log('foo');
   if (items.length > 0) {
     var new_item = data.data[data.data.length-1].id;
     var last_item = items[items.length-1].id;
-    console.log(new_item, last_item);
     if (last_item == new_item) {
-      console.log('nothing new!');
+      // no updates, don't render page content
       return;
     }
   }
-  console.log('populating page');
   var content = '';
   data.data.forEach(item => {
-
-    // content = content + '<li id="' + item.id + '">' + item.eventType + '</li>';
     content = content + get_row_html(item);
   });
   container.innerHTML = content;
@@ -73,24 +66,13 @@ function render(data) {
 function getData() {
   ajax('{{ config.API_URL }}/events', 'GET', null, render, null);
 }
+
 function init() {
   getData()
   setTimeout(init, 2000);
 }
+
 init();
-
-// getData();
-
-// function foo () {
-//   console.log('hello');
-// }
-
-// function refresh() {
-//     foo();
-//     setTimeout(refresh, 2000);
-// }
-
-// refresh();
 
 
 </script>
