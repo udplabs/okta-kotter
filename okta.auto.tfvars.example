@@ -1,0 +1,4 @@
+# Fill in real values below
+org_name  = "example-12345"
+base_url  = "okta.com"
+api_token = "00ABcdEfgH1iJKLmN2OPQ2rst3vWXYZAb4C5DEf"
