@@ -9,6 +9,7 @@ from .blueprints.api.api import api_blueprint
 from .blueprints.admin.views import admin_blueprint
 from .blueprints.developer.views import developer_blueprint
 from .blueprints.portfolio.views import portfolio_blueprint
+from .blueprints.events import views
 from .logs import configure_logging
 from .util import init_db, get_help_markdown
 

@@ -54,6 +54,8 @@ class BaseConfig(object):
     FF_DEVELOPER_PKCE_POLICY_ID = os.getenv('FF_DEVELOPER_PKCE_POLICY_ID')
     FF_PORTFOLIO = is_true('FF_PORTFOLIO')
     FF_PORTFOLIO_CLIENT_GROUP = os.getenv('FF_PORTFOLIO_CLIENT_GROUP')
+    FF_EVENTS = is_true('FF_EVENTS')
+    FF_EVENTS_HOOK_ID = os.getenv('FF_EVENTS_HOOK_ID')
 
     OKTA_BASE_URL = os.getenv('OKTA_BASE_URL')
     OKTA_API_KEY = os.getenv('OKTA_API_KEY')

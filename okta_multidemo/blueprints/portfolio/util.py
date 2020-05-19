@@ -11,7 +11,7 @@ def authorize():
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            access_token = session.get('access_token', request.cookies.get('access_token'))
+            access_token = request.cookies.get('access_token')
             # TODO: actually validate token, since we're not using an API endpoint
             if not access_token:
                 raise Unauthorized

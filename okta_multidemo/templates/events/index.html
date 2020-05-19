@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Events</h2>
+
+{% for hook in hooks %}
+<span class="badge badge-pill badge-warning">{{ hook }}</span>
+{% endfor %}
+
+<ul id="events">
+
+</ul>
+
+{% endblock %}
+
+{% block add_js %}
+<script src="/static/js/util.js"></script>
+<script>
+function render(data) {
+  var container = document.getElementById('events');
+  var items = container.getElementsByTagName('li');
+  console.log('foo');
+  if (items.length > 0) {
+    var new_item = data.data[data.data.length-1].id;
+    var last_item = items[items.length-1].id;
+    console.log(new_item, last_item);
+    if (last_item == new_item) {
+      console.log('nothing new!');
+      return;
+    }
+  }
+  console.log('populating page');
+  var content = '';
+  data.data.forEach(item => {
+    content = content + '<li id="' + item.id + '">' + item.eventType + '</li>';
+  });
+  container.innerHTML = content;
+}
+
+function getData() {
+  ajax('{{ config.API_URL }}/events', 'GET', null, render, null);
+}
+function init() {
+  getData()
+  setTimeout(init, 2000);
+}
+init();
+
+// getData();
+
+// function foo () {
+//   console.log('hello');
+// }
+
+// function refresh() {
+//     foo();
+//     setTimeout(refresh, 2000);
+// }
+
+// refresh();
+
+
+</script>
+{% endblock %}

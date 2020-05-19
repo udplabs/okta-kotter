@@ -58,6 +58,7 @@
               {% if session.is_admin %}<a class="dropdown-item" href="{{ url_for('admin.index') }}">Admin</a>{% endif %}
               {% if config.FF_PORTFOLIO %}<a class="dropdown-item" href="{{ url_for('portfolio.index') }}">Portfolio</a>{% endif %}
               {% if config.FF_DEVELOPER %}<a class="dropdown-item" href="{{ url_for('developer.index') }}">Developer</a>{% endif %}
+              {% if config.FF_EVENTS %}<a class="dropdown-item" href="{{ url_for('admin.events') }}">Event Hooks</a>{% endif %}
             </div>
           </li>
 
