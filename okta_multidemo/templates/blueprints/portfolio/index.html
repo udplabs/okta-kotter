@@ -21,4 +21,39 @@
     {% endfor %}
   </tbody>
 </table>
+
+<h2>Apps</h2>
+
+{% if not grants %}
+<div class="alert alert-primary" role="alert">
+  <i class="fa fa-info-circle"></i> You have not yet granted consent for any apps to access your portfolio data. You may wish to create an app that will consume this data, then register it as an Open ID Connect client (Auth code flow with PKCE) in the <a href="{{ url_for('developer.index') }}">Developer Portal</a>.
+</div>
+
+{% else %}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">App</th>
+      <th scope="col">Consent</th>
+      <th scope="col">Revoke consent?</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for grant in grants %}
+    <tr>
+      <td>{{ grant._links.client.title }}</td>
+      <td><span class="badge badge-pill badge-warning">{{ grant._links.scope.title }}</span></td>
+      <td>
+        <a href="{{ url_for('portfolio.revoke_consent', grant_id=grant.id) }}" class="btn btn-danger" role="button" aria-pressed="true"><i class="fa fa-remove"></i></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endif %}
+
 {% endblock %}
+
+

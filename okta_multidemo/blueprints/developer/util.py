@@ -1,9 +1,10 @@
-import json
 from functools import wraps
+from urllib.parse import urlparse
 
-from flask import session, request
+from flask import request
 from werkzeug.exceptions import Unauthorized
 from simple_rest_client.resource import Resource
+from simple_rest_client.exceptions import ClientError
 
 from ...util import decode_token, get_api_default_actions, OktaAPIClient
 from .models import Client
@@ -139,6 +140,28 @@ def create_pkce_client(client_name, user_id, group_id, redirect_uri, config):
         resource_class=AppGroupResource
     )
     okta.api.app_groups.assign(client_id, group_id)
+
+    # add to trusted origins
+    parsed_url = urlparse(redirect_uri)
+    core_url = '{}://{}'.format(parsed_url.scheme, parsed_url.netloc)
+    okta.api.add_resource(resource_name='trustedOrigins')
+    try:
+        okta.api.trustedOrigins.create(body={
+            'name': client_name,
+            'origin': core_url,
+            'scopes': [
+                {
+                    'type': 'CORS'
+                },
+                {
+                    'type': 'REDIRECT'
+                }
+            ]
+        })
+    except ClientError:
+        # TODO: probably tried to create an existing Trusted Origin
+        #   should check for sure this is the case.
+        pass
 
     add_client_to_policy(
         client_id, config['FF_DEVELOPER_PKCE_POLICY_ID'], config)

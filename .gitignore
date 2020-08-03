@@ -133,3 +133,7 @@ README.local.md
 _customers/
 _chrome-overrides/
 okta_multidemo/static/themes/_*
+# terraform
+.terraform/
+okta.auto.tfvars
+terraform.tfstate*
