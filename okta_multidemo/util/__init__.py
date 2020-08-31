@@ -10,8 +10,12 @@ import requests
 from simple_rest_client.api import API
 from simple_rest_client.resource import Resource
 
+from .settings import get_settings
 
-def init_db(db, theme_uri, app_url, items_img=None):
+
+def init_db(db, theme_uri, app_url, env, items_img=None):
+
+    # populate DB with sample product data
     table = db.table('products')
     path = Path(__file__).parent.absolute()
 
@@ -41,6 +45,7 @@ def init_db(db, theme_uri, app_url, items_img=None):
         products[ct]['image'] = img
     table.insert_multiple(products)
 
+    # populate DB with sample orders data
     table = db.table('orders')
     with open(os.path.join(path, '..', 'conf/orders.json')) as file_:
         data = file_.read()
@@ -55,6 +60,12 @@ def init_db(db, theme_uri, app_url, items_img=None):
             # might not be available in product_map if order data is out of sync
             pass
     table.insert_multiple(orders)
+
+    # populate DB with settings
+    settings = get_settings(env)
+    table = db.table('settings')
+    for i in settings.keys():
+        table.insert({'setting': i, 'value': settings[i]})
 
 
 # NOTE: this is a simple_rest_client kludge
