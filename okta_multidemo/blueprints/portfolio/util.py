@@ -1,10 +1,11 @@
 from functools import wraps
 
-from flask import request, current_app
+from flask import request
 from werkzeug.exceptions import Unauthorized
 from simple_rest_client.resource import Resource
 
 from ...util import decode_token, get_api_default_actions, APIClient
+from ...util.settings import app_settings
 
 
 def authorize():
@@ -31,7 +32,7 @@ class GrantResource(Resource):
 
 
 def get_api_client():
-    api_url = '{}/api/v1'.format(current_app.config['OKTA_BASE_URL'])
+    api_url = '{}/api/v1'.format(app_settings()['OKTA_BASE_URL'])
     okta = APIClient(api_url, request.cookies.get('o4o_token'))
     okta.api.add_resource(
         resource_name='grants',

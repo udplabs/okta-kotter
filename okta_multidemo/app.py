@@ -16,6 +16,7 @@ from .blueprints.portfolio.views import portfolio_blueprint
 from .blueprints.events import views
 from .logs import configure_logging
 from .util import init_db, get_help_markdown
+from .util.settings import get_settings
 
 app = Flask(__name__)
 app.secret_key = app.config['SECRET_KEY']
@@ -50,43 +51,22 @@ from .okta import okta_blueprint, okta_admin_blueprint, okta_o4o_blueprint  # no
 from . import views  # noqa
 
 
+@app.before_first_request
+def before_first_request():
+    global app
+    subdomain = urlparse(request.url).hostname.split('.')[0]
+    session['subdomain'] = subdomain
+    db = TinyDB(storage=MemoryStorage)
+    app.config['DB_CONNS'][subdomain] = db
+    init_db(db, app.config['ENV'])
+
+
 @app.before_request
 def before_request():
 
     # NOTE: normally excluding static assets would be handled by the webserver
     if request.path.startswith('/static') or request.path.startswith('/api'):
         return
-
-    global app
-    subdomain = urlparse(request.url).hostname.split('.')[0]
-    if session.get('subdomain', None) != subdomain:
-        session['subdomain'] = subdomain
-        if subdomain not in app.config['DB_CONNS']:
-            # db = TinyDB(storage=MemoryStorage)
-            db = TinyDB('/tmp/foo.db')  # TODO: file-based DB
-            app.config['DB_CONNS'][subdomain] = db
-            init_db(
-                db,
-                app.config['THEME_URI'],
-                app.config['APP_URL'],
-                app.config['ENV'],
-                app.config['ITEMS_IMG']
-            )
-            # table = db.table('settings')
-            # table.insert({'setting': 'SITE_TITLE', 'value': 'Here is title'})
-            # Config = Query()
-            # x = table.get(Config.setting == 'SITE_TITLE')
-    # db = app.config['DB_CONN']
-    # table = db.table('subdomains')
-    # table.search()
-    # table.insert({subdomain: {'foo': 'bar'}})
-    # print(table.all())
-
-        # get config from UDP
-        # WARNING: assigning to app config is global for all users regardless of subdomain
-        # TODO: put configs in in-memory DB???
-        # session['config'] = {'hello': 'world'}
-    # print (session)
 
     # handle help URLs
     if request.path.endswith('/'):

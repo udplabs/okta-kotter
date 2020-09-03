@@ -6,10 +6,11 @@ from functools import wraps
 
 import requests
 
-from flask import current_app, Response, session, request
+from flask import Response, session, request
 from jwcrypto import jwt, jwk, jws
 
 from ...util import OktaAPIClient, UserFactorResource
+from ...util.settings import app_settings
 
 JWK_CACHE = []
 
@@ -23,8 +24,9 @@ def get_token_from_header():
 # TODO: this should probably be a class that can take auth server params as config
 def validate_access_token(token, scopes, user_id=None):
     global JWK_CACHE
+    settings = app_settings()
     if len(JWK_CACHE) == 0:
-        url = '{}/v1/keys'.format(current_app.config['OKTA_ISSUER'])
+        url = '{}/v1/keys'.format(settings['OKTA_ISSUER'])
         resp = requests.get(url)
         keys = json.loads(resp.content)['keys']
     else:
@@ -50,11 +52,11 @@ def validate_access_token(token, scopes, user_id=None):
     for scope in scopes:
         assert scope in claims['scp']
 
-    allowed_clients = [current_app.config['OKTA_CLIENT_ID'], current_app.config['OKTA_ADMIN_CLIENT_ID']]
+    allowed_clients = [settings['OKTA_CLIENT_ID'], settings['OKTA_ADMIN_CLIENT_ID']]
     # assert claims['cid'] in allowed_clients
     # TODO/FIXME: if using "developer" Blueprint, consult database of allowed clients
-    assert claims['iss'] == current_app.config['OKTA_ISSUER']
-    assert claims['aud'] == current_app.config['OKTA_AUDIENCE']
+    assert claims['iss'] == settings['OKTA_ISSUER']
+    assert claims['aud'] == settings['OKTA_AUDIENCE']
     return claims
 
 
@@ -84,9 +86,10 @@ def mfa():
             user_id = session.get('user_id', None)
             if not user_id:  # must be client credentials; no MFA
                 return f(*args, **kwargs)
+            settings = app_settings()
             okta = OktaAPIClient(
-                current_app.config['OKTA_BASE_URL'],
-                current_app.config['OKTA_API_KEY']
+                settings['OKTA_BASE_URL'],
+                settings['OKTA_API_KEY']
             )
             okta.api.add_resource(
                 resource_name='factors',

@@ -13,7 +13,17 @@ from simple_rest_client.resource import Resource
 from .settings import get_settings
 
 
-def init_db(db, theme_uri, app_url, env, items_img=None):
+def init_db(db, env):
+
+    # populate DB with settings
+    settings = get_settings(env)
+    table = db.table('settings')
+    for i in settings.keys():
+        table.insert({'setting': i, 'value': settings[i]})
+
+    theme_uri = settings['THEME_URI']
+    app_url = settings['APP_URL']
+    items_img = settings['ITEMS_IMG']
 
     # populate DB with sample product data
     table = db.table('products')
@@ -61,11 +71,6 @@ def init_db(db, theme_uri, app_url, env, items_img=None):
             pass
     table.insert_multiple(orders)
 
-    # populate DB with settings
-    settings = get_settings(env)
-    table = db.table('settings')
-    for i in settings.keys():
-        table.insert({'setting': i, 'value': settings[i]})
 
 
 # NOTE: this is a simple_rest_client kludge

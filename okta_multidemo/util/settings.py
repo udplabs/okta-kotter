@@ -1,8 +1,10 @@
 import json
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 import requests
+from flask import session, current_app, request
 
 
 def get_theme_config(theme_uri, app_url):
@@ -27,10 +29,10 @@ def is_true(var):
 
 
 def get_settings(env):
-    if env == 'UDP':
+    if env == 'production':
         # get settings from UDP
         pass
-    else:  # get settings from env file
+    else:  # 'development' - get settings from local env file
         app_url = os.getenv('APP_URL')
         theme_uri = os.getenv('THEME_URI', 'http://{}/static/themes/default'.format(app_url))
         # ^^^ FIXME: external hosted themes probably broken
@@ -75,6 +77,7 @@ def get_settings(env):
             'OKTA_PASSWORDPLACEHOLDER': os.getenv('OKTA_PASSWORDPLACEHOLDER'),
             'OKTA_USERNAMETOOLTIP': os.getenv('OKTA_USERNAMETOOLTIP'),
             'OKTA_PASSWORDTOOLTIP': os.getenv('OKTA_PASSWORDTOOLTIP'),
+            'THEME_URI': theme_uri,
             'THEME_LABEL': theme_config['label'],
             'SITE_TITLE': theme_config['site-title'],
             'ITEMS_TITLE': theme_config['items-title'],
@@ -83,4 +86,25 @@ def get_settings(env):
             'ITEMS_ACTION_TITLE': theme_config['action-title'],
             'ITEMS_IMG': theme_config.get('img-items', False)  # whether items have custom images in img-items dir
         }
+    return settings
+
+
+def get_db():
+    subdomain = session.get('subdomain')
+    if not subdomain:
+        subdomain = urlparse(request.url).hostname.split('.')[0]
+    # FIXME: below is specific to ngrok implementation for Event hook
+    if subdomain == 'tunnel':
+        subdomain = 'localhost'
+    db = current_app.config['DB_CONNS'][subdomain]
+    return db
+
+
+def app_settings():
+    db = get_db()
+    table = db.table('settings')
+    results = table.all()
+    settings = {}
+    for i in results:
+        settings[i['setting']] = i['value']
     return settings

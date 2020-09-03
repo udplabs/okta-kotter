@@ -1,11 +1,8 @@
-import json
+from flask import Blueprint, request, render_template
 
-from flask import Blueprint, request, jsonify, session, current_app, Response, render_template
-from tinydb import TinyDB, Query
-from simple_rest_client.exceptions import AuthError
-from werkzeug.exceptions import Unauthorized
-
-from ...util import APIClient, OktaAPIClient, decode_token
+from ...models import Order
+from ...util import APIClient
+from ...util.settings import app_settings
 
 from .util import auth_admin, auth_o4o
 
@@ -23,15 +20,15 @@ def index():
 @admin_blueprint.route('/orders', methods=('GET',))
 @auth_admin()
 def orders():
-    client = APIClient(current_app.config['API_URL'], request.cookies.get('access_token'))
-    client.api.add_resource(resource_name='orders')
-    try:
-        data = client.api.orders.list()
-    except AuthError:
-        raise Unauthorized
+    status = request.args.get('status')
+    orders = Order()
+    if status:
+        data = orders.get({'status': status})
+    else:
+        data = orders.get()
     return render_template(
         'admin/orders.html',
-        orders=data.body
+        orders=data
     )
 
 
@@ -39,7 +36,7 @@ def orders():
 @auth_o4o('admin.users')
 def users():
     # get users via OAuth for Okta instread of SSWS API key
-    api_url = '{}/api/v1'.format(current_app.config['OKTA_BASE_URL'])
+    api_url = '{}/api/v1'.format(app_settings()['OKTA_BASE_URL'])
     okta = APIClient(api_url, request.cookies.get('o4o_token'))
     okta.api.add_resource(resource_name='users')
     # TODO: get only users assigned to app
