@@ -4,7 +4,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from flask import Flask, render_template, request, session, g
-from tinydb import TinyDB, Query
+from tinydb import TinyDB
 from tinydb.storages import MemoryStorage
 
 
@@ -16,7 +16,6 @@ from .blueprints.portfolio.views import portfolio_blueprint
 from .blueprints.events import views
 from .logs import configure_logging
 from .util import init_db, get_help_markdown
-from .util.settings import get_settings
 
 app = Flask(__name__)
 app.secret_key = app.config['SECRET_KEY']
@@ -37,36 +36,28 @@ if app.config['ENV'] == 'production':  # reads from FLASK_ENV env variable
 else:
     app.config.from_object('okta_multidemo.config.DevelopmentConfig')
 
-# if not len(app.config['DB_CONN'].tables()) > 1:
-#     init_db(
-#         app.config['DB_CONN'],
-#         app.config['THEME_URI'],
-#         app.config['APP_URL'],
-#         app.config['ENV'],
-#         app.config['ITEMS_IMG']
-#     )
-
 # TODO: need to import after app.config takes place -- is this ok?
 from .okta import okta_blueprint, okta_admin_blueprint, okta_o4o_blueprint  # noqa
 from . import views  # noqa
 
 
-@app.before_first_request
-def before_first_request():
-    global app
-    subdomain = urlparse(request.url).hostname.split('.')[0]
-    session['subdomain'] = subdomain
-    db = TinyDB(storage=MemoryStorage)
-    app.config['DB_CONNS'][subdomain] = db
-    init_db(db, app.config['ENV'])
-
-
 @app.before_request
 def before_request():
+    global app
 
     # NOTE: normally excluding static assets would be handled by the webserver
     if request.path.startswith('/static') or request.path.startswith('/api'):
         return
+
+    # init db for subdomain
+    subdomain = urlparse(request.url).hostname.split('.')[0]
+    if subdomain not in session:
+        session['subdomain'] = subdomain
+    if subdomain not in app.config['DB_CONNS']:
+        # db = TinyDB('/tmp/{}.json'.format(subdomain))
+        db = TinyDB(storage=MemoryStorage)
+        app.config['DB_CONNS'][subdomain] = db
+        init_db(db, app.config['ENV'])
 
     # handle help URLs
     if request.path.endswith('/'):

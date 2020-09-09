@@ -33,8 +33,9 @@ def get_settings(env):
         # get settings from UDP
         pass
     else:  # 'development' - get settings from local env file
+        print (request.url)
         app_url = os.getenv('APP_URL')
-        theme_uri = os.getenv('THEME_URI', 'http://{}/static/themes/default'.format(app_url))
+        theme_uri = os.getenv('THEME_URI', '{}/static/themes/default'.format(app_url))
         # ^^^ FIXME: external hosted themes probably broken
         theme_config = get_theme_config(theme_uri, app_url)
         settings = {
