@@ -4,6 +4,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
+from requests.auth import HTTPBasicAuth
 from flask import session, current_app, request
 
 
@@ -31,7 +32,45 @@ def is_true(var):
 def get_settings(env):
     if env == 'production':
         # get settings from UDP
-        pass
+        host_parts = urlparse(request.url).hostname.split('.')
+        subdomain = host_parts[0]
+        app_name = host_parts[1]
+
+        # get access token
+        url = '{}/v1/token'.format(os.getenv('UDP_ISSUER'))
+        auth = HTTPBasicAuth(
+            os.getenv('UDP_CLIENT_ID'), os.getenv('UDP_CLIENT_SECRET'))
+        headers = {
+            'accept': 'application/json',
+            'content-type': 'application/x-www-form-urlencoded',
+        }
+        data = {
+            'grant_type': 'client_credentials',
+            'scope': 'secrets:read',
+        }
+        req = requests.post(url, headers=headers, data=data, auth=auth)
+        authn_response = json.loads(req.content)
+        access_token = authn_response['access_token']
+
+        # get settings
+        url = '{}/api/configs/{}/{}'.format(
+            os.getenv('UDP_CONFIG_URL'),
+            subdomain,
+            app_name
+        )
+        headers = {
+            'accept': 'application/json',
+            'content-type': 'application/json',
+            'authorization': 'Bearer {}'.format(access_token)
+        }
+        req = requests.get(url, headers=headers)
+        settings = json.loads(req.content)['settings']
+        settings_dict = {}
+        for i in settings:
+            key = i.upper()
+            settings_dict[key] = settings[i]
+        return settings_dict
+
     else:  # 'development' - get settings from local env file
         print (request.url)
         app_url = os.getenv('APP_URL')
