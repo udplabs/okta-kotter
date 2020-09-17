@@ -36,7 +36,7 @@ def get_settings(env):
         subdomain = host_parts[0]
         app_name = host_parts[1]
 
-        # get access token
+        # get access token from UDP using client credentials flow
         url = '{}/v1/token'.format(os.getenv('UDP_ISSUER'))
         auth = HTTPBasicAuth(
             os.getenv('UDP_CLIENT_ID'), os.getenv('UDP_CLIENT_SECRET'))
@@ -52,7 +52,7 @@ def get_settings(env):
         authn_response = json.loads(req.content)
         access_token = authn_response['access_token']
 
-        # get settings
+        # get settings from UDP using access token
         url = '{}/api/configs/{}/{}'.format(
             os.getenv('UDP_CONFIG_URL'),
             subdomain,
