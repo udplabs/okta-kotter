@@ -126,6 +126,7 @@
     {% if g.help %}
     {% include 'partials/help.html' %}
     {% endif %}
+    <div id="bottom-right"><a href="{{ url_for('reset') }}"><button class="btn btn-outline-danger btn-sm" type="submit">Reset</button></a></div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

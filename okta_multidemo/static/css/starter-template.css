@@ -142,3 +142,11 @@ background-image: linear-gradient(15deg, #13547a 0%, #80d0c7 100%);
 .ribbon.blue:after {
     border-top: 3px solid #115979
 }
+
+
+#bottom-right {
+  margin:20px;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
