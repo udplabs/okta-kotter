@@ -105,7 +105,7 @@
           {% endif %}
               <li class="nav-item" style="margin-left:20px;">
                 <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#helpModal" style="margin-top:5px">
-                  <i class="fa fa-question-circle"></i> Help
+                  <i class="fa fa-graduation-cap"></i> Learn
                 </button>
               </li>
           </ul>
@@ -126,6 +126,7 @@
     {% if g.help %}
     {% include 'partials/help.html' %}
     {% endif %}
+    <div id="bottom-right"><a href="{{ url_for('reset') }}"><button class="btn btn-outline-danger btn-sm" type="submit">Reset</button></a></div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

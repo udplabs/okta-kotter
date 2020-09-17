@@ -17,6 +17,7 @@ from .app import app
 from .forms import LoginForm, ProfileForm
 from .util import APIClient, decode_token, OktaAPIClient, init_db
 from .util.widget import get_widget_config
+from .util.settings import app_settings, get_db
 
 
 def set_session_vars(id_token):
@@ -102,31 +103,31 @@ def render_login_template(conf, css=None):
 
 @app.route('/login-widget', methods=['GET'])
 def login_widget():
-    conf = get_widget_config(current_app.config)
+    conf = get_widget_config(app_settings())
     return render_login_template(conf)
 
 
 @app.route('/login-social', methods=['GET'])
 def login_widget_social():
-    conf = get_widget_config(current_app.config, 'social')
+    conf = get_widget_config(app_settings(), 'social')
     return render_login_template(conf)
 
 
 @app.route('/login-implicit', methods=['GET'])
 def login_widget_implicit():
-    conf = get_widget_config(current_app.config, 'implicit')
+    conf = get_widget_config(app_settings(), 'implicit')
     return render_login_template(conf)
 
 
 @app.route('/login-custom-css', methods=['GET'])
 def login_widget_custom_css():
-    conf = get_widget_config(current_app.config)
+    conf = get_widget_config(app_settings())
     return render_login_template(conf, css='okta-signin-custom')
 
 
 @app.route('/login-idp-disco', methods=['GET'])
 def login_idp_disco():
-    conf = get_widget_config(current_app.config, 'idp-disco')
+    conf = get_widget_config(app_settings(), 'idp-disco')
     return render_login_template(conf)
 
 
@@ -206,10 +207,10 @@ def products_mvc():
         data = client.api.products.list()
     except exceptions.AuthError:
         raise Unauthorized
-    if current_app.config['ITEMS_IMG']:
-        img_path = '{}/img-items/'.format(current_app.config['THEME_URI'])
+    if app_settings()['ITEMS_IMG']:
+        img_path = '{}/img-items/'.format(app_settings()['THEME_URI'])
     else:
-        img_path = '{}/static/img/items/'.format(current_app.config['APP_URL'])
+        img_path = '{}/static/img/items/'.format(app_settings()['APP_URL'])
     return render_template(
         'products.html',
         items=data.body,
@@ -223,9 +224,10 @@ def products_rest():
 
 @app.route('/apps', methods=('GET',))
 def apps():
+    settings = app_settings()
     okta = OktaAPIClient(
-        current_app.config['OKTA_BASE_URL'],
-        current_app.config['OKTA_API_KEY']
+        settings['OKTA_BASE_URL'],
+        settings['OKTA_API_KEY']
     )
     okta.api.add_resource(resource_name='apps')
     data = okta.api.apps.list(params={
@@ -240,11 +242,7 @@ def apps():
 
 @app.route('/_reset', methods=('GET',))
 def reset():
-    current_app.config['DB_CONN'].purge_tables()
-    init_db(
-        current_app.config['DB_CONN'],
-        current_app.config['THEME_URI'],
-        current_app.config['APP_URL'],
-        app.config['ITEMS_IMG']
-    )
+    db = get_db()
+    db.purge_tables()
+    init_db(db, current_app.config['ENV'])
     return redirect(url_for('index'))

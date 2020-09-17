@@ -4,10 +4,11 @@ import json
 import requests
 
 from flask import (
-    Blueprint, request, current_app, render_template, redirect, url_for, flash)
+    Blueprint, request, render_template, redirect, url_for, flash)
 from requests.auth import HTTPBasicAuth
 
 from ...util import OktaAPIClient
+from ...util.settings import app_settings
 
 from .util import authorize, create_cc_client, create_pkce_client
 from .forms import ClientForm
@@ -35,6 +36,7 @@ def index(user_id=None):
 @authorize()
 def create_client(user_id=None):
     """TODO: docstring."""
+    settings = app_settings()
     form = ClientForm()
     if request.method == 'POST':
         if form.validate():
@@ -42,19 +44,19 @@ def create_client(user_id=None):
             grant_type = form.grant_type.data
             if grant_type == 'client_credentials':
                 create_cc_client(
-                    current_app.config['OKTA_RESOURCE_PREFIX'] + client_name,
+                    settings['OKTA_RESOURCE_PREFIX'] + client_name,
                     grant_type,
                     user_id,
                     form.redirect_uri.data,
-                    current_app.config
+                    settings
                 )
             else:  # PKCE
                 create_pkce_client(
-                    current_app.config['OKTA_RESOURCE_PREFIX'] + client_name,
+                    settings['OKTA_RESOURCE_PREFIX'] + client_name,
                     user_id,
-                    current_app.config['FF_PORTFOLIO_CLIENT_GROUP'],
+                    settings['FF_PORTFOLIO_CLIENT_GROUP'],
                     form.redirect_uri.data,
-                    current_app.config)
+                    settings)
             return redirect(url_for('developer.index'))
         else:
             flash('Invalid form data.')
@@ -66,9 +68,10 @@ def create_client(user_id=None):
 @authorize()
 def delete_client(user_id=None):
     """TODO: docstring."""
+    settings = app_settings()
     okta = OktaAPIClient(
-        current_app.config['OKTA_BASE_URL'],
-        current_app.config['OKTA_API_KEY'],
+        settings['OKTA_BASE_URL'],
+        settings['OKTA_API_KEY'],
         'oauth2'
     )
     client_id = request.args.get('client_id')
@@ -87,7 +90,7 @@ def test_client(user_id=None):
     client_id = request.form['client_id']
     client_secret = request.form['client_secret']
     client_name = request.form['client_name']
-    url = '{}/v1/token'.format(current_app.config['OKTA_ISSUER'])
+    url = '{}/v1/token'.format(app_settings()['OKTA_ISSUER'])
     auth = HTTPBasicAuth(client_id, client_secret)
     headers = {
         'accept': 'application/json',
