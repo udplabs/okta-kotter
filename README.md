@@ -58,7 +58,17 @@ docker run --env-file PATH_TO_YOUR_ENV_FILE --name okta-multidemo -p 5000:5000 m
 
 ### Okta org configuration
 
-The demo app expects a few configuration details in your Okta org (TODO: automate configuration with Terraform):
+- Install Terraform using the official [Hashicorp installation guide](https://learn.hashicorp.com/terraform/getting-started/install.html)
+- Copy the `okta.auto.tfvars.example` file to `okta.auto.tfvars`
+- Edit `okta.auto.tfvars` and fill it with real values for your Okta org
+- Initalize Terraform with this command: `terraform init`
+- Make sure that you correctly set up your `.tfvars` file with this command: `terraform plan`
+- If everything looks good, run Terraform using this command: `terraform apply`
+- You should now be able to run this demo app using `flask run`
+
+### Manual Okta org configuration
+
+The demo app expects a few configuration details in your Okta org:
 
 - A group called "Admin" -- you'll want to assign at least one user to it.
 - API key.
