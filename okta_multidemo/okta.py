@@ -26,7 +26,7 @@ o4o_conf = {
     'client_secret': os.environ.get('OKTA_CLIENT_SECRET'),
     'base_url': base_url,
     'redirect_url': '{}/authorization/redirect?conf=okta-o4o'.format(os.environ.get('APP_URL')),
-    'scope': ['okta.users.read'],
+    'scope': ['okta.users.read', 'okta.eventHooks.read', 'okta.users.manage'],
     'token_url': '{}/oauth2/v1/token'.format(base_url),
     'authorization_url': '{}/oauth2/v1/authorize'.format(base_url),
 }

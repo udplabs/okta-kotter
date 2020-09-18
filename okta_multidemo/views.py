@@ -1,35 +1,44 @@
 import json
-import os
 
-from dateutil.parser import parse
-from flask import render_template, request, make_response, url_for, redirect, flash, session, current_app, Response
+from flask import (
+    current_app,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    Response,
+    session,
+    url_for
+)
 from simple_rest_client import exceptions
 from werkzeug.exceptions import Unauthorized
 
-from . import filters
 from .app import app
 from .forms import LoginForm, ProfileForm
-from .logs import format_json_output
-from .models import Product
-from .util import APIClient, decode_token, OktaAPIClient, get_help_markdown, init_db
+from .util import APIClient, decode_token, OktaAPIClient, init_db
 from .util.widget import get_widget_config
+from .util.settings import app_settings, get_db
 
 
-def set_session_vars(access_token, id_token):
-    access_decoded = decode_token(access_token)
+def set_session_vars(id_token):
     id_decoded = decode_token(id_token)
     session['username'] = id_decoded['email']
     session['name'] = id_decoded['name']
     session['user_id'] = id_decoded['sub']
     session['is_admin'] = 'Admin' in id_decoded.get('groups', [])
-    session['access_token'] = access_token
-    session['id_token'] = id_token
+    # NOTE: browser session gets too big if we don't clean it up
+    #   or move to a filesystem backend for it; these session
+    #   vars are placed by Flask-Dance, and can't just be put
+    #   in their own cookies; seems ok to remove this one since
+    #   it's not referenced again after initial login
+    session.pop('okta_oauth_token', None)
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    access_token = session.get('access_token', request.cookies.get('access_token'))
-    id_token = session.get('id_token', request.cookies.get('id_token'))
+    # import pdb;pdb.set_trace()
+    access_token = request.cookies.get('access_token')
+    id_token = request.cookies.get('id_token')
     token_dict = {}
     if access_token:
         access_decoded = decode_token(access_token)
@@ -63,11 +72,11 @@ def authorization_redirect():
         raise Unauthorized
     access_token = token_main['access_token']
     if blueprint == 'okta-o4o':
-        resp = redirect(url_for('admin.users'))
+        resp = redirect(url_for(app.blueprints[blueprint].state))
         resp.set_cookie('o4o_token', access_token)
         return resp
     id_token = token_main['id_token']
-    set_session_vars(access_token, id_token)
+    set_session_vars(id_token)
     if blueprint == 'okta-admin':
         resp = redirect(url_for('admin.index'))
     else:
@@ -94,31 +103,31 @@ def render_login_template(conf, css=None):
 
 @app.route('/login-widget', methods=['GET'])
 def login_widget():
-    conf = get_widget_config(current_app.config)
+    conf = get_widget_config(app_settings())
     return render_login_template(conf)
 
 
 @app.route('/login-social', methods=['GET'])
 def login_widget_social():
-    conf = get_widget_config(current_app.config, 'social')
+    conf = get_widget_config(app_settings(), 'social')
     return render_login_template(conf)
 
 
 @app.route('/login-implicit', methods=['GET'])
 def login_widget_implicit():
-    conf = get_widget_config(current_app.config, 'implicit')
+    conf = get_widget_config(app_settings(), 'implicit')
     return render_login_template(conf)
 
 
 @app.route('/login-custom-css', methods=['GET'])
 def login_widget_custom_css():
-    conf = get_widget_config(current_app.config)
+    conf = get_widget_config(app_settings())
     return render_login_template(conf, css='okta-signin-custom')
 
 
 @app.route('/login-idp-disco', methods=['GET'])
 def login_idp_disco():
-    conf = get_widget_config(current_app.config, 'idp-disco')
+    conf = get_widget_config(app_settings(), 'idp-disco')
     return render_login_template(conf)
 
 
@@ -137,7 +146,7 @@ def implicit_callback():
     data = json.loads(request.data)
     access_token = data[0]['accessToken']
     id_token = data[1]['idToken']
-    set_session_vars(access_token, id_token)
+    set_session_vars(id_token)
     resp = make_response(Response(json.dumps({'status': 'OK'}), 200)) # redirect(url_for('index'))
     resp.set_cookie('access_token', access_token)
     resp.set_cookie('id_token', id_token)
@@ -166,7 +175,7 @@ def profile():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    id_token = session.get('id_token', request.cookies.get('id_token'))
+    id_token = request.cookies.get('id_token')
     logout_url = '{}/v1/logout?id_token_hint={}&post_logout_redirect_uri={}'.format(
         app.config['OKTA_ISSUER'],
         id_token,
@@ -177,6 +186,7 @@ def logout():
     # ^^^ use this instead to avoid killing Okta session
     resp.set_cookie('access_token', '', expires=0)
     resp.set_cookie('id_token', '', expires=0)
+    resp.set_cookie('o4o_token', '', expires=0)
     session.clear()
     return resp
 
@@ -197,10 +207,10 @@ def products_mvc():
         data = client.api.products.list()
     except exceptions.AuthError:
         raise Unauthorized
-    if current_app.config['ITEMS_IMG']:
-        img_path = '{}/img-items/'.format(current_app.config['THEME_URI'])
+    if app_settings()['ITEMS_IMG']:
+        img_path = '{}/img-items/'.format(app_settings()['THEME_URI'])
     else:
-        img_path = '{}/static/img/items/'.format(current_app.config['APP_URL'])
+        img_path = '{}/static/img/items/'.format(app_settings()['APP_URL'])
     return render_template(
         'products.html',
         items=data.body,
@@ -214,9 +224,10 @@ def products_rest():
 
 @app.route('/apps', methods=('GET',))
 def apps():
+    settings = app_settings()
     okta = OktaAPIClient(
-        current_app.config['OKTA_BASE_URL'],
-        current_app.config['OKTA_API_KEY']
+        settings['OKTA_BASE_URL'],
+        settings['OKTA_API_KEY']
     )
     okta.api.add_resource(resource_name='apps')
     data = okta.api.apps.list(params={
@@ -231,11 +242,7 @@ def apps():
 
 @app.route('/_reset', methods=('GET',))
 def reset():
-    current_app.config['DB_CONN'].purge_tables()
-    init_db(
-        current_app.config['DB_CONN'],
-        current_app.config['THEME_URI'],
-        current_app.config['APP_URL'],
-        app.config['ITEMS_IMG']
-    )
+    db = get_db()
+    db.purge_tables()
+    init_db(db, current_app.config['ENV'])
     return redirect(url_for('index'))

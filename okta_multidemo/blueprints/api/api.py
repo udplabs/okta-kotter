@@ -32,8 +32,7 @@ def create_order(claims={}):
     data['status'] = 'pending'
     data['productTitle'] = product['title']
     data['productImage'] = product['image']
-    result = order.add(data)
-    resp = {'message': 'OK'}
+    order.add(data)
     return jsonify(data)  # equivalent of Response(json.dumps(resp), 200)
 
 
@@ -79,3 +78,4 @@ def update_order(order_id, claims={}):
     product_model.update({'count': product['count']-1}, [order['itemId']])
     order_model.update(data, [order_id])
     return jsonify({'message': 'OK'})
+

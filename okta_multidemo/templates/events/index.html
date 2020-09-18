@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Events</h2>
+
+<span class="badge badge-dark">Listening:</span>
+{% for hook in hooks %}
+<span class="badge badge-pill badge-warning">{{ hook }}</span>
+{% endfor %}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Event</th>
+      <th scope="col">Message</th>
+      <th scope="col">IP</th>
+      <th scope="col">Timestamp</th>
+      <th scope="col">Severity</th>
+      <th scope="col">View</th>
+    </tr>
+  </thead>
+  <tbody id="events">
+
+  </tbody>
+</table>
+
+<a href="{{ url_for('admin.events_clear') }}"><button class="btn btn-danger" type="submit">Clear</button></a>
+{% endblock %}
+
+{% block add_js %}
+<script src="/static/js/util.js"></script>
+<script>
+function get_row_html(item) {
+  var template = `
+    <tr id="${item.id}">
+      <th scope="row"><span class="badge badge-pill badge-primary">${item.eventType}</span></th>
+      <td>${item.displayMessage}</td>
+      <td>${item.ipAddress}</td>
+      <td>${item.published}</td>
+      <td><span class="badge badge-success">${item.severity}</td>
+      <td>
+        <a href="{{ admin_url }}/report/system_log_2?search=uuid+eq+%22${item.uuid}%22" class="btn" role="button" aria-pressed="true" target="_NEW"><i class="fa fa-external-link"></i></a>
+      </td>
+    </tr>
+  `;
+  return template;
+}
+
+function render(data) {
+  var container = document.getElementById('events');
+  var items = container.getElementsByTagName('li');
+  if (items.length > 0) {
+    var new_item = data.data[data.data.length-1].id;
+    var last_item = items[items.length-1].id;
+    if (last_item == new_item) {
+      // no updates, don't render page content
+      return;
+    }
+  }
+  var content = '';
+  data.data.forEach(item => {
+    content = content + get_row_html(item);
+  });
+  container.innerHTML = content;
+}
+
+function getData() {
+  ajax('{{ config.API_URL }}/events', 'GET', null, render, null);
+}
+
+function init() {
+  getData()
+  setTimeout(init, 2000);
+}
+
+init();
+
+
+</script>
+{% endblock %}

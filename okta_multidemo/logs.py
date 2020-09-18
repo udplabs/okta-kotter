@@ -20,6 +20,7 @@ SILENCE_LOGS = [
 
 
 def configure_logging():
+    # FIXME: no real need for STAGE, just use env
     log_level = 'DEBUG' if os.environ.get('STAGE') == 'dev' else 'INFO'
     for module in SILENCE_LOGS:
         logging.getLogger(module).setLevel(logging.WARNING)

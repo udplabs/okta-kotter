@@ -1,12 +1,13 @@
-from flask import current_app
-from tinydb import TinyDB, Query, where
+from tinydb import Query, where
+
+from .util.settings import get_db
 
 
 class Model(object):
     TYPE = ''
 
     def __init__(self):
-        self.db = current_app.config['DB_CONN']
+        self.db = get_db()
         self.table = self.db.table(self.get_type())
 
     def get_type(self):
@@ -56,6 +57,9 @@ class Model(object):
         self.table.remove(where(key) == value)
         # FIXME: below should work
         # self.table.remove(doc_ids=[key])
+
+    def purge(self):
+        self.table.purge()
 
 
 class Product(Model):

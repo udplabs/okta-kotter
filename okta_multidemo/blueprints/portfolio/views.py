@@ -1,19 +1,19 @@
 from collections import Counter
 
-from flask import session, render_template, Blueprint
+from flask import session, render_template, Blueprint, redirect, url_for, request
 
-from .util import authorize
-from ...models import Order, Product
+from .util import authorize, get_api_client
+from ...models import Order
+from ..admin.util import auth_o4o
 
 portfolio_blueprint = Blueprint('portfolio', 'portfolio', url_prefix='/portfolio')
 
 
 @portfolio_blueprint.route('/', methods=('GET',))
-@authorize()
+@auth_o4o('portfolio.index')
 def index(user_id=None):
     # TODO: use API rather than accessing models directly
     order = Order()
-    product = Product()
     orders = []
     images = {}
     for i in order.get({'userId': session['user_id']}):
@@ -23,8 +23,24 @@ def index(user_id=None):
     # orders = [i['productTitle'] for i in order.get({'userId': session['user_id']})]
     order_list = list(zip(Counter(orders).keys(), Counter(orders).values()))
     # TODO: only return items with status "complete"?
+
+    okta_api = get_api_client()
+    grants = okta_api.grants.list(session['user_id'])
+    # print(grants.body[0])
+
     return render_template(
         'blueprints/portfolio/index.html',
         orders=order_list,
-        images=images
+        images=images,
+        grants=grants.body
     )
+
+
+@portfolio_blueprint.route('/revoke', methods=('GET',))
+@auth_o4o('portfolio.revoke_consent')
+def revoke_consent():
+    """TODO: docstring."""
+    grant_id = request.args.get('grant_id')
+    okta_api = get_api_client()
+    okta_api.grants.delete(session['user_id'], grant_id)
+    return redirect(url_for('portfolio.index'))

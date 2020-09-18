@@ -25,8 +25,8 @@ def get_theme_config(theme_uri, app_url):
     theme = theme_uri.split('/')[-1]
     path = Path(__file__).parent.absolute()
     with open(os.path.join(
-            path, 'static/themes/{}/config.json'.format(theme)
-        )) as file_:
+        path, 'static/themes/{}/config.json'.format(theme)
+    )) as file_:
         data = file_.read()
     return json.loads(data)
 
@@ -45,8 +45,8 @@ class BaseConfig(object):
     APP_URL = os.getenv('APP_URL')
     DB_PATH = os.getenv('DB_PATH')
     DB_CONN = TinyDB(storage=MemoryStorage) if not DB_PATH else TinyDB(DB_PATH)
+    DB_CONNS = {}
     API_URL = os.getenv('API_URL')
-    PERSIST_DB = is_true('PERSIST_DB')
     REST_API = is_true('REST_API')
 
     FF_DEVELOPER = is_true('FF_DEVELOPER')
@@ -54,6 +54,8 @@ class BaseConfig(object):
     FF_DEVELOPER_PKCE_POLICY_ID = os.getenv('FF_DEVELOPER_PKCE_POLICY_ID')
     FF_PORTFOLIO = is_true('FF_PORTFOLIO')
     FF_PORTFOLIO_CLIENT_GROUP = os.getenv('FF_PORTFOLIO_CLIENT_GROUP')
+    FF_EVENTS = is_true('FF_EVENTS')
+    FF_EVENTS_HOOK_ID = os.getenv('FF_EVENTS_HOOK_ID')
 
     OKTA_BASE_URL = os.getenv('OKTA_BASE_URL')
     OKTA_API_KEY = os.getenv('OKTA_API_KEY')
@@ -108,3 +110,4 @@ class TestingConfig(BaseConfig):
 
 class ProductionConfig(BaseConfig):
     pass
+
