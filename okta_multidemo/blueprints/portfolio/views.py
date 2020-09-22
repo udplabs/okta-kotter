@@ -3,8 +3,9 @@ from collections import Counter
 from flask import session, render_template, Blueprint, redirect, url_for, request
 
 from .util import authorize, get_api_client
-from ...models import Order
 from ..admin.util import auth_o4o
+from ...models import Order
+from ...util.settings import app_settings
 
 portfolio_blueprint = Blueprint('portfolio', 'portfolio', url_prefix='/portfolio')
 
@@ -32,7 +33,8 @@ def index(user_id=None):
         'blueprints/portfolio/index.html',
         orders=order_list,
         images=images,
-        grants=grants.body
+        grants=grants.body,
+        config=app_settings()
     )
 
 

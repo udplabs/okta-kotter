@@ -4,6 +4,7 @@ import time
 
 from functools import wraps
 
+from werkzeug.exceptions import Forbidden, Unauthorized
 import requests
 
 from flask import Response, session, request
@@ -69,9 +70,9 @@ def authorize(scopes=[], user_id=None):
                 claims = validate_access_token(token, scopes)
             except Exception as e:
                 logging.exception(str(e))
-                # raise Unauthorized
-                response = {'status': 'UNAUTHORIZED'}
-                return Response(json.dumps(response), 401)
+                raise Unauthorized
+                # response = {'status': 'UNAUTHORIZED'}
+                # return Response(json.dumps(response), 403)
             kwargs.update({'claims': claims})
             return f(*args, **kwargs)
         return decorated_function

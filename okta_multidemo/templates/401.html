@@ -1,7 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'base_error.html' %}
 
 {% block content %}
-<div class="alert alert-danger" role="alert">
-  <i class="fa fa-exclamation-triangle"></i> You are unauthorized to view this page.
-</div>
+    <div class="cover"><h1>Unauthorized! <small>401</small></h1><p class="lead">Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response.</p>
+    <p><a href="/">Home</a></p>
+  </div>
 {% endblock %}

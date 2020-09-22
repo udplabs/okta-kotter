@@ -4,7 +4,7 @@
       <div class="starter-template text-light">
         <h1>Welcome to {{ config.SITE_TITLE }}</h1>
         {% if not session.username %}
-        <a href="{{ url_for('okta.login') }}"><button class="btn btn-primary" type="submit">Log In</button></a>
+        <a href="{{ url_for('auth.login') }}"><button class="btn btn-primary" type="submit">Log In</button></a>
         <br /><br />
         <p>If you do not have an account, click <a href="/subscribe">here</a> to join.</p>
         {% else %}

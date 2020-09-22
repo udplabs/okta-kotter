@@ -12,14 +12,17 @@ admin_blueprint = Blueprint('admin', 'admin', url_prefix='/admin')
 @admin_blueprint.route('/', methods=('GET',))
 @auth_admin()
 def index():
+    settings = app_settings()
     return render_template(
-        'admin/index.html'
+        'admin/index.html',
+        config=settings
     )
 
 
 @admin_blueprint.route('/orders', methods=('GET',))
 @auth_admin()
 def orders():
+    settings = app_settings()
     status = request.args.get('status')
     orders = Order()
     if status:
@@ -28,7 +31,8 @@ def orders():
         data = orders.get()
     return render_template(
         'admin/orders.html',
-        orders=data
+        orders=data,
+        config=settings
     )
 
 
@@ -36,20 +40,24 @@ def orders():
 @auth_o4o('admin.users')
 def users():
     # get users via OAuth for Okta instread of SSWS API key
-    api_url = '{}/api/v1'.format(app_settings()['OKTA_BASE_URL'])
+    settings = app_settings()
+    api_url = '{}/api/v1'.format(settings['OKTA_BASE_URL'])
     okta = APIClient(api_url, request.cookies.get('o4o_token'))
     okta.api.add_resource(resource_name='users')
     # TODO: get only users assigned to app
     data = okta.api.users.list()
     return render_template(
         'admin/users.html',
-        users=data.body
+        users=data.body,
+        config=settings
     )
 
 
 @admin_blueprint.route('/config', methods=('GET',))
 @auth_admin()
 def config():
+    settings = app_settings()
     return render_template(
-        'admin/config.html'
+        'admin/config.html',
+        config=settings
     )

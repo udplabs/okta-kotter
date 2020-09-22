@@ -29,6 +29,13 @@ def is_true(var):
     return True if os.getenv(var).lower() == 'true' else False
 
 
+def get_theme_uri(theme, app_url):
+    if theme.startswith('http'):
+        return theme
+    else:
+        return '{}/static/themes/{}'.format(app_url, theme)
+
+
 def get_settings(env):
     if env == 'production':
         # get settings from UDP
@@ -72,18 +79,14 @@ def get_settings(env):
         return settings_dict
 
     else:  # 'development' - get settings from local env file
-        print (request.url)
         app_url = os.getenv('APP_URL')
-        theme_uri = os.getenv('THEME_URI', '{}/static/themes/default'.format(app_url))
-        # ^^^ FIXME: external hosted themes probably broken
+        theme = os.getenv('THEME', 'default')
+        theme_uri = get_theme_uri(theme, app_url)
+
         theme_config = get_theme_config(theme_uri, app_url)
         settings = {
             'APP_URL': app_url,
-            # 'DB_PATH': os.getenv('DB_PATH'),
-            # 'DB_CONN': TinyDB(storage=MemoryStorage) if not DB_PATH else TinyDB(DB_PATH),
-            # 'DB_CONNS': {},
-            'API_URL': os.getenv('API_URL'),
-            'REST_API': is_true('REST_API'),
+            'API_URL': '{}/api'.format(app_url),
             'FF_DEVELOPER': is_true('FF_DEVELOPER'),
             'FF_DEVELOPER_CC_POLICY_ID': os.getenv('FF_DEVELOPER_CC_POLICY_ID'),
             'FF_DEVELOPER_PKCE_POLICY_ID': os.getenv('FF_DEVELOPER_PKCE_POLICY_ID'),
@@ -100,8 +103,6 @@ def get_settings(env):
             'OKTA_GOOGLE_IDP': os.getenv('OKTA_GOOGLE_IDP'),
             'OKTA_FACEBOOK_IDP': os.getenv('OKTA_FACEBOOK_IDP'),
             'OKTA_SAML_IDP': os.getenv('OKTA_SAML_IDP'),
-            'OKTA_SCOPES': os.getenv('OKTA_SCOPES').split(','),
-            'OKTA_ADMIN_SCOPES': os.getenv('OKTA_ADMIN_SCOPES').split(','),
             'OKTA_ADMIN_CLIENT_ID': os.getenv('OKTA_ADMIN_CLIENT_ID'),
             'OKTA_IDP_REQUEST_CONTEXT': os.getenv('OKTA_IDP_REQUEST_CONTEXT'),
             'OKTA_RESOURCE_PREFIX': os.getenv('OKTA_RESOURCE_PREFIX', ''),
@@ -117,12 +118,12 @@ def get_settings(env):
             'OKTA_PASSWORDPLACEHOLDER': os.getenv('OKTA_PASSWORDPLACEHOLDER'),
             'OKTA_USERNAMETOOLTIP': os.getenv('OKTA_USERNAMETOOLTIP'),
             'OKTA_PASSWORDTOOLTIP': os.getenv('OKTA_PASSWORDTOOLTIP'),
+            'THEME': theme,
             'THEME_URI': theme_uri,
             'THEME_LABEL': theme_config['label'],
             'SITE_TITLE': theme_config['site-title'],
             'ITEMS_TITLE': theme_config['items-title'],
             'ITEMS_TITLE_LABEL': theme_config['items-title-label'],
-            'ITEMS_PATH': '/{}'.format(theme_config['items-title-label']),
             'ITEMS_ACTION_TITLE': theme_config['action-title'],
             'ITEMS_IMG': theme_config.get('img-items', False)  # whether items have custom images in img-items dir
         }
@@ -147,4 +148,5 @@ def app_settings():
     settings = {}
     for i in results:
         settings[i['setting']] = i['value']
+    settings.update(dict(current_app.config))
     return settings

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from pathlib import Path
 from urllib.parse import urlparse
 
 from flask import Flask, render_template, request, session, g
@@ -9,6 +8,7 @@ from tinydb.storages import MemoryStorage
 
 
 # TODO: rename/reorg blueprints for consistency
+from .blueprints.auth.views import auth_blueprint
 from .blueprints.api.api import api_blueprint
 from .blueprints.admin.views import admin_blueprint
 from .blueprints.developer.views import developer_blueprint
@@ -29,15 +29,10 @@ app.add_url_rule('/static/<path:filename>',
 
 if app.config['ENV'] == 'production':  # reads from FLASK_ENV env variable
     app.config.from_object('okta_multidemo.config.ProductionConfig')
-    # from .config import UdpConfig
-    # import pdb;pdb.set_trace()
-    # app.config.from_object(UdpConfig())
-    # Talisman(app, content_security_policy=None)
-else:
+else:  # 'development'
     app.config.from_object('okta_multidemo.config.DevelopmentConfig')
 
 # TODO: need to import after app.config takes place -- is this ok?
-from .okta import okta_blueprint, okta_admin_blueprint, okta_o4o_blueprint  # noqa
 from . import views  # noqa
 
 
@@ -45,8 +40,11 @@ from . import views  # noqa
 def before_request():
     global app
 
-    # NOTE: normally excluding static assets would be handled by the webserver
-    if request.path.startswith('/static') or request.path.startswith('/api'):
+    # NOTE: normally excluding static assets would be handled by the webserver,
+    #   and API would be a different app on a different domain
+    if request.path.startswith('/static') \
+            or request.path.startswith('/api') \
+            or request.path == ('/favicon.ico'):
         return
 
     # init db for subdomain
@@ -54,10 +52,13 @@ def before_request():
     if subdomain not in session:
         session['subdomain'] = subdomain
     if subdomain not in app.config['DB_CONNS']:
-        # db = TinyDB('/tmp/{}.json'.format(subdomain))
-        db = TinyDB(storage=MemoryStorage)
-        app.config['DB_CONNS'][subdomain] = db
-        init_db(db, app.config['ENV'])
+        if app.config['DB_PATH']:
+            db = TinyDB('{}/{}.json'.format(app.config['DB_PATH'], subdomain))
+            app.config['DB_CONNS'][subdomain] = db
+        else:
+            db = TinyDB(storage=MemoryStorage)
+            app.config['DB_CONNS'][subdomain] = db
+            init_db(db, app.config['ENV'])
 
     # handle help URLs
     if request.path.endswith('/'):
@@ -71,6 +72,7 @@ def before_request():
         logging.warning('No help file found for {} view'.format(path))
 
 
+# TODO: refactor error page handlers to a single function
 def page_not_found(e):
     return render_template('404.html'), 404
 
@@ -83,21 +85,22 @@ def unauthorized(e):
     return render_template('401.html'), 401
 
 
-app.register_blueprint(okta_blueprint, url_prefix='/login')
-app.register_blueprint(okta_admin_blueprint, url_prefix='/login')
-app.register_blueprint(okta_o4o_blueprint, url_prefix='/login')
+def forbidden(e):
+    return render_template('403.html'), 403
+
+
 blueprints = [
+    auth_blueprint,
     api_blueprint,
     admin_blueprint,
+    developer_blueprint,
+    portfolio_blueprint
 ]
-if app.config['FF_DEVELOPER']:
-    blueprints.append(developer_blueprint)
-if app.config['FF_PORTFOLIO']:
-    blueprints.append(portfolio_blueprint)
-# TODO: ^^^ refactor as additional FF's are added
+
 for blueprint in blueprints:
     app.register_blueprint(blueprint)
 
 app.register_error_handler(404, page_not_found)
 app.register_error_handler(500, server_error)
 app.register_error_handler(401, unauthorized)
+app.register_error_handler(403, forbidden)

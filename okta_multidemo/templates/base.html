@@ -50,7 +50,7 @@
             <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
           </li>
           <li>
-            <a class="nav-link" href="{{ config.ITEMS_PATH }}">{{ config.ITEMS_TITLE }}</a>
+            <a class="nav-link" href="/products">{{ config.ITEMS_TITLE }}</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Tools</a>
@@ -70,7 +70,7 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Log In</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="{{ url_for('okta.login') }}">Log In (Okta-hosted)</a>
+              <a class="dropdown-item" href="{{ url_for('auth.login') }}">Log In (Okta-hosted)</a>
               <h6 class="dropdown-header">OKTA SIGN IN WIDGET</h6>
               <a class="dropdown-item" href="/login-widget">Log In (Authz Code)</a>
               <a class="dropdown-item" href="/login-implicit">Log In (Implicit)</a>
@@ -98,7 +98,7 @@
                 <a class="nav-link" href="/apps">Apps</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/logout">Log out</a>
+                <a class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
               </li>
           {% else %}
             <span style="width:300px"></span><!-- FIXME: why doesn't Help button flush right -->

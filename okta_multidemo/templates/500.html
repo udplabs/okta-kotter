@@ -1,7 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'base_error.html' %}
 
 {% block content %}
-<div class="alert alert-danger" role="alert">
-  <i class="fa fa-exclamation-triangle"></i> An error occurred! It's possible you don't have access to the requested resource.
-</div>
+    <div class="cover"><h1>Internal Server Error! <small>500</small></h1><p class="lead">The server has encountered a situation it doesn't know how to handle.</p>
+    <p><a href="/">Home</a></p>
+  </div>
 {% endblock %}

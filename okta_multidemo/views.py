@@ -11,27 +11,13 @@ from flask import (
     url_for
 )
 from simple_rest_client import exceptions
-from werkzeug.exceptions import Unauthorized
+from werkzeug.exceptions import Forbidden
 
 from .app import app
 from .forms import LoginForm, ProfileForm
-from .util import APIClient, decode_token, OktaAPIClient, init_db
+from .util import APIClient, decode_token, OktaAPIClient, init_db, set_session_vars
 from .util.widget import get_widget_config
 from .util.settings import app_settings, get_db
-
-
-def set_session_vars(id_token):
-    id_decoded = decode_token(id_token)
-    session['username'] = id_decoded['email']
-    session['name'] = id_decoded['name']
-    session['user_id'] = id_decoded['sub']
-    session['is_admin'] = 'Admin' in id_decoded.get('groups', [])
-    # NOTE: browser session gets too big if we don't clean it up
-    #   or move to a filesystem backend for it; these session
-    #   vars are placed by Flask-Dance, and can't just be put
-    #   in their own cookies; seems ok to remove this one since
-    #   it's not referenced again after initial login
-    session.pop('okta_oauth_token', None)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -58,82 +44,62 @@ def index():
     resp = make_response(render_template(
         'index.html',
         data=token_dict,
-        body_class='home-body-image'
+        body_class='home-body-image',
+        config=app_settings()
     ))
     return resp
 
 
-@app.route('/authorization/redirect')
-def authorization_redirect():
-    # authz flow only
-    blueprint = request.args.get('conf', 'okta')
-    token_main = app.blueprints[blueprint].session.token
-    if not token_main:
-        raise Unauthorized
-    access_token = token_main['access_token']
-    if blueprint == 'okta-o4o':
-        resp = redirect(url_for(app.blueprints[blueprint].state))
-        resp.set_cookie('o4o_token', access_token)
-        return resp
-    id_token = token_main['id_token']
-    set_session_vars(id_token)
-    if blueprint == 'okta-admin':
-        resp = redirect(url_for('admin.index'))
-    else:
-        resp = redirect(url_for('index'))
-    # NOTE: we're putting the tokens in the cookie so that the client
-    #   can access API endpoints.  A more secure MVC app might
-    #   manage them on the server side, while a SPA app might
-    #   use the token manager of the Okta Auth SDK to manage them
-    #   in local storage.
-    resp.set_cookie('access_token', access_token)
-    resp.set_cookie('id_token', id_token)
-    return resp
-
-
-def render_login_template(conf, css=None):
+def render_login_template(conf, settings, css=None):
     resp = render_template(
         'login/widget.html',
         widget_conf=json.dumps(conf, indent=2),
         body_class='home-body-image' if not css else 'home-body-bgcolor',
-        custom_css=css
+        custom_css=css,
+        config=settings
     )
     return resp
 
 
 @app.route('/login-widget', methods=['GET'])
 def login_widget():
-    conf = get_widget_config(app_settings())
-    return render_login_template(conf)
+    settings = app_settings()
+    conf = get_widget_config(settings)
+    return render_login_template(conf, settings)
 
 
 @app.route('/login-social', methods=['GET'])
 def login_widget_social():
-    conf = get_widget_config(app_settings(), 'social')
-    return render_login_template(conf)
+    settings = app_settings()
+    conf = get_widget_config(settings, 'social')
+    return render_login_template(conf, settings)
 
 
 @app.route('/login-implicit', methods=['GET'])
 def login_widget_implicit():
-    conf = get_widget_config(app_settings(), 'implicit')
-    return render_login_template(conf)
+    settings = app_settings()
+    conf = get_widget_config(settings, 'implicit')
+    return render_login_template(conf, settings)
 
 
 @app.route('/login-custom-css', methods=['GET'])
 def login_widget_custom_css():
-    conf = get_widget_config(app_settings())
-    return render_login_template(conf, css='okta-signin-custom')
+    settings = app_settings()
+    conf = get_widget_config(settings)
+    return render_login_template(conf, settings, css='okta-signin-custom')
 
 
 @app.route('/login-idp-disco', methods=['GET'])
 def login_idp_disco():
-    conf = get_widget_config(app_settings(), 'idp-disco')
-    return render_login_template(conf)
+    settings = app_settings()
+    conf = get_widget_config(settings, 'idp-disco')
+    return render_login_template(conf, settings)
 
 
 @app.route('/login-custom', methods=['GET'])
 def login_custom():
-    resp = render_template('login/custom.html', form=LoginForm())
+    resp = render_template(
+        'login/custom.html', form=LoginForm(), config=app_settings())
     return resp
 
 
@@ -146,7 +112,7 @@ def implicit_callback():
     data = json.loads(request.data)
     access_token = data[0]['accessToken']
     id_token = data[1]['idToken']
-    set_session_vars(id_token)
+    set_session_vars(session, id_token)
     resp = make_response(Response(json.dumps({'status': 'OK'}), 200)) # redirect(url_for('index'))
     resp.set_cookie('access_token', access_token)
     resp.set_cookie('id_token', id_token)
@@ -155,7 +121,7 @@ def implicit_callback():
 
 @app.route('/subscribe', methods=['GET'])
 def subscribe():
-    resp = render_template('subscribe.html')
+    resp = render_template('subscribe.html', settings=app_settings())
     return resp
 
 
@@ -169,36 +135,22 @@ def profile():
                 'csrf': session['csrf'],
             }
             pass
-    resp = render_template('profile.html', form=form)
-    return resp
-
-
-@app.route('/logout', methods=['GET', 'POST'])
-def logout():
-    id_token = request.cookies.get('id_token')
-    logout_url = '{}/v1/logout?id_token_hint={}&post_logout_redirect_uri={}'.format(
-        app.config['OKTA_ISSUER'],
-        id_token,
-        app.config['APP_URL']
+    resp = render_template(
+        'profile.html',
+        form=form,
+        settings=app_settings()
     )
-    resp = redirect(logout_url)
-    # resp = make_response(redirect(url_for('index')))
-    # ^^^ use this instead to avoid killing Okta session
-    resp.set_cookie('access_token', '', expires=0)
-    resp.set_cookie('id_token', '', expires=0)
-    resp.set_cookie('o4o_token', '', expires=0)
-    session.clear()
     return resp
 
 
-@app.route(app.config['ITEMS_PATH'], methods=('GET',))
+@app.route('/products', methods=('GET',))
 def products():
-    if app.config['REST_API']:
-        return products_rest()
-    return products_mvc()
+    settings = app_settings()
+    return render_template('products-rest.html', config=settings)
 
 
-def products_mvc():
+def products_mvc(settings):
+    # NOTE: UNUSED
     # NOTE: Here the view calls the REST API, rather than importing the model directly.
     #   In an MVC app it doesn't have to work this way.
     client = APIClient(app.config['API_URL'], request.cookies.get('access_token'))
@@ -206,7 +158,7 @@ def products_mvc():
     try:
         data = client.api.products.list()
     except exceptions.AuthError:
-        raise Unauthorized
+        raise Forbidden
     if app_settings()['ITEMS_IMG']:
         img_path = '{}/img-items/'.format(app_settings()['THEME_URI'])
     else:
@@ -214,12 +166,9 @@ def products_mvc():
     return render_template(
         'products.html',
         items=data.body,
-        img_path=img_path
+        img_path=img_path,
+        config=settings
     )
-
-
-def products_rest():
-    return render_template('products-rest.html')
 
 
 @app.route('/apps', methods=('GET',))
@@ -236,7 +185,8 @@ def apps():
     })
     return render_template(
         'apps.html',
-        apps=data.body
+        apps=data.body,
+        config=settings
     )
 
 
@@ -245,4 +195,4 @@ def reset():
     db = get_db()
     db.purge_tables()
     init_db(db, current_app.config['ENV'])
-    return redirect(url_for('index'))
+    return redirect(url_for('auth.logout'))

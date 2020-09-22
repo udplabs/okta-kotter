@@ -1,6 +1,5 @@
 coloredlogs==10.0
 Flask==1.1.1
-Flask-Dance==3.0.0
 flask-talisman==0.7.0
 Flask-WTF==0.14.2
 flask-cors==3.0.8

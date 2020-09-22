@@ -1,7 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'base_error.html' %}
 
 {% block content %}
-<div class="alert alert-warning" role="alert">
-  <i class="fa fa-exclamation-triangle"></i> Page not found!
-</div>
+    <div class="cover"><h1>Page Not Found! <small>404</small></h1><p class="lead">The server can not find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 to hide the existence of a resource from an unauthorized client. This response code is probably the most famous one due to its frequent occurrence on the web.</p>
+    <p><a href="/">Home</a></p>
+  </div>
 {% endblock %}

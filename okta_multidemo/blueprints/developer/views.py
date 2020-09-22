@@ -26,7 +26,8 @@ def index(user_id=None):
     clients = client.all()
     return render_template(
         'blueprints/developer/index.html',
-        clients=clients
+        clients=clients,
+        config=app_settings()
     )
 
 
@@ -60,7 +61,8 @@ def create_client(user_id=None):
             return redirect(url_for('developer.index'))
         else:
             flash('Invalid form data.')
-    resp = render_template('blueprints/developer/form.html', form=form)
+    resp = render_template(
+        'blueprints/developer/form.html', form=form, config=settings)
     return resp
 
 
@@ -111,6 +113,7 @@ def test_client(user_id=None):
         token_resp=json.dumps(req.json()),
         client_id=client_id,
         client_secret=client_secret,
-        client_name=client_name
+        client_name=client_name,
+        config=app_settings()
     )
     return resp

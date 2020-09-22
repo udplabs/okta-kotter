@@ -10,6 +10,7 @@ from .models import Event
 from ..admin.util import auth_o4o
 from ..admin.views import admin_blueprint
 from ..api.api import api_blueprint
+from ...util.settings import app_settings
 
 
 @admin_blueprint.route('/events', methods=('GET',))
@@ -27,7 +28,8 @@ def events():
     return render_template(
         'events/index.html',
         hooks=data.body['events']['items'],
-        admin_url=admin_url
+        admin_url=admin_url,
+        config=app_settings()
     )
 
 

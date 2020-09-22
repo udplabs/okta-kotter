@@ -1,3 +1,5 @@
+import os
+
 from flask import url_for
 
 def get_widget_config(app_conf, type_=None):
@@ -54,12 +56,12 @@ def get_widget_config(app_conf, type_=None):
         widget_conf['authParams']['display'] = 'page'
         widget_conf.update({'features': {'idpDiscovery': True}})
         widget_conf.update({'idpDiscovery': {'requestContext': app_conf['OKTA_IDP_REQUEST_CONTEXT']}})
-        widget_conf['redirectUri'] = '{}{}/authorized'.format(
-            app_conf['APP_URL'], url_for('okta.login')
+        widget_conf['redirectUri'] = '{}{}'.format(
+            app_conf['APP_URL'], url_for('auth.callback')
         )
     else:
-        widget_conf['redirectUri'] = '{}{}/authorized'.format(
-            app_conf['APP_URL'], url_for('okta.login')
+        widget_conf['redirectUri'] = '{}{}'.format(
+            app_conf['APP_URL'], url_for('auth.callback')
         )
         widget_conf['authParams']['responseType'] = ['code']
     return widget_conf

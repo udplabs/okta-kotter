@@ -144,6 +144,14 @@ def decode_token(token):
     return jwt.decode(token, verify=False)
 
 
+def set_session_vars(session, id_token):
+    id_decoded = decode_token(id_token)
+    session['username'] = id_decoded['email']
+    session['name'] = id_decoded['name']
+    session['user_id'] = id_decoded['sub']
+    session['is_admin'] = 'Admin' in id_decoded.get('groups', [])
+
+
 def get_help_markdown(view_name, session, request):
     logged_in_ext = ''
     if session.get('username'):

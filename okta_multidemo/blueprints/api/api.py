@@ -2,7 +2,7 @@ import json
 
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
-from werkzeug.exceptions import Unauthorized
+from werkzeug.exceptions import Forbidden
 
 from ...models import Product, Order
 from .util import authorize, mfa, validate_access_token, get_token_from_header
@@ -59,7 +59,7 @@ def get_user_orders(user_id, claims={}):
     try:
         validate_access_token(token, scopes, user_id)
     except AssertionError:
-        raise Unauthorized
+        raise Forbidden
     order = Order()
     data = order.get({'userId': user_id})
     # TODO: only return items with status "complete"?
