@@ -19,22 +19,22 @@ def get_widget_config(app_conf, type_=None):
             'scopes': app_conf['OKTA_SCOPES'],
         },
         'features': {
-            'router': app_conf['OKTA_ROUTER'],
-            'registration': app_conf['OKTA_REGISTRATION'],
-            'rememberMe': app_conf['OKTA_REMEMBERME'],
-            'multiOptionalFactorEnroll': app_conf['OKTA_MULTIOPTIONALFACTORENROLL'],
-            'selfServiceUnlock': app_conf['OKTA_SELFSERVICEUNLOCK'],
-            'smsRecovery': app_conf['OKTA_SMSRECOVERY'],
-            'callRecovery': app_conf['OKTA_CALLRECOVERY'],
-            'passwordlessAuth': app_conf['OKTA_PASSWORDLESS'],
+            'router': app_conf['OKTA_SIW_ROUTER'],
+            'registration': app_conf['OKTA_SIW_REGISTRATION'],
+            'rememberMe': app_conf['OKTA_SIW_REMEMBERME'],
+            'multiOptionalFactorEnroll': app_conf['OKTA_SIW_MULTIOPTIONALFACTORENROLL'],
+            'selfServiceUnlock': app_conf['OKTA_SIW_SELFSERVICEUNLOCK'],
+            'smsRecovery': app_conf['OKTA_SIW_SMSRECOVERY'],
+            'callRecovery': app_conf['OKTA_SIW_CALLRECOVERY'],
+            'passwordlessAuth': app_conf['OKTA_SIW_PASSWORDLESS'],
         },
     }
 
     i18n_options = {
-        'primaryauth.username.placeholder': app_conf['OKTA_USERNAMEPLACEHOLDER'],
-        'primaryauth.password.placeholder': app_conf['OKTA_PASSWORDPLACEHOLDER'],
-        'primaryauth.username.tooltip': app_conf['OKTA_USERNAMETOOLTIP'],
-        'primaryauth.password.tooltip': app_conf['OKTA_PASSWORDTOOLTIP'],
+        'primaryauth.username.placeholder': app_conf['OKTA_SIW_USERNAMEPLACEHOLDER'],
+        'primaryauth.password.placeholder': app_conf['OKTA_SIW_PASSWORDPLACEHOLDER'],
+        'primaryauth.username.tooltip': app_conf['OKTA_SIW_USERNAMETOOLTIP'],
+        'primaryauth.password.tooltip': app_conf['OKTA_SIW_PASSWORDTOOLTIP'],
     }
     for i in i18n_options:
         if i18n_options[i]:
