@@ -96,15 +96,20 @@ def mfa():
                 resource_name='factors',
                 resource_class=UserFactorResource
             )
-            # get factors available for this user -- for now, just grab
-            #   the first one; which factor to use could be part of the
-            #   user's profile admin in the app
+            # get factors available for this user and make sure OV push
+            #   is one of them
             factors = okta.api.factors.get(user_id)
-            factor = [i for i in factors.body if i['status'] == 'ACTIVE'][0]
+            try:
+                factor = [i for i in factors.body
+                          if i['status'] == 'ACTIVE' and
+                          i['factorType'] == 'push'][0]
+            except IndexError:
+                raise Forbidden
             factor_id = factor['id']
             challenge = okta.api.factors.issue(user_id, factor_id)
             poll_link = challenge.body['_links']['poll']['href']
-            transaction_id = poll_link.split('/')[-1]  # not sure why tx ID is not included in payload
+            transaction_id = poll_link.split('/')[-1]
+            # not sure why tx ID is not included in payload ^^^
             status = challenge.body['factorResult']
             wait_ct = 0
             while status == 'WAITING':
