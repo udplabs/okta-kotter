@@ -5,7 +5,7 @@ from requests_oauthlib import OAuth2Session
 from ...util.settings import app_settings
 from ...util import set_session_vars
 
-auth_blueprint = Blueprint('auth', 'auth', url_prefix='/login')
+auth_blueprint = Blueprint('auth', 'auth', url_prefix='/authorization-code')
 
 
 @auth_blueprint.route('/')
@@ -23,7 +23,8 @@ def login():
         scopes = current_app.config['OKTA_SCOPES']
     oauth = OAuth2Session(
         settings['OKTA_CLIENT_ID'],
-        redirect_uri='{}/login/okta/authorized'.format(settings['APP_URL']),
+        redirect_uri='{}{}'.format(
+            settings['APP_URL'], url_for('auth.callback')),
         scope=scopes
     )
     authorization_url, state = oauth.authorization_url(authn_url)
@@ -33,7 +34,7 @@ def login():
     return redirect(authorization_url)
 
 
-@auth_blueprint.route('/okta/authorized')
+@auth_blueprint.route('/callback')
 def callback():
     if request.args.get('iss'):
         # TODO: this is for IdP disco - probably should validate the value in 'iss'
@@ -49,7 +50,8 @@ def callback():
     oauth = OAuth2Session(
         settings['OKTA_CLIENT_ID'],
         state=session.get('oauth_state', None),
-        redirect_uri='{}/login/okta/authorized'.format(settings['APP_URL'])
+        redirect_uri='{}{}'.format(
+            settings['APP_URL'], url_for('auth.callback'))
     )
     token = oauth.fetch_token(
         token_url,

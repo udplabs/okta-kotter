@@ -11,12 +11,12 @@ from dotenv import load_dotenv
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
-OKTA_BASE_URL=os.getenv('OKTA_BASE_URL')
-OKTA_ISSUER=os.getenv('OKTA_ISSUER')
-OKTA_ADMIN_CLIENT_ID=os.getenv('OKTA_ADMIN_CLIENT_ID')
-OKTA_ADMIN_CLIENT_SECRET=os.getenv('OKTA_ADMIN_CLIENT_SECRET')
-OKTA_ADMIN_SCOPES=os.getenv('OKTA_ADMIN_SCOPES')
-API_URL=os.getenv('API_URL')
+OKTA_BASE_URL = os.getenv('OKTA_BASE_URL')
+OKTA_ISSUER = os.getenv('OKTA_ISSUER')
+OKTA_ADMIN_CLIENT_ID = os.getenv('OKTA_ADMIN_CLIENT_ID')
+OKTA_ADMIN_CLIENT_SECRET = os.getenv('OKTA_ADMIN_CLIENT_SECRET')
+OKTA_ADMIN_SCOPES = os.getenv('OKTA_ADMIN_SCOPES')
+API_URL = '{}/api'.format(os.getenv('APP_URL'))
 
 
 def update_orders():

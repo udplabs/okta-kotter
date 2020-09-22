@@ -76,11 +76,9 @@ The demo app expects a few configuration details in your Okta org:
   - both Authorization Code and Implicit grant types enabled
   - Login redirect URI:
     - `http://localhost:5000`
-    - `http://localhost:5000/login/okta/authorized`
-    - `http://localhost:5000/login/okta-admin/authorized`
+    - `http://localhost:5000/authorization-code/callback`
     - `http://localhost:5000/implicit/callback`
-    - `http://localhost:5000/widget`
-  - Initiate login URI: `http://localhost:5000/login/okta/authorized`
+  - Initiate login URI: `http://localhost:5000/authorization-code`
   - Okta API Scopes:
     - Grant the `okta.users.read` scope. Users who are both in the "Admin" group and who have an appropriate Okta Administrative role will be able to get a list of users in the app's administrative section using OAuth for Okta.
   - App Profile custom attributes (group type):

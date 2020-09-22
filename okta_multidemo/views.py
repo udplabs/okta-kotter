@@ -138,7 +138,7 @@ def profile():
     resp = render_template(
         'profile.html',
         form=form,
-        settings=app_settings()
+        config=app_settings()
     )
     return resp
 
