@@ -1,15 +1,14 @@
 import json
 
-from flask import request, jsonify, render_template, url_for, redirect
+from flask import request, jsonify, render_template, url_for, redirect, flash
 from flask_cors import cross_origin
-from ...util import APIClient
-from ...util.settings import app_settings
 
 from .models import Event
 
 from ..admin.util import auth_o4o
 from ..admin.views import admin_blueprint
 from ..api.api import api_blueprint
+from ...util import APIClient
 from ...util.settings import app_settings
 
 
@@ -17,10 +16,15 @@ from ...util.settings import app_settings
 @auth_o4o('admin.events')  # NOTE: requires okta.eventHooks.read
 def events():
     settings = app_settings()
+    hook_id = settings['FF_EVENTS_HOOK_ID']
+    if not hook_id:
+        flash('No event hook configured.', 'danger')
+        return redirect(url_for('index'))
+
     api_url = '{}/api/v1'.format(settings['OKTA_BASE_URL'])
     okta = APIClient(api_url, request.cookies.get('o4o_token'))
     okta.api.add_resource(resource_name='eventHooks')
-    data = okta.api.eventHooks.retrieve(settings['FF_EVENTS_HOOK_ID'])
+    data = okta.api.eventHooks.retrieve(hook_id)
     # print(json.dumps(data.body['events']['items']))
     admin_url_segs = settings['OKTA_BASE_URL'].split('.')
     admin_url = admin_url_segs[0] + '-admin.' + '.'.join(

@@ -1,6 +1,7 @@
 from werkzeug.exceptions import Unauthorized
-from flask import Blueprint, request, redirect, session, url_for, jsonify, current_app
+from flask import Blueprint, request, redirect, session, url_for, current_app, flash
 from requests_oauthlib import OAuth2Session
+from oauthlib.oauth2.rfc6749.errors import ConsentRequired
 
 from ...util.settings import app_settings
 from ...util import set_session_vars
@@ -53,13 +54,23 @@ def callback():
         redirect_uri='{}{}'.format(
             settings['APP_URL'], url_for('auth.callback'))
     )
-    token = oauth.fetch_token(
-        token_url,
-        client_secret=settings['OKTA_CLIENT_SECRET'],
-        authorization_response=request.url,
-    )
-    # TODO: does the above ever return anything but a token? error out?
-    if not token:
+    try:
+        token = oauth.fetch_token(
+            token_url,
+            client_secret=settings['OKTA_CLIENT_SECRET'],
+            authorization_response=request.url,
+        )
+    except ConsentRequired as e:
+        raise e
+        msg = """
+            You are not allowed any of the requested scopes.
+            Did you assign the appropriate
+            <a href="https://developer.okta.com/docs/guides/implement-oauth-for-okta/overview/">
+            Okta API Scopes</a> to the OAuth client in the Okta admin console?
+        """
+        flash(msg, 'danger')
+        return redirect(url_for('index'))
+    except:
         raise Unauthorized
     access_token = token['access_token']
     resp = redirect(url_for(view))

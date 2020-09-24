@@ -139,6 +139,8 @@ okta_multidemo/static/themes/_*
 .terraform
 terraform.tfstate
 terraform.tfstate.backup
+versions.tf
+!.env.tf_template
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

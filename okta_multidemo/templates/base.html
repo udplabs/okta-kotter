@@ -117,7 +117,7 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
 <div class="alert alert-{{ "primary" if category == "message" else category }}" role="alert">
-  {{ message }}
+  {{ message|safe }}
 </div>
             {% endfor %}
         {% endwith %}
