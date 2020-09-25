@@ -41,7 +41,7 @@ resource "okta_app_oauth" "kotter" {
                                 "${local.base_url}/implicit/callback"
   ]
   post_logout_redirect_uris  = ["http://localhost:5000"]
-  login_uri                  = "${local.base_url}/login/okta/authorized"
+  login_uri                  = "${local.base_url}/authorization-code"
   response_types             = ["token", "id_token", "code"]
   issuer_mode                = "ORG_URL"
   groups                     = [data.okta_group.all.id]

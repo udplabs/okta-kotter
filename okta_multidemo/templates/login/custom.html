@@ -24,7 +24,7 @@ function do_login(un, pw) {
     var authClient = new OktaAuth({
         url: '{{ config.OKTA_BASE_URL }}',
         clientId: '{{ config.OKTA_CLIENT_ID }}',
-        redirectUri: '{{ config.APP_URL }}/login/okta/authorized',
+        redirectUri: '{{ config.APP_URL }}{{ url_for("auth.callback") }}',
         issuer: '{{ config.OKTA_ISSUER }}'
     });
 

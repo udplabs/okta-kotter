@@ -17,6 +17,7 @@ def get_widget_config(app_conf, type_=None):
         'authParams': {
             'issuer': app_conf['OKTA_ISSUER'],
             'scopes': app_conf['OKTA_SCOPES'],
+            'pkce': False,
         },
         'features': {
             'router': app_conf['OKTA_SIW_ROUTER'],

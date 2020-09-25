@@ -110,8 +110,8 @@ def implicit_callback():
     #     id_token = request.form['id_token']
     # else:
     data = json.loads(request.data)
-    access_token = data[0]['accessToken']
-    id_token = data[1]['idToken']
+    access_token = data['tokens']['accessToken']['value']
+    id_token = data['tokens']['idToken']['value']
     set_session_vars(session, id_token)
     resp = make_response(Response(json.dumps({'status': 'OK'}), 200)) # redirect(url_for('index'))
     resp.set_cookie('access_token', access_token)
