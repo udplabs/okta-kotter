@@ -152,6 +152,7 @@ def get_settings(env):
                 'OKTA_ISSUER': resp['issuer'],
                 'OKTA_BASE_URL': resp['okta_org_name'],
                 'APP_URL': app_url,
+                'API_URL': '{}/api'.format(app_url),
                 'THEME': theme,
                 'THEME_URI': theme_uri,
                 'THEME_LABEL': theme_config['label'],
