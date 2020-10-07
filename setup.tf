@@ -228,7 +228,7 @@ resource "okta_auth_server_policy_rule" "default" {
   policy_id            = okta_auth_server_policy.default.id
   status               = "ACTIVE"
   name                 = "Default"
-  priority             = 1
+  priority             = 2
   group_whitelist      = ["EVERYONE"]
   grant_type_whitelist = ["authorization_code", "implicit"]
   scope_whitelist      = ["orders:create", "products:read", "openid", "profile", "email"]
@@ -242,7 +242,7 @@ resource "okta_auth_server_policy_rule" "admin" {
   policy_id            = okta_auth_server_policy.default.id
   status               = "ACTIVE"
   name                 = "Admin"
-  priority             = 2
+  priority             = 1
   group_whitelist      = ["${okta_group.admin.id}"]  # []
   grant_type_whitelist = ["authorization_code", "implicit"]
   scope_whitelist      = ["orders:create", "products:read", "openid", "profile", "email", "orders:read", "orders:update", "products:update"]
