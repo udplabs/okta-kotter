@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 import requests
 from requests.auth import HTTPBasicAuth
 from flask import session, current_app, request
+from werkzeug.exceptions import NotFound, InternalServerError
 
 
 def get_theme_config(theme_uri, app_url):
@@ -94,8 +95,8 @@ def get_settings(env):
     if env == 'production':
         # get settings from UDP
         host_parts = urlparse(request.url).hostname.split('.')
-        subdomain = host_parts[0]
-        app_name = host_parts[1]
+        subdomain = 'mdorn1'  # host_parts[0]
+        app_name = 'kotter'  # host_parts[1]
 
         # get access token from UDP using client credentials flow
         url = '{}/v1/token'.format(os.getenv('UDP_ISSUER'))
@@ -124,20 +125,47 @@ def get_settings(env):
             'content-type': 'application/json',
             'authorization': 'Bearer {}'.format(access_token)
         }
+        req = requests.get(url, headers=headers)
+        if req.status_code != 200:
+            if (req.status_code == 404):
+                logging.warning('404 - no configuration for {}.{}?'.format(
+                    subdomain, app_name))
+                raise NotFound
+            else:
+                logging.error('{} - API error'.format(req.status_code))
+                raise InternalServerError  # TODO: better error handling
+        resp = json.loads(req.content)
         try:
-            req = requests.get(url, headers=headers)
-            settings = json.loads(req.content)['settings']
+            settings = resp['settings']
             settings_dict = {}
             for i in settings:
                 key = i.upper()
                 settings_dict[key] = settings[i]
+            redir_url = urlparse(resp['redirect_uri'])
+            app_url = '{}://{}'.format(redir_url.scheme, redir_url.netloc)
+            theme = settings_dict['THEME']
+            theme_uri = get_theme_uri(theme, app_url)
+            theme_config = get_theme_config(theme_uri, app_url)
+            settings_dict.update({
+                'OKTA_CLIENT_ID': resp['client_id'],
+                'OKTA_CLIENT_SECRET': resp['client_secret'],
+                'OKTA_ISSUER': resp['issuer'],
+                'OKTA_BASE_URL': resp['okta_org_name'],
+                'APP_URL': app_url,
+                'THEME': theme,
+                'THEME_URI': theme_uri,
+                'THEME_LABEL': theme_config['label'],
+                'SITE_TITLE': theme_config['site-title'],
+                'ITEMS_TITLE': theme_config['items-title'],
+                'ITEMS_TITLE_LABEL': theme_config['items-title-label'],
+                'ITEMS_ACTION_TITLE': theme_config['action-title'],
+                'ITEMS_IMG': theme_config.get('img-items', False)
+            })
             return settings_dict
         except Exception as e:
             logging.warning('Unable to retrieve remote UDP config')
             logging.exception('{}: {}'.format(type(e), str(e)))
-        return _get_local_settings()
-    else:  # 'development' - get settings from local env file
-        return _get_local_settings()
+    return _get_local_settings()
 
 
 def get_db():

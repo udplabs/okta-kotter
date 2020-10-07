@@ -46,7 +46,7 @@ resource "okta_app_oauth" "kotter" {
   login_uri                  = "https://${local.app_domain}/authorization-code"
   response_types             = ["token", "id_token", "code"]
   issuer_mode                = "ORG_URL"
-  groups                     = [data.okta_group.all.id]
+  groups                     = ["${data.okta_group.all.id}"]
   consent_method             = "TRUSTED"
   # TODO: Grant this app the "okta.users.read" scope
 }
@@ -89,6 +89,7 @@ resource "okta_app_user_schema" "app_features" {
   description = "Feature set for the user of this application"
   master      = "OKTA"
   scope       = "SELF"  # "NONE" for group ?
+  depends_on  = [okta_app_user_schema.app_permissions]
   type        = "array"
   array_type  = "string"
   array_enum  = ["basic", "premium"]
@@ -147,30 +148,35 @@ resource "okta_auth_server_scope" "products_read" {
   description    = "products:read"
   name           = "products:read"
   auth_server_id = okta_auth_server.kotter.id
+
 }
 
 resource "okta_auth_server_scope" "products_update" {
   description    = "products:update"
   name           = "products:update"
   auth_server_id = okta_auth_server.kotter.id
+  depends_on  = [okta_auth_server_scope.products_read]
 }
 
 resource "okta_auth_server_scope" "orders_create" {
   description    = "orders:create"
   name           = "orders:create"
   auth_server_id = okta_auth_server.kotter.id
+  depends_on  = [okta_auth_server_scope.products_update]
 }
 
 resource "okta_auth_server_scope" "orders_read" {
   description    = "orders:read"
   name           = "orders:read"
   auth_server_id = okta_auth_server.kotter.id
+  depends_on  = [okta_auth_server_scope.orders_create]
 }
 
 resource "okta_auth_server_scope" "orders_update" {
   description    = "orders:update"
   name           = "orders:update"
   auth_server_id = okta_auth_server.kotter.id
+  depends_on  = [okta_auth_server_scope.orders_read]
 }
 
 resource "okta_auth_server_scope" "orders_read_user" {
@@ -178,6 +184,7 @@ resource "okta_auth_server_scope" "orders_read_user" {
   name           = "orders:read:user"
   auth_server_id = okta_auth_server.kotter.id
   consent        = "REQUIRED"
+  depends_on  = [okta_auth_server_scope.orders_update]
 }
 
 resource "okta_auth_server_claim" "feature_access" {
@@ -225,6 +232,10 @@ resource "okta_auth_server_policy_rule" "default" {
   group_whitelist      = ["EVERYONE"]
   grant_type_whitelist = ["authorization_code", "implicit"]
   scope_whitelist      = ["orders:create", "products:read", "openid", "profile", "email"]
+  depends_on  = [
+    okta_auth_server_scope.products_read,
+    okta_auth_server_scope.orders_create
+  ]
 }
 resource "okta_auth_server_policy_rule" "admin" {
   auth_server_id       = okta_auth_server.kotter.id
@@ -235,6 +246,13 @@ resource "okta_auth_server_policy_rule" "admin" {
   group_whitelist      = ["${okta_group.admin.id}"]  # []
   grant_type_whitelist = ["authorization_code", "implicit"]
   scope_whitelist      = ["orders:create", "products:read", "openid", "profile", "email", "orders:read", "orders:update", "products:update"]
+  depends_on  = [
+    okta_auth_server_scope.products_read,
+    okta_auth_server_scope.products_update,
+    okta_auth_server_scope.orders_create,
+    okta_auth_server_scope.orders_read,
+    okta_auth_server_scope.orders_update
+  ]
 }
 
 resource "okta_auth_server_policy" "client_credentials_admin" {
@@ -254,6 +272,13 @@ resource "okta_auth_server_policy_rule" "client_credentials_admin" {
   group_whitelist      = ["EVERYONE"]
   grant_type_whitelist = ["client_credentials"]
   scope_whitelist      = ["products:read", "orders:create", "orders:read", "orders:update", "products:update"]
+  depends_on  = [
+    okta_auth_server_scope.products_read,
+    okta_auth_server_scope.products_update,
+    okta_auth_server_scope.orders_create,
+    okta_auth_server_scope.orders_read,
+    okta_auth_server_scope.orders_update
+  ]
 }
 
 resource "okta_auth_server_policy" "client_credentials_developer" {
@@ -273,6 +298,9 @@ resource "okta_auth_server_policy_rule" "client_credentials_developer" {
   group_whitelist      = ["EVERYONE"]
   grant_type_whitelist = ["client_credentials"]
   scope_whitelist      = ["products:read"]
+  depends_on  = [
+    okta_auth_server_scope.products_read
+  ]
 }
 
 resource "okta_auth_server_policy" "pkce_developer" {
@@ -283,7 +311,7 @@ resource "okta_auth_server_policy" "pkce_developer" {
   client_whitelist = []
   auth_server_id   = okta_auth_server.kotter.id
 }
-resource "okta_auth_server_policy_rule" "pkce_develeoper" {
+resource "okta_auth_server_policy_rule" "pkce_developer" {
   auth_server_id       = okta_auth_server.kotter.id
   policy_id            = okta_auth_server_policy.pkce_developer.id
   status               = "ACTIVE"
@@ -292,6 +320,9 @@ resource "okta_auth_server_policy_rule" "pkce_develeoper" {
   group_whitelist      = ["EVERYONE"]
   grant_type_whitelist = ["authorization_code", "implicit"]
   scope_whitelist      = ["orders:read:user"]
+  depends_on  = [
+    okta_auth_server_scope.orders_read_user
+  ]
 }
 
 # resource "okta_event_hook" "hook" {
@@ -311,26 +342,26 @@ resource "okta_auth_server_policy_rule" "pkce_develeoper" {
 # }
 
 
-data "template_file" "configuration" {
-  template = "${file("${path.module}/.env.example")}"
-  vars = {
-    okta_base_url     = "https://${var.org_name}.${var.base_url}"
-    okta_api_key      = var.api_token
-    client_id         = okta_app_oauth.kotter.client_id
-    client_secret     = okta_app_oauth.kotter.client_secret
-    issuer            = okta_auth_server.kotter.issuer
-    audience          = local.audience
-    admin_client_id   = okta_app_oauth.kotter_client_credentials.client_id
-    admin_client_secret = okta_app_oauth.kotter_client_credentials.client_secret
-    developer_client_credentials_policy_id = okta_auth_server_policy.client_credentials_developer.id
-    # event_hook_id     = okta_event_hook.hook.id
-  }
-}
+# data "template_file" "configuration" {
+#   template = "${file("${path.module}/.env.example")}"
+#   vars = {
+#     okta_base_url     = "https://${var.org_name}.${var.base_url}"
+#     okta_api_key      = var.api_token
+#     client_id         = okta_app_oauth.kotter.client_id
+#     client_secret     = okta_app_oauth.kotter.client_secret
+#     issuer            = okta_auth_server.kotter.issuer
+#     audience          = local.audience
+#     admin_client_id   = okta_app_oauth.kotter_client_credentials.client_id
+#     admin_client_secret = okta_app_oauth.kotter_client_credentials.client_secret
+#     developer_client_credentials_policy_id = okta_auth_server_policy.client_credentials_developer.id
+#     # event_hook_id     = okta_event_hook.hook.id
+#   }
+# }
 
-resource "local_file" "env" {
-  content  = data.template_file.configuration.rendered
-  filename = "${path.module}/.env.terraformed"
-}
+# resource "local_file" "env" {
+#   content  = data.template_file.configuration.rendered
+#   filename = "${path.module}/.env.terraformed"
+# }
 
 output "client_id" {
   value = "${okta_app_oauth.kotter.client_id}"
