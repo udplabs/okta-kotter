@@ -7,26 +7,36 @@ import mistune
 import jwt
 import requests
 
+from flask import g
 from simple_rest_client.api import API
 from simple_rest_client.resource import Resource
 
 from .settings import get_settings
+from ..models import Setting, Product, Order, Tenant
 
 
-def init_db(db, env):
+def init_db(db, env, tenant):
+
+    # check DB for tenant
+    tenants = Tenant()
+    existing_tenant = tenants.get({'name': tenant})
+    if existing_tenant:
+        return
+    else:
+        tenants.add({'name': tenant})
 
     # populate DB with settings
     settings = get_settings(env)
-    table = db.table('settings')
+    setting = Setting()
     for i in settings.keys():
-        table.insert({'setting': i, 'value': settings[i]})
+        setting.add({'setting': i, 'value': settings[i], 'tenant': tenant})
 
     theme_uri = settings['THEME_URI']
     app_url = settings['APP_URL']
     items_img = settings['ITEMS_IMG']
 
     # populate DB with sample product data
-    table = db.table('products')
+    product = Product()
     path = Path(__file__).parent.absolute()
 
     if not theme_uri.startswith(app_url):
@@ -50,17 +60,20 @@ def init_db(db, env):
         img = '{}{}'.format(img_path, i['image'])
         product_map[i['itemId']] = {
             'title': i['title'],
-            'image': img
+            'image': img,
         }
         products[ct]['image'] = img
-    table.insert_multiple(products)
+        products[ct]['tenant'] = tenant
+    for i in products:
+        product.add(i)
 
     # populate DB with sample orders data
-    table = db.table('orders')
+    order = Order()
     with open(os.path.join(path, '..', 'conf/orders.json')) as file_:
         data = file_.read()
     orders = json.loads(data)
     for i in orders:
+        i['tenant'] = tenant
         try:
             i.update({
                 'productTitle': product_map[str(i['itemId'])]['title'],
@@ -69,7 +82,8 @@ def init_db(db, env):
         except KeyError:
             # might not be available in product_map if order data is out of sync
             pass
-    table.insert_multiple(orders)
+    for i in orders:
+        order.add(i)
 
 
 

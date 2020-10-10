@@ -42,6 +42,11 @@ def before_request():
 
     # NOTE: normally excluding static assets would be handled by the webserver,
     #   and API would be a different app on a different domain
+    if not hasattr(g, 'db'):
+        if app.config['DB_PATH']:
+            g.db = TinyDB(app.config['DB_PATH'])
+        else:
+            g.db = TinyDB(storage=MemoryStorage)
     if request.path.startswith('/static') \
             or request.path.startswith('/api') \
             or request.path == ('/favicon.ico'):
@@ -49,16 +54,10 @@ def before_request():
 
     # init db for subdomain
     subdomain = urlparse(request.url).hostname.split('.')[0]
-    if subdomain not in session:
+    session_subdomain = session.get('subdomain', None)
+    if not session_subdomain:
         session['subdomain'] = subdomain
-    if subdomain not in app.config['DB_CONNS']:
-        if app.config['DB_PATH']:
-            db = TinyDB('{}/{}.json'.format(app.config['DB_PATH'], subdomain))
-            app.config['DB_CONNS'][subdomain] = db
-        else:
-            db = TinyDB(storage=MemoryStorage)
-            app.config['DB_CONNS'][subdomain] = db
-            init_db(db, app.config['ENV'])
+        init_db(g.db, app.config['ENV'], subdomain)
 
     # handle help URLs
     if request.path.endswith('/'):

@@ -8,7 +8,8 @@ from flask import (
     request,
     Response,
     session,
-    url_for
+    url_for,
+    g
 )
 from simple_rest_client import exceptions
 from werkzeug.exceptions import Forbidden
@@ -17,12 +18,12 @@ from .app import app
 from .forms import LoginForm, ProfileForm
 from .util import APIClient, decode_token, OktaAPIClient, init_db, set_session_vars
 from .util.widget import get_widget_config
-from .util.settings import app_settings, get_db
+from .util.settings import app_settings
+from .models import Product, Order, Setting, Tenant
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # import pdb;pdb.set_trace()
     access_token = request.cookies.get('access_token')
     id_token = request.cookies.get('id_token')
     token_dict = {}
@@ -192,7 +193,11 @@ def apps():
 
 @app.route('/_reset', methods=('GET',))
 def reset():
-    db = get_db()
-    db.purge_tables()
-    init_db(db, current_app.config['ENV'])
+    db = g.db
+    for model in [Product(), Order(), Setting()]:
+        model.purge()
+    subdomain = session.get('subdomain')
+    tenants = Tenant()
+    tenants.delete('name', subdomain)
+    init_db(db, current_app.config['ENV'], subdomain)
     return redirect(url_for('auth.logout'))

@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 import requests
 from requests.auth import HTTPBasicAuth
-from flask import session, current_app, request
+from flask import session, current_app, request, g
 from werkzeug.exceptions import NotFound, InternalServerError
 
 
@@ -169,20 +169,8 @@ def get_settings(env):
     return _get_local_settings()
 
 
-def get_db():
-    subdomain = session.get('subdomain')
-    if not subdomain:
-        subdomain = urlparse(request.url).hostname.split('.')[0]
-    # FIXME: below is specific to ngrok implementation for Event hook
-    if subdomain == 'tunnel':
-        subdomain = 'localhost'
-    db = current_app.config['DB_CONNS'][subdomain]
-    return db
-
-
 def app_settings():
-    db = get_db()
-    table = db.table('settings')
+    table = g.db.table('settings')
     results = table.all()
     settings = {}
     for i in results:
