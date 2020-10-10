@@ -12,31 +12,31 @@ from simple_rest_client.api import API
 from simple_rest_client.resource import Resource
 
 from .settings import get_settings
-from ..models import Setting, Product, Order, Tenant
+from ..models import get_model  # Setting, Product, Order, Tenant
 
 
 def init_db(db, env, tenant):
 
     # check DB for tenant
-    tenants = Tenant()
-    existing_tenant = tenants.get({'name': tenant})
+    m_tenant = get_model('tenants')
+    existing_tenant = m_tenant.get({'name': tenant})
     if existing_tenant:
         return
     else:
-        tenants.add({'name': tenant})
+        m_tenant.add({'name': tenant})
 
     # populate DB with settings
     settings = get_settings(env)
-    setting = Setting()
+    m_setting = get_model('settings')
     for i in settings.keys():
-        setting.add({'setting': i, 'value': settings[i], 'tenant': tenant})
+        m_setting.add({'setting': i, 'value': settings[i], 'tenant': tenant})
 
     theme_uri = settings['THEME_URI']
     app_url = settings['APP_URL']
     items_img = settings['ITEMS_IMG']
 
     # populate DB with sample product data
-    product = Product()
+    m_product = get_model('products')
     path = Path(__file__).parent.absolute()
 
     if not theme_uri.startswith(app_url):
@@ -65,10 +65,10 @@ def init_db(db, env, tenant):
         products[ct]['image'] = img
         products[ct]['tenant'] = tenant
     for i in products:
-        product.add(i)
+        m_product.add(i)
 
     # populate DB with sample orders data
-    order = Order()
+    m_order = get_model('orders')
     with open(os.path.join(path, '..', 'conf/orders.json')) as file_:
         data = file_.read()
     orders = json.loads(data)
@@ -83,7 +83,7 @@ def init_db(db, env, tenant):
             # might not be available in product_map if order data is out of sync
             pass
     for i in orders:
-        order.add(i)
+        m_order.add(i)
 
 
 

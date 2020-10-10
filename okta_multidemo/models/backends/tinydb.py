@@ -1,17 +1,14 @@
 from tinydb import Query, where
-from flask import g, session
+
+from ..base import Model
 
 
-class Model(object):
-    TYPE = ''
+class TinyDBModel(Model):
 
-    def __init__(self):
-        self.db = g.db
-        self.tenant = session.get('subdomain', None)
-        self.table = self.db.table(self.get_type())
-
-    def get_type(self):
-        return self.TYPE
+    def __init__(self, db, tenant, table):
+        self.db = db  # g.db
+        self.tenant = tenant  # session.get('subdomain', None)
+        self.table = self.db.table(table)
 
     def all_(self):
         results = []
@@ -73,19 +70,3 @@ class Model(object):
 
     def purge(self):
         self.table.remove(where('tenant') == self.tenant)
-
-
-class Product(Model):
-    TYPE = 'products'
-
-
-class Order(Model):
-    TYPE = 'orders'
-
-
-class Setting(Model):
-    TYPE = 'settings'
-
-
-class Tenant(Model):
-    TYPE = 'tenants'

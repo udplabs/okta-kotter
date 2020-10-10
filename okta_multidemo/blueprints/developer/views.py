@@ -12,7 +12,7 @@ from ...util.settings import app_settings
 
 from .util import authorize, create_cc_client, create_pkce_client
 from .forms import ClientForm
-from .models import Client
+from ...models import get_model
 
 developer_blueprint = Blueprint(
     'developer', 'developer', url_prefix='/developer')
@@ -22,7 +22,7 @@ developer_blueprint = Blueprint(
 @authorize()
 def index(user_id=None):
     """TODO: docstring."""
-    client = Client()
+    client = get_model('clients')
     clients = client.all()
     return render_template(
         'blueprints/developer/index.html',
@@ -79,7 +79,7 @@ def delete_client(user_id=None):
     client_id = request.args.get('client_id')
     okta.api.add_resource(resource_name='clients')
     okta.api.clients.destroy(client_id)
-    clients = Client()
+    clients = get_model('clients')
     # FIXME: should be able to use local_id
     clients.delete('client_id', client_id)
     return redirect(url_for('developer.index'))

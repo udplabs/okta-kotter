@@ -3,13 +3,12 @@ import json
 from flask import request, jsonify, render_template, url_for, redirect, flash
 from flask_cors import cross_origin
 
-from .models import Event
-
 from ..admin.util import auth_o4o
 from ..admin.views import admin_blueprint
 from ..api.api import api_blueprint
 from ...util import APIClient
 from ...util.settings import app_settings
+from ...models import get_model
 
 
 @admin_blueprint.route('/events', methods=('GET',))
@@ -40,7 +39,7 @@ def events():
 @api_blueprint.route('/events', methods=['GET', 'POST'])  # noqa
 @cross_origin()  # TODO: whitelist Okta domain
 def events_api():
-    event_obj = Event()
+    event_obj = get_model('events')
     if request.method == 'POST':
         data = json.loads(request.get_data())
         event = data['data']['events'][0]
@@ -64,6 +63,6 @@ def events_api():
 
 @admin_blueprint.route('/events-clear', methods=['GET'])
 def events_clear():
-    events = Event()
+    events = get_model('events')
     events.purge()
     return redirect(url_for('admin.events'))

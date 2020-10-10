@@ -19,7 +19,7 @@ from .forms import LoginForm, ProfileForm
 from .util import APIClient, decode_token, OktaAPIClient, init_db, set_session_vars
 from .util.widget import get_widget_config
 from .util.settings import app_settings
-from .models import Product, Order, Setting, Tenant
+from .models import get_model, TENANT_MODELS
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -194,10 +194,12 @@ def apps():
 @app.route('/_reset', methods=('GET',))
 def reset():
     db = g.db
-    for model in [Product(), Order(), Setting()]:
+    env = current_app.config['ENV']
+    for model in TENANT_MODELS:
+        model = get_model(model)
         model.purge()
     subdomain = session.get('subdomain')
-    tenants = Tenant()
+    tenants = get_model('tenants')
     tenants.delete('name', subdomain)
-    init_db(db, current_app.config['ENV'], subdomain)
+    init_db(db, env, subdomain)
     return redirect(url_for('auth.logout'))
