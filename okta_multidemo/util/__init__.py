@@ -7,26 +7,35 @@ import mistune
 import jwt
 import requests
 
+from flask import g
 from simple_rest_client.api import API
 from simple_rest_client.resource import Resource
 
 from .settings import get_settings
+from ..models import get_model  # Setting, Product, Order, Tenant
 
 
-def init_db(db, env):
+def init_db(db, env, tenant):
+    # check DB for tenant
+    m_tenant = get_model('tenants')
+    existing_tenant = m_tenant.get({'name': tenant})
+    if existing_tenant:
+        return
+    else:
+        m_tenant.add({'name': tenant})
 
     # populate DB with settings
     settings = get_settings(env)
-    table = db.table('settings')
+    m_setting = get_model('settings')
     for i in settings.keys():
-        table.insert({'setting': i, 'value': settings[i]})
+        m_setting.add({'name': i, 'value': settings[i], 'tenant': tenant})
 
     theme_uri = settings['THEME_URI']
     app_url = settings['APP_URL']
     items_img = settings['ITEMS_IMG']
 
     # populate DB with sample product data
-    table = db.table('products')
+    m_product = get_model('products')
     path = Path(__file__).parent.absolute()
 
     if not theme_uri.startswith(app_url):
@@ -49,28 +58,31 @@ def init_db(db, env):
     for ct, i in enumerate(products):
         img = '{}{}'.format(img_path, i['image'])
         product_map[i['itemId']] = {
-            'title': i['title'],
-            'image': img
+            'name': i['name'],
+            'image': img,
         }
         products[ct]['image'] = img
-    table.insert_multiple(products)
+        products[ct]['tenant'] = tenant
+    for i in products:
+        m_product.add(i)
 
     # populate DB with sample orders data
-    table = db.table('orders')
+    m_order = get_model('orders')
     with open(os.path.join(path, '..', 'conf/orders.json')) as file_:
         data = file_.read()
     orders = json.loads(data)
     for i in orders:
+        i['tenant'] = tenant
         try:
             i.update({
-                'productTitle': product_map[str(i['itemId'])]['title'],
+                'productTitle': product_map[str(i['itemId'])]['name'],
                 'productImage': product_map[str(i['itemId'])]['image'],
             })
         except KeyError:
             # might not be available in product_map if order data is out of sync
             pass
-    table.insert_multiple(orders)
-
+    for i in orders:
+        m_order.add(i)
 
 
 # NOTE: this is a simple_rest_client kludge

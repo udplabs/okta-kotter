@@ -189,7 +189,7 @@ theme_folder
 [
     {
         "itemId": "1",
-        "title": "Cloud Atlas",
+        "name": "Cloud Atlas",
         "description": "",
         "category": "fiction",
         "count": 10,
@@ -199,7 +199,7 @@ theme_folder
     },
     {
         "itemId": "2",
-        "title": "The Cloud of Unknowing",
+        "name": "The Cloud of Unknowing",
         "description": "",
         "category": "nonfiction",
         "count": 10,

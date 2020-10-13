@@ -7,7 +7,7 @@ from simple_rest_client.resource import Resource
 from simple_rest_client.exceptions import ClientError
 
 from ...util import decode_token, get_api_default_actions, OktaAPIClient
-from .models import Client
+from ...models import get_model
 
 
 def authorize():
@@ -85,7 +85,7 @@ def create_cc_client(client_name, grant_type, user_id, redirect_uri, config):
         client_id, config['FF_DEVELOPER_CC_POLICY_ID'], config)
 
     # save to local DB
-    clients = Client()
+    clients = get_model('clients')
     params.update({
         'user_id': user_id,
         'client_id': client_id,
@@ -167,7 +167,7 @@ def create_pkce_client(client_name, user_id, group_id, redirect_uri, config):
         client_id, config['FF_DEVELOPER_PKCE_POLICY_ID'], config)
 
     # save to local DB
-    clients = Client()
+    clients = get_model('clients')
     params_db.update({
         'user_id': user_id,
         'client_id': client_id,

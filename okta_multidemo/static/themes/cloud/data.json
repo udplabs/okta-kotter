@@ -1,7 +1,7 @@
 [
     {
         "itemId": "1",
-        "title": "Linux Server",
+        "name": "Linux Server",
         "description": "",
         "category": "compute",
         "count": 10,
@@ -11,7 +11,7 @@
     },
     {
         "itemId": "2",
-        "title": "Elastic Storage",
+        "name": "Elastic Storage",
         "description": "",
         "category": "storage",
         "count": 10,
@@ -21,7 +21,7 @@
     },
     {
         "itemId": "3",
-        "title": "Load Balancer",
+        "name": "Load Balancer",
         "description": "",
         "category": "network",
         "count": 10,

@@ -3,8 +3,9 @@ import json
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from werkzeug.exceptions import Forbidden
+import simplejson
 
-from ...models import Product, Order
+from ...models import get_model
 from .util import authorize, mfa, validate_access_token, get_token_from_header
 
 api_blueprint = Blueprint('api', 'api', url_prefix='/api')
@@ -13,24 +14,25 @@ api_blueprint = Blueprint('api', 'api', url_prefix='/api')
 @api_blueprint.route('/products', methods=['GET'])
 @authorize(scopes=['products:read'])
 def get_products(claims={}):
-    products = Product()
+    products = get_model('products')
     feature_access = claims.get('feature_access', [])
     if 'premium' in feature_access:
         data = products.all()
     else:
         data = products.get({'target': 'PUBLIC'})
-    return jsonify(data)
+    # return jsonify(data)
+    return simplejson.dumps(data, use_decimal=True)
 
 
 @api_blueprint.route('/orders', methods=['POST'])
 @authorize(scopes=['orders:create'])
 def create_order(claims={}):
-    order = Order()
-    prod_obj = Product()
+    order = get_model('orders')
+    prod_obj = get_model('products')
     data = json.loads(request.get_data())
-    product = prod_obj.get(data['itemId'])[0]
+    product = prod_obj.get({'itemId': data['itemId']})[0]
     data['status'] = 'pending'
-    data['productTitle'] = product['title']
+    data['productTitle'] = product['name']
     data['productImage'] = product['image']
     order.add(data)
     return jsonify(data)  # equivalent of Response(json.dumps(resp), 200)
@@ -40,7 +42,7 @@ def create_order(claims={}):
 @authorize(scopes=['orders:update'])
 def get_orders(claims={}):
     status = request.args.get('status')
-    orders = Order()
+    orders = get_model('orders')
     if status:
         data = orders.get({'status': status})
     else:
@@ -60,21 +62,21 @@ def get_user_orders(user_id, claims={}):
         validate_access_token(token, scopes, user_id)
     except AssertionError:
         raise Forbidden
-    order = Order()
+    order = get_model('orders')
     data = order.get({'userId': user_id})
     # TODO: only return items with status "complete"?
     return jsonify(data)
 
 
-@api_blueprint.route('/orders/<int:order_id>', methods=['PATCH'])
+@api_blueprint.route('/orders/<order_id>', methods=['PATCH'])
 @authorize(scopes=['orders:update'])
 @mfa()
 def update_order(order_id, claims={}):
     data = json.loads(request.get_data())
-    order_model = Order()
-    product_model = Product()
+    order_model = get_model('orders')
+    product_model = get_model('products')
     order = order_model.get(order_id)[0]
-    product = product_model.get(order['itemId'])[0]
+    product = product_model.get({'itemId': order['itemId']})[0]
     product_model.update({'count': product['count']-1}, [order['itemId']])
     order_model.update(data, [order_id])
     return jsonify({'message': 'OK'})

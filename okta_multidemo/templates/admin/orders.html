@@ -26,7 +26,7 @@
       <td><span class="badge badge-{{ 'success' if order.status == 'complete' else 'secondary' }}">{{ order.status }}</span></td>
       <td>
         {% if order.status == 'pending' %}
-        <button id="btn-{{ order.id }}" class="btn btn-danger btn-sm" type="button" onclick="orderAction({{ order.id }});">Approve</button>
+        <button id="btn-{{ order.id }}" class="btn btn-danger btn-sm" type="button" onclick="orderAction('{{ order.id }}');">Approve</button>
         {% endif %}
       </td>
     </tr>

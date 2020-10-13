@@ -16,6 +16,8 @@ SILENCE_LOGS = [
     'simple_rest_client.request',
     'faker.factory',
     'hpack.hpack',
+    'botocore',
+    'boto3'
 ]
 
 

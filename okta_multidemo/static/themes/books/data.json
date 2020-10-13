@@ -1,7 +1,7 @@
 [
     {
         "itemId": "1",
-        "title": "Cloud Atlas",
+        "name": "Cloud Atlas",
         "description": "",
         "category": "fiction",
         "count": 10,
@@ -11,7 +11,7 @@
     },
     {
         "itemId": "2",
-        "title": "The Cloud of Unknowing",
+        "name": "The Cloud of Unknowing",
         "description": "",
         "category": "nonfiction",
         "count": 10,
@@ -21,7 +21,7 @@
     },
     {
         "itemId": "3",
-        "title": "Aristophanes: Clouds",
+        "name": "Aristophanes: Clouds",
         "description": "",
         "category": "fiction",
         "count": 10,
@@ -31,7 +31,7 @@
     },
     {
         "itemId": "4",
-        "title": "Cloud Computing",
+        "name": "Cloud Computing",
         "description": "",
         "category": "nonfiction",
         "count": 10,
@@ -41,7 +41,7 @@
     },
     {
         "itemId": "5",
-        "title": "Cloudsplitter",
+        "name": "Cloudsplitter",
         "description": "",
         "category": "fiction",
         "count": 10,
@@ -51,7 +51,7 @@
     },
     {
         "itemId": "6",
-        "title": "Raising Clouded Leopards",
+        "name": "Raising Clouded Leopards",
         "description": "",
         "category": "nonfiction",
         "count": 10,
@@ -61,7 +61,7 @@
     },
     {
         "itemId": "7",
-        "title": "Reading the Clouds",
+        "name": "Reading the Clouds",
         "description": "",
         "category": "nonfiction",
         "count": 10,
@@ -72,7 +72,7 @@
     },
     {
         "itemId": "8",
-        "title": "The Book of Clouds",
+        "name": "The Book of Clouds",
         "description": "",
         "category": "nonfiction",
         "count": 10,

@@ -3,9 +3,6 @@ import logging
 from urllib.parse import urlparse
 
 from flask import Flask, render_template, request, session, g
-from tinydb import TinyDB
-from tinydb.storages import MemoryStorage
-
 
 # TODO: rename/reorg blueprints for consistency
 from .blueprints.auth.views import auth_blueprint
@@ -16,6 +13,7 @@ from .blueprints.portfolio.views import portfolio_blueprint
 from .blueprints.events import views
 from .logs import configure_logging
 from .util import init_db, get_help_markdown
+from .models import get_db
 
 app = Flask(__name__)
 app.secret_key = app.config['SECRET_KEY']
@@ -42,6 +40,8 @@ def before_request():
 
     # NOTE: normally excluding static assets would be handled by the webserver,
     #   and API would be a different app on a different domain
+    if not hasattr(g, 'db'):
+        g.db = get_db(app.config['DB_PATH'])
     if request.path.startswith('/static') \
             or request.path.startswith('/api') \
             or request.path == ('/favicon.ico'):
@@ -49,16 +49,10 @@ def before_request():
 
     # init db for subdomain
     subdomain = urlparse(request.url).hostname.split('.')[0]
-    if subdomain not in session:
+    session_subdomain = session.get('subdomain', None)
+    if not session_subdomain:
         session['subdomain'] = subdomain
-    if subdomain not in app.config['DB_CONNS']:
-        if app.config['DB_PATH']:
-            db = TinyDB('{}/{}.json'.format(app.config['DB_PATH'], subdomain))
-            app.config['DB_CONNS'][subdomain] = db
-        else:
-            db = TinyDB(storage=MemoryStorage)
-            app.config['DB_CONNS'][subdomain] = db
-            init_db(db, app.config['ENV'])
+        init_db(g.db, app.config['ENV'], subdomain)
 
     # handle help URLs
     if request.path.endswith('/'):

@@ -2,10 +2,10 @@ from collections import Counter
 
 from flask import session, render_template, Blueprint, redirect, url_for, request
 
-from .util import authorize, get_api_client
+from .util import get_api_client
 from ..admin.util import auth_o4o
-from ...models import Order
 from ...util.settings import app_settings
+from ...models import get_model
 
 portfolio_blueprint = Blueprint('portfolio', 'portfolio', url_prefix='/portfolio')
 
@@ -14,7 +14,7 @@ portfolio_blueprint = Blueprint('portfolio', 'portfolio', url_prefix='/portfolio
 @auth_o4o('portfolio.index')
 def index(user_id=None):
     # TODO: use API rather than accessing models directly
-    order = Order()
+    order = get_model('orders')
     orders = []
     images = {}
     for i in order.get({'userId': session['user_id']}):

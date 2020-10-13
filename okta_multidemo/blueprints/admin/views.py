@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template
 
-from ...models import Order
+from ...models import get_model
 from ...util import APIClient
 from ...util.settings import app_settings
 
@@ -24,7 +24,7 @@ def index():
 def orders():
     settings = app_settings()
     status = request.args.get('status')
-    orders = Order()
+    orders = get_model('orders')
     if status:
         data = orders.get({'status': status})
     else:
