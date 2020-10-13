@@ -9,6 +9,7 @@ from requests.auth import HTTPBasicAuth
 from flask import session, current_app, request, g
 from werkzeug.exceptions import NotFound, InternalServerError
 
+from ..models import get_model
 
 def get_theme_config(theme_uri, app_url):
     if not theme_uri.startswith(app_url):
@@ -95,8 +96,8 @@ def get_settings(env):
     if env == 'production':
         # get settings from UDP
         host_parts = urlparse(request.url).hostname.split('.')
-        subdomain = 'mdorn1'  # host_parts[0]
-        app_name = 'kotter'  # host_parts[1]
+        subdomain = host_parts[0]
+        app_name = host_parts[1]
 
         # get access token from UDP using client credentials flow
         url = '{}/v1/token'.format(os.getenv('UDP_ISSUER'))
@@ -170,10 +171,10 @@ def get_settings(env):
 
 
 def app_settings():
-    table = g.db.table('settings')
-    results = table.all()
+    m_setting = get_model('settings')
+    results = m_setting.all()
     settings = {}
     for i in results:
-        settings[i['setting']] = i['value']
+        settings[i['name']] = i['value']
     settings.update(dict(current_app.config))
     return settings

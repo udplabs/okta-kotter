@@ -1,7 +1,7 @@
 [
     {
         "itemId": "1",
-        "title": "Acme Anvil",
+        "name": "Acme Anvil",
         "description": "",
         "category": "",
         "count": 10,
@@ -11,7 +11,7 @@
     },
     {
         "itemId": "2",
-        "title": "TNT",
+        "name": "TNT",
         "description": "",
         "category": "",
         "count": 10,

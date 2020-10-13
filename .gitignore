@@ -124,16 +124,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# CUSTOM
-cookies.curl
-*.DS_Store
-README.local.md
-.env*
-!.env.example
-_customers/
-_chrome-overrides/
-okta_multidemo/static/themes/_*
-
 # Terraform
 *.tfvars
 .terraform
@@ -146,3 +136,14 @@ versions.tf
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# CUSTOM
+cookies.curl
+*.DS_Store
+README.local.md
+.env*
+!.env.example
+_customers/
+_chrome-overrides/
+okta_multidemo/static/themes/_*
+_testing/

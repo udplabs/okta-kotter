@@ -1,9 +1,18 @@
-from tinydb import Query, where
+from tinydb import TinyDB, Query, where
+from tinydb.storages import MemoryStorage
 
-from ..base import Model
+from ..base import Model as BaseModel
 
 
-class TinyDBModel(Model):
+def get_db(db_path):
+    if db_path:
+        db = TinyDB(db_path)
+    else:
+        db = TinyDB(storage=MemoryStorage)
+    return db
+
+
+class Model(BaseModel):
 
     def __init__(self, db, tenant, table):
         self.db = db  # g.db

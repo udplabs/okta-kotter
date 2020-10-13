@@ -16,7 +16,6 @@ from ..models import get_model  # Setting, Product, Order, Tenant
 
 
 def init_db(db, env, tenant):
-
     # check DB for tenant
     m_tenant = get_model('tenants')
     existing_tenant = m_tenant.get({'name': tenant})
@@ -29,7 +28,7 @@ def init_db(db, env, tenant):
     settings = get_settings(env)
     m_setting = get_model('settings')
     for i in settings.keys():
-        m_setting.add({'setting': i, 'value': settings[i], 'tenant': tenant})
+        m_setting.add({'name': i, 'value': settings[i], 'tenant': tenant})
 
     theme_uri = settings['THEME_URI']
     app_url = settings['APP_URL']
@@ -59,7 +58,7 @@ def init_db(db, env, tenant):
     for ct, i in enumerate(products):
         img = '{}{}'.format(img_path, i['image'])
         product_map[i['itemId']] = {
-            'title': i['title'],
+            'name': i['name'],
             'image': img,
         }
         products[ct]['image'] = img
@@ -76,7 +75,7 @@ def init_db(db, env, tenant):
         i['tenant'] = tenant
         try:
             i.update({
-                'productTitle': product_map[str(i['itemId'])]['title'],
+                'productTitle': product_map[str(i['itemId'])]['name'],
                 'productImage': product_map[str(i['itemId'])]['image'],
             })
         except KeyError:
@@ -84,7 +83,6 @@ def init_db(db, env, tenant):
             pass
     for i in orders:
         m_order.add(i)
-
 
 
 # NOTE: this is a simple_rest_client kludge

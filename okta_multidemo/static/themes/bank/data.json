@@ -1,7 +1,7 @@
 [
     {
         "itemId": "1",
-        "title": "Replacement Card",
+        "name": "Replacement Card",
         "description": "",
         "category": "",
         "count": 10,
@@ -11,7 +11,7 @@
     },
     {
         "itemId": "2",
-        "title": "Statement",
+        "name": "Statement",
         "description": "",
         "category": "",
         "count": 10,

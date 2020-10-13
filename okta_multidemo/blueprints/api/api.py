@@ -3,6 +3,7 @@ import json
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from werkzeug.exceptions import Forbidden
+import simplejson
 
 from ...models import get_model
 from .util import authorize, mfa, validate_access_token, get_token_from_header
@@ -19,7 +20,8 @@ def get_products(claims={}):
         data = products.all()
     else:
         data = products.get({'target': 'PUBLIC'})
-    return jsonify(data)
+    # return jsonify(data)
+    return simplejson.dumps(data, use_decimal=True)
 
 
 @api_blueprint.route('/orders', methods=['POST'])
@@ -28,9 +30,9 @@ def create_order(claims={}):
     order = get_model('orders')
     prod_obj = get_model('products')
     data = json.loads(request.get_data())
-    product = prod_obj.get(data['itemId'])[0]
+    product = prod_obj.get({'itemId': data['itemId']})[0]
     data['status'] = 'pending'
-    data['productTitle'] = product['title']
+    data['productTitle'] = product['name']
     data['productImage'] = product['image']
     order.add(data)
     return jsonify(data)  # equivalent of Response(json.dumps(resp), 200)
@@ -66,7 +68,7 @@ def get_user_orders(user_id, claims={}):
     return jsonify(data)
 
 
-@api_blueprint.route('/orders/<int:order_id>', methods=['PATCH'])
+@api_blueprint.route('/orders/<order_id>', methods=['PATCH'])
 @authorize(scopes=['orders:update'])
 @mfa()
 def update_order(order_id, claims={}):
@@ -74,7 +76,7 @@ def update_order(order_id, claims={}):
     order_model = get_model('orders')
     product_model = get_model('products')
     order = order_model.get(order_id)[0]
-    product = product_model.get(order['itemId'])[0]
+    product = product_model.get({'itemId': order['itemId']})[0]
     product_model.update({'count': product['count']-1}, [order['itemId']])
     order_model.update(data, [order_id])
     return jsonify({'message': 'OK'})
