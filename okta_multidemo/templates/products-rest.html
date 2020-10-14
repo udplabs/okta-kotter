@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<span id="alert"></span>
 <div class="card-deck" id="card-container">
 </div>
 
@@ -28,6 +29,9 @@ function get_card_html(item, theme_uri) {
 }
 
 function render(data) {
+  if (data.error) {
+    showAlert('danger', 'An error occurred: ' + data.error.description);
+  }
   var content = '';
   data.data.forEach(item => {
     content = content + get_card_html(item, '{{ config.THEME_URI }}');

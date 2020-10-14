@@ -43,6 +43,8 @@ def validate_access_token(token, scopes, user_id=None):
         except jws.InvalidJWSSignature:
             # TODO: warning?
             pass
+        except jwt.JWTExpired:
+            raise Unauthorized
 
     # check claims
     claims = json.loads(verified_token.claims)
