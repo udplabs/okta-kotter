@@ -202,5 +202,8 @@ def reset():
     tenants = get_model('tenants')
     tenants.delete('name', subdomain)
     init_db(db, env, subdomain)
-    return redirect('/')
-    # return redirect(url_for('auth.logout'))
+    if request.args.get('logout'):
+        return redirect(url_for('auth.logout'))
+    else:
+        return redirect('/')
+
