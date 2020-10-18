@@ -28,7 +28,7 @@ def orders():
     if status:
         data = orders.get({'status': status})
     else:
-        data = orders.get()
+        data = orders.all()
     return render_template(
         'admin/orders.html',
         orders=data,

@@ -15,19 +15,22 @@ TENANT_MODELS = [
 ALL_MODELS = TENANT_MODELS.append('tenants')
 
 
-def get_db(db_path):
-    if current_app.config['ENV'] == 'production':
-        db = get_dynamodb()
-    else:
-        db = get_tinydb(db_path)
+def get_db():
+    db = getattr(g, 'db', None)
+    if not db:
+        if current_app.config['ENV'] == 'production':
+            db = g.db = get_dynamodb()
+        else:
+            db = g.db = get_tinydb(current_app.config['DB_PATH'])
     return db
 
 
 def get_model(table):
     # TODO: raise error if table not in TENANT_MODELS
+    db = get_db()
     if current_app.config['ENV'] == 'production':
         model = DynamoDBModel(
-            g.db, session.get('subdomain', 'localhost'), table, os.getenv('DB_TABLE_PREFIX'))
+            db, session.get('subdomain', 'localhost'), table, os.getenv('DB_TABLE_PREFIX'))
     else:
-        model = TinyDBModel(g.db, session.get('subdomain', 'localhost'), table)
+        model = TinyDBModel(db, session.get('subdomain', 'localhost'), table)
     return model

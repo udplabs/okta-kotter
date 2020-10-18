@@ -1,22 +1,18 @@
 from tinydb import TinyDB, Query, where
-from tinydb.storages import MemoryStorage
 
 from ..base import Model as BaseModel
 
 
 def get_db(db_path):
-    if db_path:
-        db = TinyDB(db_path)
-    else:
-        db = TinyDB(storage=MemoryStorage)
+    db = TinyDB(db_path)
     return db
 
 
 class Model(BaseModel):
 
     def __init__(self, db, tenant, table):
-        self.db = db  # g.db
-        self.tenant = tenant  # session.get('subdomain', None)
+        self.db = db
+        self.tenant = tenant
         self.table = self.db.table(table)
 
     def all_(self):
@@ -27,10 +23,10 @@ class Model(BaseModel):
         return results
 
     def all(self):
-        results = []
-        for row in self.table.search((where('tenant') == self.tenant)):
-            row['id'] = row.doc_id
-            results.append(row)
+        results = self.table.search((where('tenant') == self.tenant))
+        if results:
+            if 'name' in results[0].keys():
+                results = sorted(results, key=lambda i: i['name'])
         return results
 
     def get(self, condition=None):
@@ -45,18 +41,19 @@ class Model(BaseModel):
                 )
             else:  # assume it's a doc ID
                 # FIXME: filter by tenant
-                results = [self.table.get(doc_id=condition)]
+                results = [self.table.get(doc_id=int(condition))]
+                # TODO: stop useing doc_ids, and just key on 'id'
         else:
-            results = self.table.all()
-        updated_results = []
-        for row in results:
-            row['id'] = row.doc_id
-            updated_results.append(row)
-        return updated_results
+            results = self.all()
+        if results:
+            if 'name' in results[0].keys():
+                results = sorted(results, key=lambda i: i['name'])
+        return results
 
     def add(self, data):
         data['tenant'] = self.tenant
-        self.table.insert(data)
+        id_ = self.table.insert(data)
+        self.update({'id': id_}, [id_])
 
     def update(self, data, condition=None):
         # FIXME: filter by tenant
@@ -67,7 +64,8 @@ class Model(BaseModel):
                 cond_val = list(condition.values())[0]
                 self.table.update(data, records[cond_key]==cond_val)
             else:  # it's a list of id(s)
-                self.table.update(data, doc_ids=condition)
+                self.table.update(data, doc_ids=[int(i) for i in condition])
+                # TODO: stop using doc_ids, and just key on 'id'
         else:
             self.table.update(data)
 

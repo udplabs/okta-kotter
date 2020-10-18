@@ -24,7 +24,6 @@ def events():
     okta = APIClient(api_url, request.cookies.get('o4o_token'))
     okta.api.add_resource(resource_name='eventHooks')
     data = okta.api.eventHooks.retrieve(hook_id)
-    # print(json.dumps(data.body['events']['items']))
     admin_url_segs = settings['OKTA_BASE_URL'].split('.')
     admin_url = admin_url_segs[0] + '-admin.' + '.'.join(
         [admin_url_segs[1], admin_url_segs[2]])

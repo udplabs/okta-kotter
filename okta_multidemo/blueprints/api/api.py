@@ -30,8 +30,7 @@ def create_order(claims={}):
     order = get_model('orders')
     prod_obj = get_model('products')
     data = json.loads(request.get_data())
-    product = prod_obj.get({'itemId': str(data['itemId'])})[0]
-    # FIXME: ^^^ need to cast all itemId int's to str's
+    product = prod_obj.get({'itemId': data['itemId']})[0]
     data['status'] = 'pending'
     data['productTitle'] = product['name']
     data['productImage'] = product['image']
@@ -47,7 +46,7 @@ def get_orders(claims={}):
     if status:
         data = orders.get({'status': status})
     else:
-        data = orders.get()
+        data = orders.all()
     return jsonify(data)
 
 

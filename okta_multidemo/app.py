@@ -40,19 +40,18 @@ def before_request():
 
     # NOTE: normally excluding static assets would be handled by the webserver,
     #   and API would be a different app on a different domain
-    if not hasattr(g, 'db'):
-        g.db = get_db(app.config['DB_PATH'])
     if request.path.startswith('/static') \
             or request.path.startswith('/api') \
             or request.path == ('/favicon.ico'):
         return
 
+    db = get_db()
     # init db for subdomain
     subdomain = urlparse(request.url).hostname.split('.')[0]
     session_subdomain = session.get('subdomain', None)
     if not session_subdomain:
         session['subdomain'] = subdomain
-        init_db(g.db, app.config['ENV'], subdomain)
+        init_db(db, app.config['ENV'], subdomain)
 
     # handle help URLs
     if request.path.endswith('/'):
