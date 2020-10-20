@@ -341,27 +341,31 @@ resource "okta_auth_server_policy_rule" "pkce_developer" {
 #   }
 # }
 
-
-# data "template_file" "configuration" {
-#   template = "${file("${path.module}/.env.example")}"
-#   vars = {
-#     okta_base_url     = "https://${var.org_name}.${var.base_url}"
-#     okta_api_key      = var.api_token
-#     client_id         = okta_app_oauth.kotter.client_id
-#     client_secret     = okta_app_oauth.kotter.client_secret
-#     issuer            = okta_auth_server.kotter.issuer
-#     audience          = local.audience
-#     admin_client_id   = okta_app_oauth.kotter_client_credentials.client_id
-#     admin_client_secret = okta_app_oauth.kotter_client_credentials.client_secret
-#     developer_client_credentials_policy_id = okta_auth_server_policy.client_credentials_developer.id
-#     # event_hook_id     = okta_event_hook.hook.id
-#   }
+# resource "null_resource" "env_file" {
+#     count = var.udp_subdomain == "local_kotter" ? 1 : 0
 # }
 
-# resource "local_file" "env" {
-#   content  = data.template_file.configuration.rendered
-#   filename = "${path.module}/.env.terraformed"
-# }
+data "template_file" "configuration" {
+  template = "${file("${path.module}/.env.example")}"
+  vars = {
+    okta_base_url     = "https://${var.org_name}.${var.base_url}"
+    okta_api_key      = var.api_token
+    client_id         = okta_app_oauth.kotter.client_id
+    client_secret     = okta_app_oauth.kotter.client_secret
+    issuer            = okta_auth_server.kotter.issuer
+    audience          = local.audience
+    admin_client_id   = okta_app_oauth.kotter_client_credentials.client_id
+    admin_client_secret = okta_app_oauth.kotter_client_credentials.client_secret
+    developer_client_credentials_policy_id = okta_auth_server_policy.client_credentials_developer.id
+    # event_hook_id     = okta_event_hook.hook.id
+  }
+}
+
+resource "local_file" "env" {
+  count = var.udp_subdomain == "local_kotter" ? 1 : 0
+  content  = data.template_file.configuration.rendered
+  filename = "${path.module}/.env.terraformed"
+}
 
 output "client_id" {
   value = "${okta_app_oauth.kotter.client_id}"
