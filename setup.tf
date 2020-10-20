@@ -357,6 +357,8 @@ data "template_file" "configuration" {
     admin_client_id   = okta_app_oauth.kotter_client_credentials.client_id
     admin_client_secret = okta_app_oauth.kotter_client_credentials.client_secret
     developer_client_credentials_policy_id = okta_auth_server_policy.client_credentials_developer.id
+    portfolio_client_group_id = okta_auth_server_policy.pkce_developer.id
+    developer_pkce_policy_id = okta_auth_server_policy.pkce_developer.id
     # event_hook_id     = okta_event_hook.hook.id
   }
 }
