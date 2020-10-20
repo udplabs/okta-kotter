@@ -193,7 +193,6 @@ def apps():
 
 @app.route('/_reset', methods=('GET',))
 def reset():
-    db = g.db
     env = current_app.config['ENV']
     for model in TENANT_MODELS:
         model = get_model(model)
@@ -201,7 +200,7 @@ def reset():
     subdomain = session.get('subdomain')
     tenants = get_model('tenants')
     tenants.delete('name', subdomain)
-    init_db(db, env, subdomain)
+    init_db(env, subdomain)
     if request.args.get('logout'):
         return redirect(url_for('auth.logout'))
     else:

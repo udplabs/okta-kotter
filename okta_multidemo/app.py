@@ -45,13 +45,12 @@ def before_request():
             or request.path == ('/favicon.ico'):
         return
 
-    db = get_db()
     # init db for subdomain
     subdomain = urlparse(request.url).hostname.split('.')[0]
     session_subdomain = session.get('subdomain', None)
     if not session_subdomain:
         session['subdomain'] = subdomain
-        init_db(db, app.config['ENV'], subdomain)
+        init_db(app.config['ENV'], subdomain)
 
     # handle help URLs
     if request.path.endswith('/'):

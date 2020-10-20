@@ -40,7 +40,6 @@ def get_theme_uri(theme, app_url):
 
 
 def _get_local_settings():
-    logging.info('Using local settings')
     app_url = os.getenv('APP_URL')
     theme = os.getenv('THEME', 'default')
     theme_uri = get_theme_uri(theme, app_url)
@@ -121,6 +120,7 @@ def get_settings(env):
             subdomain,
             app_name
         )
+        logging.info('Getting settings from {}'.format(url))
         headers = {
             'accept': 'application/json',
             'content-type': 'application/json',
@@ -167,14 +167,19 @@ def get_settings(env):
         except Exception as e:
             logging.warning('Unable to retrieve remote UDP config')
             logging.exception('{}: {}'.format(type(e), str(e)))
+    else:
+        logging.info('Using local settings')
     return _get_local_settings()
 
 
 def app_settings():
-    m_setting = get_model('settings')
-    results = m_setting.all()
-    settings = {}
-    for i in results:
-        settings[i['name']] = i['value']
+    if current_app.config['ENV'] == 'production':
+        m_setting = get_model('settings')
+        results = m_setting.all()
+        settings = {}
+        for i in results:
+            settings[i['name']] = i['value']
+    else:
+        settings = _get_local_settings()
     settings.update(dict(current_app.config))
     return settings

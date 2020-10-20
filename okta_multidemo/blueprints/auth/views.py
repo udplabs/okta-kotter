@@ -60,8 +60,7 @@ def callback():
             client_secret=settings['OKTA_CLIENT_SECRET'],
             authorization_response=request.url,
         )
-    except ConsentRequired as e:
-        raise e
+    except ConsentRequired:
         msg = """
             You are not allowed any of the requested scopes.
             Did you assign the appropriate

@@ -7,7 +7,6 @@ import mistune
 import jwt
 import requests
 
-from flask import g
 from simple_rest_client.api import API
 from simple_rest_client.resource import Resource
 
@@ -15,7 +14,7 @@ from .settings import get_settings
 from ..models import get_model  # Setting, Product, Order, Tenant
 
 
-def init_db(db, env, tenant):
+def init_db(env, tenant):
     # check DB for tenant
     m_tenant = get_model('tenants')
     existing_tenant = m_tenant.get({'name': tenant})
@@ -24,11 +23,12 @@ def init_db(db, env, tenant):
     else:
         m_tenant.add({'name': tenant})
 
-    # populate DB with settings
     settings = get_settings(env)
-    m_setting = get_model('settings')
-    for i in settings.keys():
-        m_setting.add({'name': i, 'value': settings[i], 'tenant': tenant})
+    if env == 'production':
+        # populate DB with settings
+        m_setting = get_model('settings')
+        for i in settings.keys():
+            m_setting.add({'name': i, 'value': settings[i], 'tenant': tenant})
 
     theme_uri = settings['THEME_URI']
     app_url = settings['APP_URL']
