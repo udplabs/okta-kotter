@@ -20,6 +20,8 @@
 
 Kotter educates Okta [sweathogs](https://en.wikipedia.org/wiki/Welcome_Back,_Kotter) about what goes on under the hood of a custom app integration with [Okta](https://www.okta.com/) for CIAM and API Access Management use cases. It's also suitable as a themeable demo platform.
 
+![gif](docs/img/okta-multidemo-screencast.gif)
+
 Two key features are 1) contextual help: a "Teach" button on each page gives technical information about some key aspect of the feature on the page, and 2) themes: you can choose from an included theme or easily create and use a custom theme.
 
 ### Components
@@ -58,8 +60,8 @@ Details below.
 - Assuming you have Python 3 installed (tested with v3.7 and 3.8), clone this repo and install the requirements:
 
 ```bash
-git clone https://github.com/mdorn/python-okta-multidemo
-cd python-okta-multidemo
+git clone https://github.com/udplabs/okta-kotter
+cd okta-kotter
 python3 -m venv env
 . env/bin/activate
 pip install -r requirements.txt
