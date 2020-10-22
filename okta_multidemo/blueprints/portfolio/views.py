@@ -1,6 +1,8 @@
 from collections import Counter
 
-from flask import session, render_template, Blueprint, redirect, url_for, request
+from flask import (
+    session, render_template, Blueprint, redirect, url_for, request, flash
+)
 
 from .util import get_api_client
 from ..admin.util import auth_o4o
@@ -25,15 +27,20 @@ def index(user_id=None):
     order_list = list(zip(Counter(orders).keys(), Counter(orders).values()))
     # TODO: only return items with status "complete"?
 
-    okta_api = get_api_client()
-    grants = okta_api.grants.list(session['user_id'])
-    # print(grants.body[0])
+    try:
+        okta_api = get_api_client()
+        grants = okta_api.grants.list(session['user_id']).body
+    except:
+        grants = []
+        flash(
+            'Failed to get grants for consent: Is API_ACCESS_MANAGEMENT_CONSENT feature flag configured in your tenant?',
+            'danger')
 
     return render_template(
         'blueprints/portfolio/index.html',
         orders=order_list,
         images=images,
-        grants=grants.body,
+        grants=grants,
         config=app_settings()
     )
 
