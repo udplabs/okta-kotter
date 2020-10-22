@@ -23,10 +23,12 @@ def index(user_id=None):
         images[i['productTitle']] = i['productImage']
         # FIXME: ^^^ ugh kludgy way of getting images into page
         orders.append(i['productTitle'])
-    # orders = [i['productTitle'] for i in order.get({'userId': session['user_id']})]
     order_list = list(zip(Counter(orders).keys(), Counter(orders).values()))
     # TODO: only return items with status "complete"?
-
+    if len(order_list) == 0:
+        flash(
+            'You have not yet added any orders to your portfolio.',
+            'info')
     try:
         okta_api = get_api_client()
         grants = okta_api.grants.list(session['user_id']).body
