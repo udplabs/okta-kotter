@@ -2,14 +2,19 @@
 
 ## Table of Contents
 
-* [About](#about)
+- [Table of Contents](#table-of-contents)
+- [About](#about)
   * [Components](#components)
-* [Quickstart](#quickstart)
+- [Quickstart](#quickstart)
   * [Get an Okta tenant](#get-an-okta-tenant)
   * [Clone and install this repo.](#clone-and-install-this-repo)
   * [Terraform your Okta tenant](#terraform-your-okta-tenant)
   * [Run the app](#run-the-app)
-* [Next Steps](#next-steps)
+- [Next steps](#next-steps)
+  * [Themes](#themes)
+  * [Completing the configuration](#completing-the-configuration)
+- [Troubleshooting](#troubleshooting)
+- [Acknowledgements](#acknowledgements)
 
 ## About
 
@@ -64,7 +69,7 @@ Remain in the working directory for all of the remaining steps.
 
 ### Terraform your Okta tenant
 
-These steps will create the necessary resources in your Okta tenant for Kotter to function.
+These steps will create the necessary resources in your Okta tenant for Kotter to function using [Terraform](https://www.terraform.io/).  (If you're unfamiliar with using Terraform with Okta, see [this blog post](https://developer.okta.com/blog/2020/02/03/managing-multiple-okta-instances-with-terraform-cloud).)
 
 - Copy `okta.auto.tfvars.example` to `okta.auto.tfvars` and populate the `org_name`, `base_url` and `api_token` values in the file.  It will look something like this:
 
@@ -117,7 +122,7 @@ To complete the setup, take the following steps in your Okta tenant:
 
 - Currently refresh tokens are not used.  If you run into authorization or other errors, try logging out or clicking the "Reset" button to clear the database and start a new session.
 
-## Acknowledgments
+## Acknowledgements
 
 [Noun Project](https://thenounproject.com/) images:
 
