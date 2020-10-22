@@ -6,7 +6,7 @@ Clicking "Log In" on this page will log your user in using an [Okta-hosted](http
 
 [This guide](https://developer.okta.com/docs/guides/custom-hosted-signin/overview/) provides information on how to customize the Okta-hosted sign in page. Okta-hosted sign in is an alternative to embedding the Okta Sign In Widget in your app.
 
-Because this application is a [Flask](https://palletsprojects.com/p/flask/) app written in [Python](https://www.python.org/), it makes use of the [Flask-Dance](https://flask-dance.readthedocs.io/en/latest/) library for its OpenID Connect implementation.  See [this repo](https://github.com/mdorn/flask-dance-okta-example) for a simple example implementation with Okta.
+Because this application is a [Flask](https://palletsprojects.com/p/flask/) app written in [Python](https://www.python.org/), it makes use of the [OAuthLib](https://oauthlib.readthedocs.io/en/latest/) library for its OpenID Connect implementation.
 
 No matter which language or platform you're developing on, you will likely use an open source library that implements the [OpenID Connect](https://openid.net/connect/) and [OAuth 2.0](https://oauth.net/2/) protocols.
 
