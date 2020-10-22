@@ -18,18 +18,20 @@ def events():
     hook_id = settings['FF_EVENTS_HOOK_ID']
     if not hook_id:
         flash('No event hook configured.', 'danger')
-        return redirect(url_for('index'))
-
-    api_url = '{}/api/v1'.format(settings['OKTA_BASE_URL'])
-    okta = APIClient(api_url, request.cookies.get('o4o_token'))
-    okta.api.add_resource(resource_name='eventHooks')
-    data = okta.api.eventHooks.retrieve(hook_id)
-    admin_url_segs = settings['OKTA_BASE_URL'].split('.')
-    admin_url = admin_url_segs[0] + '-admin.' + '.'.join(
-        [admin_url_segs[1], admin_url_segs[2]])
+        hooks = []
+        admin_url = ''
+    else:
+        api_url = '{}/api/v1'.format(settings['OKTA_BASE_URL'])
+        okta = APIClient(api_url, request.cookies.get('o4o_token'))
+        okta.api.add_resource(resource_name='eventHooks')
+        data = okta.api.eventHooks.retrieve(hook_id)
+        admin_url_segs = settings['OKTA_BASE_URL'].split('.')
+        admin_url = admin_url_segs[0] + '-admin.' + '.'.join(
+            [admin_url_segs[1], admin_url_segs[2]])
+        hooks = data.body['events']['items']
     return render_template(
         'events/index.html',
-        hooks=data.body['events']['items'],
+        hooks=hooks,
         admin_url=admin_url,
         config=app_settings()
     )
