@@ -42,9 +42,12 @@ def get_theme_config(theme_uri, app_url):
 
 
 def is_true(var):
-    if not os.getenv(var):
-        return False
-    return True if os.getenv(var).lower() == 'true' else False
+    # if not os.getenv(var):
+    #     return False
+    # return True if os.getenv(var).lower() == 'true' else False
+    if var is True:
+        return True
+    return True if str(var).lower() == 'true' else False
 
 
 def get_theme_uri(theme, app_url):
@@ -156,6 +159,7 @@ def get_settings(env):
             settings_dict = {}
             for i in settings:
                 key = i.upper()
+                print (key, settings[i], is_true(settings[i]))
                 if key in BOOLS:
                     settings_dict[key] = is_true(settings[i])
                 else:
