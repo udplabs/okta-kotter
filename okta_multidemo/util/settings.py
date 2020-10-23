@@ -6,10 +6,25 @@ from urllib.parse import urlparse
 
 import requests
 from requests.auth import HTTPBasicAuth
-from flask import session, current_app, request, g
+from flask import current_app, request
 from werkzeug.exceptions import NotFound, InternalServerError
 
 from ..models import get_model
+
+BOOLS = [
+    'FF_DEVELOPER',
+    'FF_PORTFOLIO',
+    'FF_EVENTS',
+    'OKTA_SIW_PASSWORDLESS',
+    'OKTA_SIW_ROUTER',
+    'OKTA_SIW_REGISTRATION',
+    'OKTA_SIW_REMEMBERME',
+    'OKTA_SIW_MULTIOPTIONALFACTORENROLL',
+    'OKTA_SIW_SELFSERVICEUNLOCK',
+    'OKTA_SIW_SMSRECOVERY',
+    'OKTA_SIW_CALLRECOVERY',
+]
+
 
 def get_theme_config(theme_uri, app_url):
     if not theme_uri.startswith(app_url):
@@ -141,7 +156,10 @@ def get_settings(env):
             settings_dict = {}
             for i in settings:
                 key = i.upper()
-                settings_dict[key] = settings[i]
+                if key in BOOLS:
+                    settings_dict[key] = is_true(settings[i])
+                else:
+                    settings_dict[key] = settings[i]
             redir_url = urlparse(resp['redirect_uri'])
             app_url = '{}://{}'.format(redir_url.scheme, redir_url.netloc)
             theme = settings_dict['THEME']

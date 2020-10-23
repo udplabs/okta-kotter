@@ -18,10 +18,18 @@ class BaseConfig(object):
     TESTING = False
     SECRET_KEY = os.getenv('SECRET_KEY')
     DB_PATH = os.getenv('DB_PATH')
-    DB_CONNS = {}
     OKTA_SCOPES = os.getenv('OKTA_SCOPES').split(',')
     OKTA_ADMIN_SCOPES = os.getenv('OKTA_ADMIN_SCOPES').split(',')
     OKTA_O4O_SCOPES = os.getenv('OKTA_O4O_SCOPES').split(',')
+    UDP_CONFIG_URL = os.getenv('UDP_CONFIG_URL')
+    UDP_ISSUER = os.getenv('UDP_ISSUER')
+    UDP_CLIENT_ID = os.getenv('UDP_CLIENT_ID')
+    UDP_CLIENT_SECRET = os.getenv('UDP_CLIENT_SECRET')
+    DB_TABLE_PREFIX = os.getenv('DB_TABLE_PREFIX')
+    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+    AWS_DEFAULT_REGION = os.getenv('AWS_DEFAULT_REGION')
+    OKTA_RESOURCE_PREFIX = os.getenv('OKTA_RESOURCE_PREFIX')
     # NOTE: other .env settings are read into database, see util/settings.py
 
 

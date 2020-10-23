@@ -15,6 +15,8 @@ from ..models import get_model  # Setting, Product, Order, Tenant
 
 
 def init_db(env, tenant):
+    # FIXME: if production, ensure there's a UDP config for tenant
+    #   before creating it
     # check DB for tenant
     m_tenant = get_model('tenants')
     existing_tenant = m_tenant.get({'name': tenant})
