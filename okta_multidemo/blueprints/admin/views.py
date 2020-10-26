@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, flash
 
 from ...models import get_model
 from ...util import APIClient, OktaAPIClient
@@ -58,27 +58,35 @@ def users():
 @auth_admin()
 def config():
     settings = app_settings()
-    okta = OktaAPIClient(settings['OKTA_BASE_URL'], settings['OKTA_API_KEY'])
-    # groups, auth servers + policies, event hooks
+    if not settings['OKTA_API_KEY']:
+        flash(
+          'No Okta API key configured. See <a href="https://github.com/udplabs/okta-kotter/tree/master/docs/udp">this documentation</a> for additional configuration information.',
+          'danger'
+        )
+        groups = []
+        as_data =[]
+        event_hooks =[]
+    else:
+        okta = OktaAPIClient(settings['OKTA_BASE_URL'], settings['OKTA_API_KEY'])
+        # groups, auth servers + policies, event hooks
 
-    okta.api.add_resource(resource_name='groups')
-    groups = okta.api.groups.list().body
+        okta.api.add_resource(resource_name='groups')
+        groups = okta.api.groups.list().body
 
-    okta.api.add_resource(resource_name='authorizationServers')
-    okta.api.add_resource(resource_name='policies', resource_class=PolicyResource)
-    as_data = []
-    auth_svrs = okta.api.authorizationServers.list()
-    for i in auth_svrs.body:
-        policies = okta.api.policies.get(i['id'], '').body
-        as_data.append({
-            'name': i['name'],
-            'id': i['id'],
-            'policies': [{'name': j['name'], 'id': j['id']} for j in policies]
-        })
+        okta.api.add_resource(resource_name='authorizationServers')
+        okta.api.add_resource(resource_name='policies', resource_class=PolicyResource)
+        as_data = []
+        auth_svrs = okta.api.authorizationServers.list()
+        for i in auth_svrs.body:
+            policies = okta.api.policies.get(i['id'], '').body
+            as_data.append({
+                'name': i['name'],
+                'id': i['id'],
+                'policies': [{'name': j['name'], 'id': j['id']} for j in policies]
+            })
 
-    okta.api.add_resource(resource_name='eventHooks')
-    event_hooks = okta.api.eventHooks.list().body
-    print(event_hooks)
+        okta.api.add_resource(resource_name='eventHooks')
+        event_hooks = okta.api.eventHooks.list().body
 
     return render_template(
         'admin/config.html',
