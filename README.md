@@ -41,7 +41,7 @@ Kotter currently offers the following components:
 
 ## Quickstart
 
-> **NOTE**: Kotter also runs on the Okta Unified Demo Platform (UDP).  The instructions below are for running it locally. 
+> **NOTE**: Kotter also runs on the Okta Unified Demo Platform (UDP).  The instructions below are for running it locally. Instructions for additional configuration after UDP provisioning are [here](docs/udp).
 
 The following steps are needed to get up and running:
 
