@@ -20,7 +20,7 @@
   border: 12px white solid;         /*Here you can change color of the loader*/
   border-radius: 50%;
   position: absolute;
-  border-top-color: blue ;        /*Here you can change color of the loader*/
+  border-top-color: #017dc1 ;        /*Here you can change color of the loader*/
   transform: translate(-50%, -50%);
   top: 50%;
   left: 50%;

@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 from pathlib import Path
 
@@ -15,9 +16,8 @@ from ..models import get_model  # Setting, Product, Order, Tenant
 
 
 def init_db(env, tenant):
-    # FIXME: if production, ensure there's a UDP config for tenant
-    #   before creating it
-    # check DB for tenant
+    settings = get_settings(env)
+
     m_tenant = get_model('tenants')
     existing_tenant = m_tenant.get({'name': tenant})
     if existing_tenant:
@@ -25,12 +25,12 @@ def init_db(env, tenant):
     else:
         m_tenant.add({'name': tenant})
 
-    settings = get_settings(env)
     if env == 'production':
         # populate DB with settings
         m_setting = get_model('settings')
         for i in settings.keys():
             m_setting.add({'name': i, 'value': settings[i], 'tenant': tenant})
+        time.sleep(5)  # FIXME: DynamoDB misreporting created state?
 
     theme_uri = settings['THEME_URI']
     app_url = settings['APP_URL']
