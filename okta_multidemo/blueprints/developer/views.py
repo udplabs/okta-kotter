@@ -17,6 +17,9 @@ from ...models import get_model
 developer_blueprint = Blueprint(
     'developer', 'developer', url_prefix='/developer')
 
+# NOTE: the reason we store clients in the DB instead of just
+#   getting them from Okta is to be able to persist the client secret
+
 
 @developer_blueprint.route('/', methods=('GET',))
 @authorize()
