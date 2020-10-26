@@ -25,12 +25,14 @@ def get_db():
     return db
 
 
-def get_model(table):
+def get_model(table, subdomain=None):
     # TODO: raise error if table not in TENANT_MODELS
     db = get_db()
+    if not subdomain:
+        subdomain = session.get('subdomain', 'localhost')
     if current_app.config['ENV'] == 'production':
         model = DynamoDBModel(
-            db, session.get('subdomain', 'localhost'), table, os.getenv('DB_TABLE_PREFIX'))
+            db, subdomain, table, os.getenv('DB_TABLE_PREFIX'))
     else:
-        model = TinyDBModel(db, session.get('subdomain', 'localhost'), table)
+        model = TinyDBModel(db, subdomain, table)
     return model

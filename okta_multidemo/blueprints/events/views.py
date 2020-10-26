@@ -1,4 +1,5 @@
 import json
+from urllib.parse import urlparse
 
 from flask import request, jsonify, render_template, url_for, redirect, flash
 from flask_cors import cross_origin
@@ -40,7 +41,8 @@ def events():
 @api_blueprint.route('/events', methods=['GET', 'POST'])  # noqa
 @cross_origin()  # TODO: whitelist Okta domain
 def events_api():
-    event_obj = get_model('events')
+    subdomain = urlparse(request.url).hostname.split('.')[0]
+    event_obj = get_model('events', subdomain)
     if request.method == 'POST':
         data = json.loads(request.get_data())
         event = data['data']['events'][0]

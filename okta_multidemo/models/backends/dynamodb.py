@@ -31,7 +31,6 @@ class Model(BaseModel):
         response = self.table.query(
             IndexName='tenant',
             KeyConditionExpression=Key('tenant').eq(self.tenant),
-            # FilterExpression=Attr('title').eq('Product 9')
         )
         result = response['Items']
         if result:
@@ -92,7 +91,7 @@ class Model(BaseModel):
             UpdateExpression='SET {}'.format(update_exps),
             ExpressionAttributeValues=exp_attrs,
             ExpressionAttributeNames=exp_attr_names,
-            ReturnValues="UPDATED_NEW"
+            ReturnValues='UPDATED_NEW'
         )
 
     def delete(self, key, value):
