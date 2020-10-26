@@ -1,9 +1,10 @@
 from flask import Blueprint, request, render_template
 
 from ...models import get_model
-from ...util import APIClient
+from ...util import APIClient, OktaAPIClient
 from ...util.settings import app_settings
 
+from ..developer.util import PolicyResource
 from .util import auth_admin, auth_o4o
 
 admin_blueprint = Blueprint('admin', 'admin', url_prefix='/admin')
@@ -57,7 +58,32 @@ def users():
 @auth_admin()
 def config():
     settings = app_settings()
+    okta = OktaAPIClient(settings['OKTA_BASE_URL'], settings['OKTA_API_KEY'])
+    # groups, auth servers + policies, event hooks
+
+    okta.api.add_resource(resource_name='groups')
+    groups = okta.api.groups.list().body
+
+    okta.api.add_resource(resource_name='authorizationServers')
+    okta.api.add_resource(resource_name='policies', resource_class=PolicyResource)
+    as_data = []
+    auth_svrs = okta.api.authorizationServers.list()
+    for i in auth_svrs.body:
+        policies = okta.api.policies.get(i['id'], '').body
+        as_data.append({
+            'name': i['name'],
+            'id': i['id'],
+            'policies': [{'name': j['name'], 'id': j['id']} for j in policies]
+        })
+
+    okta.api.add_resource(resource_name='eventHooks')
+    event_hooks = okta.api.eventHooks.list().body
+    print(event_hooks)
+
     return render_template(
         'admin/config.html',
-        config=settings
+        config=settings,
+        groups_data=groups,
+        as_data=as_data,
+        hooks_data=event_hooks
     )

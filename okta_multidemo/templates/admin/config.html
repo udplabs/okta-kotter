@@ -5,4 +5,26 @@
 <span id="alert"></span>
 
 <a href="{{ url_for('reset') }}"><button class="btn btn-danger" type="submit">Reset</button></a>
+<hr />
+<h3>Resources</h3>
+
+<h4>Groups</h4>
+<pre>{% for i in groups_data %}
+{{ i.profile.name }} - {{ i.id }}{% endfor %}
+</pre>
+
+<h4>Authorization Servers and Policies</h4>
+<pre>{% for i in as_data %}
+{{ i.name }} - {{ i.id }}
+{% for j in i.policies %}
+    {{ j.name }} - {{ j.id }}{% endfor %}
+{% endfor %}
+</pre>
+
+<h4>Event Hooks</h4>
+<pre>{% for i in hooks_data %}
+{{ i.name }} - {{ i.id }}{% endfor %}
+</pre>
+
 {% endblock %}
+
