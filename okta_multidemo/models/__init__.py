@@ -8,7 +8,6 @@ from .backends.dynamodb import Model as DynamoDBModel, get_db as get_dynamodb
 TENANT_MODELS = [
     'products',
     'orders',
-    'settings',
     'clients',
     'events',
 ]

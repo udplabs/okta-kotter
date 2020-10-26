@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 import requests
 from requests.auth import HTTPBasicAuth
-from flask import current_app, request
+from flask import current_app, request, session
 from werkzeug.exceptions import NotFound, InternalServerError
 
 from ..models import get_model
@@ -195,13 +195,9 @@ def get_settings(env):
 
 
 def app_settings(subdomain=None):
-    if current_app.config['ENV'] == 'production':
-        m_setting = get_model('settings', subdomain)
-        results = m_setting.all()
-        settings = {}
-        for i in results:
-            settings[i['name']] = i['value']
-    else:
-        settings = _get_local_settings()
+    settings = {}
+    for i in session:
+        if i.startswith('__'):
+            settings[i[2:]] = session[i]
     settings.update(dict(current_app.config))
     return settings

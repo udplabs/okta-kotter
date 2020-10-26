@@ -8,6 +8,8 @@ import mistune
 import jwt
 import requests
 
+from flask import session
+
 from simple_rest_client.api import API
 from simple_rest_client.resource import Resource
 
@@ -17,6 +19,8 @@ from ..models import get_model  # Setting, Product, Order, Tenant
 
 def init_db(env, tenant):
     settings = get_settings(env)
+    for i in settings.keys():
+        (session['__{}'.format(i)]) = settings[i]
 
     m_tenant = get_model('tenants')
     existing_tenant = m_tenant.get({'name': tenant})
@@ -24,13 +28,6 @@ def init_db(env, tenant):
         return
     else:
         m_tenant.add({'name': tenant})
-
-    if env == 'production':
-        # populate DB with settings
-        m_setting = get_model('settings')
-        for i in settings.keys():
-            m_setting.add({'name': i, 'value': settings[i], 'tenant': tenant})
-        time.sleep(5)  # FIXME: DynamoDB misreporting created state?
 
     theme_uri = settings['THEME_URI']
     app_url = settings['APP_URL']
