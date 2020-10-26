@@ -1,4 +1,5 @@
 import json
+from urllib.parse import urlparse
 
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
@@ -62,7 +63,8 @@ def get_user_orders(user_id, claims={}):
         validate_access_token(token, scopes, user_id)
     except AssertionError:
         raise Forbidden
-    order = get_model('orders')
+    order = get_model('orders', urlparse(request.url).hostname.split('.')[0])
+    # FIXME: ^^^ reconcile use of subdomain vs. session cookie var
     data = order.get({'userId': user_id})
     # TODO: only return items with status "complete"?
     return jsonify(data)
