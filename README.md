@@ -116,9 +116,8 @@ To complete the setup, take the following steps in your Okta tenant:
   + `okta.users.read`
   + `okta.eventHooks.read`
   + `okta.users.manage`
-- To register an event hook, your app will need to available at a publicly accessible URL.  Assuming this is the case, go to Workflow > Event Hooks, and create a hook at your domain that ends with `/api/events` e.g., `https://myapp.example.com/api/events`.  Be sure to subscribe to some events (e.g. "User signed in and session started") to see them show up on your events page.
-- To see all the products provided by the API including "Premium" products in some of the themes, a custom claim is used that maps onto the application profile field `app_features`.  To assign this to your user, go to Applications > Kotter > Assignments > \[edit\] to Edit User Assignment, and select "Premium" under "Features".  When you authenticate as this user, the access token will be populated accordingly.  **NOTE:** this is more useful as a Group assignment so that you can for example easily assign a "Premium" group of users access to these features. You'll need the `APPLICATION_ENTITLEMENT_POLICY` and `UD_DEFINE_ENUM_PROPERTIES` feature flags enabled in your tenant for that.
-- For API consent management, you'll need to have the `API_ACCESS_MANAGEMENT_CONSENT` flag enabled in your org.
+
+For additional setup info relevant to both a local install and a UDP deployment, see these [Kotter on the Unified Demo Platform (UDP)](docs/udp).
 
 ## Troubleshooting
 
