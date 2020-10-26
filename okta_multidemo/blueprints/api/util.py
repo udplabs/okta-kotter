@@ -3,6 +3,7 @@ import logging
 import time
 
 from functools import wraps
+from urllib.parse import urlparse
 
 from werkzeug.exceptions import Forbidden, Unauthorized
 import requests
@@ -25,7 +26,8 @@ def get_token_from_header():
 # TODO: this should probably be a class that can take auth server params as config
 def validate_access_token(token, scopes, user_id=None):
     global JWK_CACHE
-    settings = app_settings()
+    # FIXME: why are we using subdomain in some places and session var in others?
+    settings = app_settings(urlparse(request.url).hostname.split('.')[0])
     if len(JWK_CACHE) == 0:
         url = '{}/v1/keys'.format(settings['OKTA_ISSUER'])
         resp = requests.get(url)

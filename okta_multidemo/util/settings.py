@@ -194,9 +194,9 @@ def get_settings(env):
     return _get_local_settings()
 
 
-def app_settings():
+def app_settings(subdomain=None):
     if current_app.config['ENV'] == 'production':
-        m_setting = get_model('settings')
+        m_setting = get_model('settings', subdomain)
         results = m_setting.all()
         settings = {}
         for i in results:
