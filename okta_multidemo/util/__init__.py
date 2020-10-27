@@ -27,7 +27,11 @@ def init_db(env, tenant):
     if existing_tenant:
         return
     else:
-        m_tenant.add({'name': tenant})
+        m_tenant.add({
+            'name': tenant,
+            'issuer': settings['OKTA_ISSUER'],
+            'audience': settings['OKTA_AUDIENCE'],
+        })
 
     theme_uri = settings['THEME_URI']
     app_url = settings['APP_URL']

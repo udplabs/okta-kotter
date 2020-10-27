@@ -122,7 +122,7 @@ def implicit_callback():
 
 @app.route('/subscribe', methods=['GET'])
 def subscribe():
-    resp = render_template('subscribe.html', settings=app_settings())
+    resp = render_template('subscribe.html', config=app_settings())
     return resp
 
 
@@ -156,10 +156,7 @@ def products_mvc(settings):
     #   In an MVC app it doesn't have to work this way.
     client = APIClient(app.config['API_URL'], request.cookies.get('access_token'))
     client.api.add_resource(resource_name='products')
-    try:
-        data = client.api.products.list()
-    except exceptions.AuthError:
-        raise Forbidden
+    data = client.api.products.list()
     if app_settings()['ITEMS_IMG']:
         img_path = '{}/img-items/'.format(app_settings()['THEME_URI'])
     else:

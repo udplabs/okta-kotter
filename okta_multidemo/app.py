@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
-from urllib.parse import urlparse
 
+import simple_rest_client
+from urllib.parse import urlparse
 from flask import Flask, render_template, request, session, g
 
 # TODO: rename/reorg blueprints for consistency
@@ -61,7 +62,7 @@ def before_request():
         g.help = get_help_markdown(path, session, request)
 
     except FileNotFoundError:
-        logging.warning('No help file found for {} view'.format(path))
+        logging.debug('No help file found for {} view'.format(path))
 
 
 # TODO: refactor error page handlers to a single function
@@ -96,3 +97,8 @@ app.register_error_handler(404, page_not_found)
 app.register_error_handler(500, server_error)
 app.register_error_handler(401, unauthorized)
 app.register_error_handler(403, forbidden)
+
+
+@app.errorhandler(simple_rest_client.exceptions.AuthError)
+def handle_rest_auth_error(e):
+    return render_template('401.html'), 401

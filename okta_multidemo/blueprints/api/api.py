@@ -57,14 +57,16 @@ def get_orders(claims={}):
 @cross_origin()  # NOTE: the idea here would be to allow requests from registered clients; i.e. whitelist their domains
 def get_user_orders(user_id, claims={}):
     # validating token without decorator because of user_id
+    subdomain = urlparse(request.url).hostname.split('.')[0]
     scopes = ['orders:read:user']
     token = get_token_from_header()
+    tenant = get_model('tenants')
+    config = tenant.get({'name': subdomain})[0]
     try:
-        validate_access_token(token, scopes, user_id)
+        validate_access_token(token, scopes, config, user_id)
     except AssertionError:
         raise Forbidden
-    order = get_model('orders', urlparse(request.url).hostname.split('.')[0])
-    # FIXME: ^^^ reconcile use of subdomain vs. session cookie var
+    order = get_model('orders', subdomain)
     data = order.get({'userId': user_id})
     # TODO: only return items with status "complete"?
     return jsonify(data)
