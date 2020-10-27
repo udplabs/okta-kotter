@@ -64,8 +64,8 @@ def config():
           'danger'
         )
         groups = []
-        as_data =[]
-        event_hooks =[]
+        as_data = []
+        event_hooks = []
     else:
         okta = OktaAPIClient(settings['OKTA_BASE_URL'], settings['OKTA_API_KEY'])
         # groups, auth servers + policies, event hooks
@@ -82,6 +82,7 @@ def config():
             as_data.append({
                 'name': i['name'],
                 'id': i['id'],
+                'issuer': i['issuer'],
                 'policies': [{'name': j['name'], 'id': j['id']} for j in policies]
             })
 

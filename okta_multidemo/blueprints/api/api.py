@@ -60,7 +60,7 @@ def get_user_orders(user_id, claims={}):
     subdomain = urlparse(request.url).hostname.split('.')[0]
     scopes = ['orders:read:user']
     token = get_token_from_header()
-    tenant = get_model('tenants')
+    tenant = get_model('tenants', subdomain)
     config = tenant.get({'name': subdomain})[0]
     try:
         validate_access_token(token, scopes, config, user_id)

@@ -14,10 +14,14 @@
 </pre>
 
 <h4>Authorization Servers and Policies</h4>
-<pre>{% for i in as_data %}
+<pre>
+{% for i in as_data %}
 {{ i.name }} - {{ i.id }}
-{% for j in i.policies %}
-    {{ j.name }} - {{ j.id }}{% endfor %}
+    ISSUER: {{ i.issuer }}
+    AUTHN ENDPOINT: {{ i.issuer }}/v1/authorize
+    TOKEN ENDPOINT: {{ i.issuer }}/v1/token
+    POLICIES:{% for j in i.policies %}
+        {{ j.name }} - {{ j.id }}{% endfor %}
 {% endfor %}
 </pre>
 
