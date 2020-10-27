@@ -25,12 +25,19 @@ developer_blueprint = Blueprint(
 @authorize()
 def index(user_id=None):
     """TODO: docstring."""
+    settings = app_settings()
     client = get_model('clients')
     clients = client.all()
+    for i in clients:
+        i.update(
+            {'client_name': i['client_name'].replace(
+                settings['OKTA_RESOURCE_PREFIX'], ''
+            )}
+        )
     return render_template(
         'blueprints/developer/index.html',
         clients=clients,
-        config=app_settings()
+        config=settings
     )
 
 

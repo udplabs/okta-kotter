@@ -42,8 +42,8 @@
   <tbody>
     {% for grant in grants %}
     <tr>
-      <td>{{ grant._links.client.title }}</td>
-      <td><span class="badge badge-pill badge-warning">{{ grant._links.scope.title }}</span></td>
+      <td>{{ grant.client_title }}</td>
+      <td><span class="badge badge-pill badge-warning">{{ grant.scope_title }}</span></td>
       <td>
         <a href="{{ url_for('portfolio.revoke_consent', grant_id=grant.id) }}" class="btn btn-danger" role="button" aria-pressed="true"><i class="fa fa-remove"></i></a>
       </td>

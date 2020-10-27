@@ -16,6 +16,7 @@ portfolio_blueprint = Blueprint('portfolio', 'portfolio', url_prefix='/portfolio
 @auth_o4o('portfolio.index')
 def index(user_id=None):
     # TODO: use API rather than accessing models directly
+    settings = app_settings()
     order = get_model('orders')
     orders = []
     images = {}
@@ -31,8 +32,17 @@ def index(user_id=None):
             'info')
     try:
         okta_api = get_api_client()
-        grants = okta_api.grants.list(session['user_id']).body
-    except:
+        grants_resp = okta_api.grants.list(session['user_id']).body
+        grants = []
+        for grant in grants_resp:
+            grants.append({
+                'id': grant['id'],
+                'client_title': grant['_links']['client']['title'].replace(
+                    settings['OKTA_RESOURCE_PREFIX'], ''
+                ),
+                'scope_title': grant['_links']['scope']['title'],
+            })
+    except ValueError:
         grants = []
         flash(
             'Failed to get grants for consent: Is API_ACCESS_MANAGEMENT_CONSENT feature flag configured in your tenant?',
@@ -43,7 +53,7 @@ def index(user_id=None):
         orders=order_list,
         images=images,
         grants=grants,
-        config=app_settings()
+        config=settings
     )
 
 
