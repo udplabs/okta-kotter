@@ -36,7 +36,7 @@ Kotter currently offers the following components:
 - A **developer portal** and a product portfolio page work together to demonstrate:
   - **Client Credentials flow for M2M use cases**.
   - **Consent management** for OAuth scopes, especially when the API is accessed by a client using **PKCE flow** residing on an external domain.
-- **Event hooks** (also uses O4O): a screen that reports events happening in the connected Okta instance in near real time.  (Requires the app to be running at a publicly accessible URL, e.g. on UDP.)
+- **Event hooks** (also uses O4O): a screen that reports events happening in the connected Okta instance in near real time.  (Requires the app to be running at a publicly accessible URL, e.g. on UDP. See [here](docs/consent) for config details.
 - **App dashboard**: a simple SSO dashboard that displays clickable icons for all the apps assigned to the authenticated user.
 
 ## Quickstart

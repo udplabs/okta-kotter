@@ -11,7 +11,7 @@ If you're using Kotter on the Unified Demo Platform (UDP), perform the following
     + `okta.eventHooks.read`
 - **Step-up MFA authentication** (in Tools > Admin > Orders): To approve orders in the admin console, configure Okta Verify as an MFA factor for your administrative user.
 - **Developer Portal** (in Tools > Developer).  Perform the following steps:
-    - For API scope consent, enable the `API_ACCESS_MANAGEMENT_CONSENT` feature flag in your Okta tenant.
+    - For API scope consent, enable the `API_ACCESS_MANAGEMENT_CONSENT` feature flag in your Okta tenant.  For instructions on how to configure and demo it click [here](../consent).
     - Retrieve the relevant resource ID's from Tools > Admin > Config and copy them into your Kotter UDP config as follows:
         - `ff_developer_cc_policy_id`: "Developer Client Credentials" Authn Server Policy ID
         - `ff_developer_pkce_policy_id`: "Developer PKCE Clients" Authn Server Policy ID
