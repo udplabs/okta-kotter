@@ -23,10 +23,11 @@ def get_token_from_header():
 
 
 # TODO: this should probably be a class that can take auth server params as config
-def validate_access_token(token, scopes, config, user_id=None):
+def validate_access_token(token, scopes, user_id=None):
     global JWK_CACHE
+    settings = app_settings()
     if len(JWK_CACHE) == 0:
-        url = '{}/v1/keys'.format(config['issuer'])
+        url = '{}/v1/keys'.format(settings['OKTA_ISSUER'])
         resp = requests.get(url)
         keys = json.loads(resp.content)['keys']
     else:
@@ -54,11 +55,11 @@ def validate_access_token(token, scopes, config, user_id=None):
     for scope in scopes:
         assert scope in claims['scp']
 
+    # TODO/FIXME: if using "developer" Blueprint, consult database of allowed clients
     # allowed_clients = [settings['OKTA_CLIENT_ID'], settings['OKTA_ADMIN_CLIENT_ID']]
     # assert claims['cid'] in allowed_clients
-    # TODO/FIXME: if using "developer" Blueprint, consult database of allowed clients
-    assert claims['iss'] == config['issuer']
-    assert claims['aud'] == config['audience']
+    assert claims['iss'] == settings['OKTA_ISSUER']
+    assert claims['aud'] == settings['OKTA_AUDIENCE']
     return claims
 
 
@@ -66,14 +67,9 @@ def authorize(scopes=[], user_id=None):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            settings = app_settings()
             try:
                 token = get_token_from_header()
-                config = {
-                    'issuer': settings['OKTA_ISSUER'],
-                    'audience': settings['OKTA_AUDIENCE'],
-                }
-                claims = validate_access_token(token, scopes, config)
+                claims = validate_access_token(token, scopes)
             except Exception as e:
                 logging.exception(str(e))
                 raise Unauthorized

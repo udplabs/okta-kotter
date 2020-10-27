@@ -43,7 +43,8 @@ def create_order(claims={}):
 @authorize(scopes=['orders:update'])
 def get_orders(claims={}):
     status = request.args.get('status')
-    orders = get_model('orders')
+    subdomain = urlparse(request.url).hostname.split('.')[0]
+    orders = get_model('orders', subdomain)
     if status:
         data = orders.get({'status': status})
     else:
@@ -60,10 +61,8 @@ def get_user_orders(user_id, claims={}):
     subdomain = urlparse(request.url).hostname.split('.')[0]
     scopes = ['orders:read:user']
     token = get_token_from_header()
-    tenant = get_model('tenants', subdomain)
-    config = tenant.get({'name': subdomain})[0]
     try:
-        validate_access_token(token, scopes, config, user_id)
+        validate_access_token(token, scopes, user_id)
     except AssertionError:
         raise Forbidden
     order = get_model('orders', subdomain)

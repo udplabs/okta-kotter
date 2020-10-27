@@ -196,8 +196,14 @@ def get_settings(env):
 
 def app_settings(subdomain=None):
     settings = {}
-    for i in session:
-        if i.startswith('__'):
-            settings[i[2:]] = session[i]
+    if session:
+        for i in session:
+            if i.startswith('__'):
+                settings[i[2:]] = session[i]
+    else:
+        # for external clients with no session
+        subdomain = urlparse(request.url).hostname.split('.')[0]
+        tenant = get_model('tenants', subdomain)
+        settings = tenant.get({'name': subdomain})[0]
     settings.update(dict(current_app.config))
     return settings

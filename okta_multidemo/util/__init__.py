@@ -29,8 +29,8 @@ def init_db(env, tenant):
     else:
         m_tenant.add({
             'name': tenant,
-            'issuer': settings['OKTA_ISSUER'],
-            'audience': settings['OKTA_AUDIENCE'],
+            'OKTA_ISSUER': settings['OKTA_ISSUER'],
+            'OKTA_AUDIENCE': settings['OKTA_AUDIENCE'],
         })
 
     theme_uri = settings['THEME_URI']
