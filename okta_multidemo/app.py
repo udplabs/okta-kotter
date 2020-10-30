@@ -65,6 +65,16 @@ def before_request():
         logging.debug('No help file found for {} view'.format(path))
 
 
+@app.teardown_appcontext
+def close_db(error):
+    """Closes database end of the request."""
+    if hasattr(g, 'db'):
+        try:
+            g.db.close()
+        except:
+            logging.debug('Failed to close DB')
+
+
 # TODO: refactor error page handlers to a single function
 def page_not_found(e):
     return render_template('404.html'), 404
