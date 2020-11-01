@@ -4,6 +4,7 @@ import logging
 import simple_rest_client
 from urllib.parse import urlparse
 from flask import Flask, render_template, request, session, g
+from jinja2.exceptions import TemplateNotFound
 
 # TODO: rename/reorg blueprints for consistency
 from .blueprints.auth.views import auth_blueprint
@@ -53,17 +54,6 @@ def before_request():
         session['subdomain'] = subdomain
         init_db(app.config['ENV'], subdomain)
 
-    # handle help URLs
-    if request.path.endswith('/'):
-        path = request.path + 'index'
-    else:
-        path = request.path[1:]
-    try:
-        g.help = get_help_markdown(path, session, request)
-
-    except FileNotFoundError:
-        logging.debug('No help file found for {} view'.format(path))
-
 
 @app.teardown_appcontext
 def close_db(error):
@@ -73,6 +63,17 @@ def close_db(error):
             g.db.close()
         except:
             logging.debug('Failed to close DB')
+
+
+@app.template_filter()
+def get_help_template(path):
+    if path == '/':
+        template_path = 'index.html'
+    else:
+        if path.endswith('/'):
+            path = path[:-1]
+        template_path = path + '.html'
+    return('help/' + template_path)
 
 
 # TODO: refactor error page handlers to a single function

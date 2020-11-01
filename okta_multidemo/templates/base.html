@@ -132,10 +132,9 @@
             {% endfor %}
         {% endwith %}
         {% block content %}{% endblock %}
+
     </main>
-    {% if g.help %}
     {% include 'partials/help.html' %}
-    {% endif %}
     {% if config.ENV == 'development' %}
     <div id="bottom-right"><a href="{{ url_for('reset') }}?logout=1"><button class="btn btn-outline-danger btn-sm" type="submit">Reset</button></a></div>
     {% endif %}
