@@ -10,6 +10,8 @@ from flask import current_app, request, session
 from werkzeug.exceptions import NotFound, InternalServerError
 
 from ..models import get_model
+from ..cache import cache
+
 
 BOOLS = [
     'FF_DEVELOPER',
@@ -26,6 +28,7 @@ BOOLS = [
 ]
 
 
+@cache.memoize()
 def get_theme_config(theme_uri, app_url):
     if not theme_uri.startswith(app_url):
         resp = requests.get('{}/config.json'.format(theme_uri))
@@ -111,6 +114,7 @@ def _get_local_settings():
 
 def get_settings(env):
     if env == 'production':
+        # return _get_local_settings()  # local debugging
         # get settings from UDP
         host_parts = urlparse(request.url).hostname.split('.')
         subdomain = host_parts[0]

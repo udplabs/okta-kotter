@@ -17,6 +17,9 @@ class BaseConfig(object):
     DEBUG = False
     TESTING = False
     SECRET_KEY = os.getenv('SECRET_KEY')
+    CACHE_TYPE = 'filesystem'
+    CACHE_DIR = '/tmp'
+    CACHE_DEFAULT_TIMEOUT = 300
     DB_PATH = os.getenv('DB_PATH')
     OKTA_SCOPES = os.getenv('OKTA_SCOPES').split(',')
     OKTA_ADMIN_SCOPES = os.getenv('OKTA_ADMIN_SCOPES').split(',')
@@ -36,11 +39,13 @@ class BaseConfig(object):
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
     TESTING = False
+    CACHE_TYPE = 'null'
 
 
 class TestingConfig(BaseConfig):
     DEBUG = False
     TESTING = True
+    CACHE_TYPE = 'null'
 
 
 class ProductionConfig(BaseConfig):
