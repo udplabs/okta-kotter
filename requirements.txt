@@ -1,5 +1,6 @@
 boto3==1.15.13
 coloredlogs==10.0
+Flask-Caching==1.9.0
 Flask-Cors==3.0.8
 flask-talisman==0.7.0
 Flask-WTF==0.14.2

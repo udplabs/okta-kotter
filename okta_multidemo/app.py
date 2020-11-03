@@ -15,6 +15,7 @@ from .blueprints.events import views
 from .logs import configure_logging
 from .util import init_db, get_help_markdown
 from .models import get_db
+from .cache import cache
 
 app = Flask(__name__)
 app.secret_key = app.config['SECRET_KEY']
@@ -30,7 +31,7 @@ if app.config['ENV'] == 'production':  # reads from FLASK_ENV env variable
     app.config.from_object('okta_multidemo.config.ProductionConfig')
 else:  # 'development'
     app.config.from_object('okta_multidemo.config.DevelopmentConfig')
-
+cache.init_app(app)
 # TODO: need to import after app.config takes place -- is this ok?
 from . import views  # noqa
 
