@@ -3,7 +3,6 @@ import os
 
 from pathlib import Path
 
-import mistune
 import jwt
 import requests
 
@@ -16,11 +15,18 @@ from .settings import get_settings
 from ..models import get_model  # Setting, Product, Order, Tenant
 
 
-def init_db(env, tenant):
+def init_settings(env):
+    '''
+    Get settings from either UDP or local env and assign them to session vars.
+    '''
     settings = get_settings(env)
     for i in settings.keys():
         (session['__{}'.format(i)]) = settings[i]
 
+
+def init_db(env, tenant):
+    settings = get_settings(env)
+    session['db_loaded'] = True
     m_tenant = get_model('tenants')
     existing_tenant = m_tenant.get({'name': tenant})
     if existing_tenant:
@@ -90,30 +96,30 @@ def init_db(env, tenant):
 # NOTE: this is a simple_rest_client kludge
 def get_api_default_actions(resource):
     return {
-      'create': {
-        'method': 'POST',
-        'url': resource
-      },
-      'destroy': {
-        'method': 'DELETE',
-        'url': '%s/{}' % resource
-      },
-      'list': {
-        'method': 'GET',
-        'url': resource
-      },
-      'partial_update': {
-        'method': 'PATCH',
-        'url': '%s/{}' % resource
-      },
-      'retrieve': {
-        'method': 'GET',
-        'url': '%s/{}' % resource
-      },
-      'update': {
-        'method': 'PUT',
-        'url': '%s/{}' % resource
-      }
+        'create': {
+            'method': 'POST',
+            'url': resource
+        },
+        'destroy': {
+            'method': 'DELETE',
+            'url': '%s/{}' % resource
+        },
+        'list': {
+            'method': 'GET',
+            'url': resource
+        },
+        'partial_update': {
+            'method': 'PATCH',
+            'url': '%s/{}' % resource
+        },
+        'retrieve': {
+            'method': 'GET',
+            'url': '%s/{}' % resource
+        },
+        'update': {
+            'method': 'PUT',
+            'url': '%s/{}' % resource
+        }
     }
 
 
@@ -168,28 +174,3 @@ def set_session_vars(session, id_token):
         if i.startswith('Admin'):
             session['is_admin'] = True
             break
-
-
-def get_help_markdown(view_name, session, request):
-    logged_in_ext = ''
-    if session.get('username'):
-        logged_in_ext = '-logged-in'
-    path = Path(__file__).parent.absolute()
-    file_not_found = False
-    file_paths = [
-        os.path.join(path, '..', 'help/{}{}.md'.format(view_name, logged_in_ext)),
-        os.path.join(path, '..', 'help/{}.md'.format(view_name)),
-        os.path.join(path, '..', 'help/{}.md'.format(request.endpoint)),
-        os.path.join(path, '..', 'help/{}.md'.format(request.endpoint, logged_in_ext)),
-    ]
-    data = None
-    for filepath in file_paths:
-        file = Path(filepath)
-        if file.exists():
-            file.exists()
-            with open(filepath) as file_:
-                data = file_.read()
-            break
-    if not data:
-        raise FileNotFoundError
-    return mistune.markdown(data)

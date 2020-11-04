@@ -4,7 +4,6 @@ import logging
 import simple_rest_client
 from urllib.parse import urlparse
 from flask import Flask, render_template, request, session, g
-from jinja2.exceptions import TemplateNotFound
 
 # TODO: rename/reorg blueprints for consistency
 from .blueprints.auth.views import auth_blueprint
@@ -14,8 +13,7 @@ from .blueprints.developer.views import developer_blueprint
 from .blueprints.portfolio.views import portfolio_blueprint
 from .blueprints.events import views
 from .logs import configure_logging
-from .util import init_db, get_help_markdown
-from .models import get_db
+from .util import init_db, init_settings
 from .cache import cache
 
 app = Flask(__name__)
@@ -43,16 +41,19 @@ def before_request():
 
     # NOTE: normally excluding static assets would be handled by the webserver,
     #   and API would be a different app on a different domain
-    if request.path.startswith('/static') \
-            or request.path.startswith('/api') \
-            or request.path == ('/favicon.ico'):
-        return
+    if app.config['ENV'] == 'development':
+        if request.path.startswith('/static') \
+                or request.path.startswith('/api') \
+                or request.path == ('/favicon.ico'):
+            return
 
-    # init db for subdomain
+    # init settings, db for subdomain
     subdomain = urlparse(request.url).hostname.split('.')[0]
     session_subdomain = session.get('subdomain', None)
     if not session_subdomain:
         session['subdomain'] = subdomain
+        init_settings(app.config['ENV'])
+    if session.get('username') and not session.get('db_loaded'):
         init_db(app.config['ENV'], subdomain)
 
 
@@ -63,6 +64,7 @@ def close_db(error):
         try:
             g.db.close()
         except:
+            # TODO: handle DynamoDB equivalent?
             logging.debug('Failed to close DB')
 
 
