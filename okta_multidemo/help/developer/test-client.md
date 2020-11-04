@@ -7,4 +7,4 @@ This testing tool demonstrates using the client credentials flow to:
 
 In this application, the API endpoint inspects the token to ensure it is valid and properly scoped before returning any data.
 
-![CC](/static/img/help/oauth_client_creds_flow.png "Client Credentials flow")
+![CC]({{ STATIC_URL }}/img/help/oauth_client_creds_flow.png "Client Credentials flow")

@@ -16,11 +16,11 @@
 
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 
-    <link href="/static/css/loader.css" rel="stylesheet">
+    <link href="{{ config.STATIC_URL }}/css/loader.css" rel="stylesheet">
     {% block add_css %}{% endblock %}
 
     <!-- Custom styles for this template -->
-    <link href="/static/css/starter-template.css" rel="stylesheet">
+    <link href="{{ config.STATIC_URL }}/css/starter-template.css" rel="stylesheet">
     <style>
     .home-body-image {
       background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("{{ config.THEME_URI }}/bg.jpg");
@@ -143,7 +143,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/js/loader.js"></script>
+    <script src="{{ config.STATIC_URL }}/js/loader.js"></script>
     {% block add_js %}{% endblock %}
   </body>
 </html>

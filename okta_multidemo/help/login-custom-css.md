@@ -4,5 +4,5 @@ This page uses the [Okta Sign In Widget](https://github.com/okta/okta-signin-wid
 
 On this page the widget has [heavily customized CSS](https://developer.okta.com/code/javascript/okta_sign-in_widget/#customization).
 
-![example image](/static/img/help/oauth_auth_code_flow.png "OAuth 2.0 authz code flow")
+![example image]({{ STATIC_URL }}/img/help/oauth_auth_code_flow.png "OAuth 2.0 authz code flow")
 

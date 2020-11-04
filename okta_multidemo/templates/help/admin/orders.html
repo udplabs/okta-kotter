@@ -1,6 +1,0 @@
-<h2>Orders admin</h2>
-<p>Orders can be fulfilled by an admin user using this interface and the same access token used for other API access in this application (sent as the <code>Bearer</code> token in the <code>Authorization</code> header), or by an automated process using a machine-to-machine flow faciliated by a <a href="https://developer.okta.com/docs/guides/implement-client-creds/overview/">Client Credentials</a> client.</p>
-<p><strong>Admin user-driven approval:</strong> When the admin user clicks the "approve" button, and API call is made to the REST API to update an order, using a scope that is only available to administrative users.  This call also involves step-up multifactor authentication, which has been configured using the <a href="https://developer.okta.com/docs/reference/api/factors/">Factors API</a>.</p>
-<p><code>FIXME:</code> Currently the user must have an Okta Verify factor enrolled for this to work.</p>
-<p><strong>Approval via automated/scheduled task:</strong>  In a machine-to-machine scenario, an automated task that is authenticated via <a href="https://developer.okta.com/docs/guides/implement-client-creds/overview/">Client Credentials</a> flow makes the appropriate API call.</p>
-<p>See <code>okta_multidemo/scripts/fulfill_orders.py</code> in the project repo for an example of a script that will perform this function.</p>

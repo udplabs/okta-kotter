@@ -3,7 +3,7 @@ body {
   /*background-image: url("http://localhost:5000/static/img/bg-masthead.jpg");*/
 }
 .home-body-image {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/static/img/bg.jpg");
+  /*background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/static/img/bg.jpg");*/
 }
 .home-body-bgcolor {
   background-color: #aaa;

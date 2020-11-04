@@ -27,7 +27,7 @@
 {% endblock %}
 
 {% block add_js %}
-<script src="/static/js/util.js"></script>
+<script src="{{ config.STATIC_URL }}/js/util.js"></script>
 <script>
 function get_row_html(item) {
   var template = `

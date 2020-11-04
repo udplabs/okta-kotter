@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 from pathlib import Path
@@ -13,6 +14,14 @@ from simple_rest_client.resource import Resource
 
 from .settings import get_settings
 from ..models import get_model  # Setting, Product, Order, Tenant
+from ..util.help import load_help
+
+
+def _init_help():
+    # used in dev env only
+    parent_path = Path(__file__).parent.absolute()
+    ct = load_help(parent_path, '/static')
+    logging.debug('{} help templates generated.'.format(ct))
 
 
 def init_settings(env):
@@ -22,6 +31,8 @@ def init_settings(env):
     settings = get_settings(env)
     for i in settings.keys():
         (session['__{}'.format(i)]) = settings[i]
+    if env == 'development':
+        _init_help()
 
 
 def init_db(env, tenant):
@@ -41,6 +52,7 @@ def init_db(env, tenant):
     theme_uri = settings['THEME_URI']
     app_url = settings['APP_URL']
     items_img = settings['ITEMS_IMG']
+    static_url = settings['STATIC_URL']
 
     # populate DB with sample product data
     m_product = get_model('products')
@@ -60,7 +72,7 @@ def init_db(env, tenant):
     if items_img:
         img_path = '{}/img-items/'.format(theme_uri)
     else:
-        img_path = '{}/static/img/items/'.format(app_url)
+        img_path = '{}/img/items/'.format(static_url)
 
     product_map = {}
     for ct, i in enumerate(products):
