@@ -28,7 +28,6 @@ BOOLS = [
 ]
 
 
-@cache.memoize()
 def get_theme_config(theme_uri, app_url):
     if not theme_uri.startswith(app_url):
         resp = requests.get('{}/config.json'.format(theme_uri))
