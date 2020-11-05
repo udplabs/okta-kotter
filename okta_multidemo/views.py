@@ -9,14 +9,14 @@ from flask import (
     Response,
     session,
     url_for,
-    g
 )
-from simple_rest_client import exceptions
-from werkzeug.exceptions import Forbidden
 
 from .app import app
 from .forms import LoginForm, ProfileForm
-from .util import APIClient, decode_token, OktaAPIClient, init_db, set_session_vars
+from .util import (
+    APIClient, decode_token, OktaAPIClient, init_db,
+    init_settings, set_session_vars
+)
 from .util.widget import get_widget_config
 from .util.settings import app_settings
 from .models import get_model, TENANT_MODELS
@@ -197,6 +197,7 @@ def reset():
     subdomain = session.get('subdomain')
     tenants = get_model('tenants')
     tenants.delete('name', subdomain)
+    init_settings(env)
     init_db(env, subdomain)
     if request.args.get('logout'):
         return redirect(url_for('auth.logout'))

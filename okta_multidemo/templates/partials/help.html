@@ -9,9 +9,7 @@
         </button>
       </div>
       <div class="modal-body">
-
-        {{ g.help|safe }}
-
+        {% include request.path|get_help_template ignore missing %}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

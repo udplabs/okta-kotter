@@ -28,13 +28,13 @@ BOOLS = [
 ]
 
 
-def get_theme_config(theme_uri, app_url):
-    if not theme_uri.startswith(app_url):
+@cache.memoize()
+def get_theme_config(theme, theme_uri, app_url):
+    if theme.startswith('http'):
         resp = requests.get('{}/config.json'.format(theme_uri))
         data = json.loads(resp.content)
         return data
     # get local theme from filesystem instead of remote URL
-    theme = theme_uri.split('/')[-1]
     path = Path(__file__).parent.absolute()
     with open(os.path.join(
         path, '..', 'static/themes/{}/config.json'.format(theme)
@@ -52,19 +52,20 @@ def is_true(var):
     return True if str(var).lower() == 'true' else False
 
 
-def get_theme_uri(theme, app_url):
+def get_theme_uri(theme, static_url):
     if theme.startswith('http'):
         return theme
     else:
-        return '{}/static/themes/{}'.format(app_url, theme)
+        return '{}/themes/{}'.format(static_url, theme)
 
 
 def _get_local_settings():
     app_url = os.getenv('APP_URL')
     theme = os.getenv('THEME', 'default')
-    theme_uri = get_theme_uri(theme, app_url)
-
-    theme_config = get_theme_config(theme_uri, app_url)
+    static_url = os.getenv('AWS_CLOUDFRONT_URL') if os.getenv('FLASK_ENV') == 'production' \
+        else '{}/static'.format(app_url)  # normally this func used in dev not prod
+    theme_uri = get_theme_uri(theme, static_url)
+    theme_config = get_theme_config(theme, theme_uri, app_url)
     settings = {
         'APP_URL': app_url,
         'API_URL': '{}/api'.format(app_url),
@@ -106,14 +107,15 @@ def _get_local_settings():
         'ITEMS_TITLE': theme_config['items-title'],
         'ITEMS_TITLE_LABEL': theme_config['items-title-label'],
         'ITEMS_ACTION_TITLE': theme_config['action-title'],
-        'ITEMS_IMG': theme_config.get('img-items', False)  # whether items have custom images in img-items dir
+        'ITEMS_IMG': theme_config.get('img-items', False),  # whether items have custom images in img-items dir
+        'STATIC_URL': static_url
     }
     return settings
 
 
 def get_settings(env):
     if env == 'production':
-        # return _get_local_settings()  # local debugging
+        return _get_local_settings()  # local debugging
         # get settings from UDP
         host_parts = urlparse(request.url).hostname.split('.')
         subdomain = host_parts[0]
@@ -162,7 +164,6 @@ def get_settings(env):
             settings_dict = {}
             for i in settings:
                 key = i.upper()
-                print (key, settings[i], is_true(settings[i]))
                 if key in BOOLS:
                     settings_dict[key] = is_true(settings[i])
                 else:
@@ -171,7 +172,7 @@ def get_settings(env):
             app_url = '{}://{}'.format(redir_url.scheme, redir_url.netloc)
             theme = settings_dict['THEME']
             theme_uri = get_theme_uri(theme, app_url)
-            theme_config = get_theme_config(theme_uri, app_url)
+            theme_config = get_theme_config(theme, theme_uri, app_url)
             settings_dict.update({
                 'OKTA_CLIENT_ID': resp['client_id'],
                 'OKTA_CLIENT_SECRET': resp['client_secret'],
@@ -186,7 +187,8 @@ def get_settings(env):
                 'ITEMS_TITLE': theme_config['items-title'],
                 'ITEMS_TITLE_LABEL': theme_config['items-title-label'],
                 'ITEMS_ACTION_TITLE': theme_config['action-title'],
-                'ITEMS_IMG': theme_config.get('img-items', False)
+                'ITEMS_IMG': theme_config.get('img-items', False),
+                'STATIC_URL': os.getenv('STATIC_URL')
             })
             return settings_dict
         except Exception as e:

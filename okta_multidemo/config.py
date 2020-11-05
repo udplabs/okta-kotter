@@ -32,7 +32,8 @@ class BaseConfig(object):
     AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
     AWS_DEFAULT_REGION = os.getenv('AWS_DEFAULT_REGION')
-    OKTA_RESOURCE_PREFIX = os.getenv('OKTA_RESOURCE_PREFIX')
+    AWS_DEFAULT_REGION = os.getenv('AWS_DEFAULT_REGION')
+    AWS_CLOUDFRONT_URL = os.getenv('AWS_CLOUDFRONT_URL')
     # NOTE: other .env settings are read into database, see util/settings.py
 
 

@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block add_js %}
-<script src="/static/js/util.js"></script>
+<script src="{{ config.STATIC_URL }}/js/util.js"></script>
 <script>
 // TODO: move to a JS file?
 function get_card_html(item, theme_uri) {

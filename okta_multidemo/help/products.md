@@ -10,9 +10,9 @@ In this demo app, the token is stored in a cookie.
 
 To understand what's happening on this page, open Chrome Developer Tools to the "Network" tab and refresh the page (it may help to filter requests by "XHR"). Notice a call to a `/products` URI.  If you click this, you'll see that a request is being made to the application's "products" API endpoint: `http://localhost:5000/api/products`, including an `Authorization: Bearer` header containing the access token issued by Okta.  Because the API server has validated the token, the response is a list of products.  Click on the action button for one of the items listed here, and you'll see a similar request, this time to the `http://localhost:5000/api/orders` endpoint.
 
-![image](/static/img/help/api_headers.png "API headers")
+![image]({{ STATIC_URL }}/img/help/api_headers.png "API headers")
 
-![image](/static/img/help/api_response.png "API response")
+![image]({{ STATIC_URL }}/img/help/api_response.png "API response")
 
 `TODO: diagram`
 

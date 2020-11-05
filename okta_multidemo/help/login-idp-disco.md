@@ -4,4 +4,4 @@ This page uses the [Okta Sign In Widget](https://github.com/okta/okta-signin-wid
 
 In this implementation, Okta acts as a SP (service provider) for an external IdP (identity provider).
 
-![saml flow](/static/img/help/saml_guidance_saml_flow.png "SAML 2.0 flow")
+![saml flow]({{ STATIC_URL }}/img/help/saml_guidance_saml_flow.png "SAML 2.0 flow")
