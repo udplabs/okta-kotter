@@ -115,7 +115,7 @@ def _get_local_settings():
 
 def get_settings(env):
     if env == 'production':
-        return _get_local_settings()  # local debugging
+        # return _get_local_settings()  # local debugging
         # get settings from UDP
         host_parts = urlparse(request.url).hostname.split('.')
         subdomain = host_parts[0]
@@ -188,7 +188,7 @@ def get_settings(env):
                 'ITEMS_TITLE_LABEL': theme_config['items-title-label'],
                 'ITEMS_ACTION_TITLE': theme_config['action-title'],
                 'ITEMS_IMG': theme_config.get('img-items', False),
-                'STATIC_URL': os.getenv('STATIC_URL')
+                'STATIC_URL': os.getenv('AWS_CLOUDFRONT_URL')
             })
             return settings_dict
         except Exception as e:
