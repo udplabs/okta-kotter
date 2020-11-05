@@ -4,7 +4,7 @@ import json
 import requests
 
 from flask import (
-    Blueprint, request, render_template, redirect, url_for, flash)
+    Blueprint, session, request, render_template, redirect, url_for, flash)
 from requests.auth import HTTPBasicAuth
 
 from ...util import OktaAPIClient
@@ -28,6 +28,9 @@ def index(user_id=None):
     settings = app_settings()
     client = get_model('clients')
     clients = client.all()
+    subdomain = session.get('subdomain')
+    m_tenant = get_model('tenants')
+    tenant = m_tenant.get({'name': subdomain})[0]
     for i in clients:
         i.update(
             {'client_name': i['client_name'].replace(
@@ -37,6 +40,7 @@ def index(user_id=None):
     return render_template(
         'blueprints/developer/index.html',
         clients=clients,
+        issuer=tenant['OKTA_ISSUER'],
         config=settings
     )
 

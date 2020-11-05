@@ -3,6 +3,17 @@
 {% block content %}
 <h2>Developer</h2>
 
+<div class="card">
+  <div class="card-header">
+    <strong>Authorization Server info</strong>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">Authorize URI: <code>{{ issuer }}/v1/authorize</code></li>
+    <li class="list-group-item">Token URI: <code>{{ issuer }}/v1/token</code></li>
+  </ul>
+</div>
+<br />
+
 <a href="{{ url_for('developer.create_client') }}"><button class="btn btn-success" type="submit">Add OAuth 2.0 client</button></a>
 <br /><br />
 
