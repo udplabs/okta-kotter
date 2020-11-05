@@ -147,4 +147,3 @@ _customers/
 _chrome-overrides/
 okta_multidemo/static/themes/_*
 _testing/
-okta_multidemo/templates/help/*

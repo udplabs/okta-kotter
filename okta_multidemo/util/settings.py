@@ -171,7 +171,7 @@ def get_settings(env):
             redir_url = urlparse(resp['redirect_uri'])
             app_url = '{}://{}'.format(redir_url.scheme, redir_url.netloc)
             theme = settings_dict['THEME']
-            theme_uri = get_theme_uri(theme, app_url)
+            theme_uri = get_theme_uri(theme, os.getenv('AWS_CLOUDFRONT_URL'))
             theme_config = get_theme_config(theme, theme_uri, app_url)
             settings_dict.update({
                 'OKTA_CLIENT_ID': resp['client_id'],
@@ -188,7 +188,8 @@ def get_settings(env):
                 'ITEMS_TITLE_LABEL': theme_config['items-title-label'],
                 'ITEMS_ACTION_TITLE': theme_config['action-title'],
                 'ITEMS_IMG': theme_config.get('img-items', False),
-                'STATIC_URL': os.getenv('AWS_CLOUDFRONT_URL')
+                'STATIC_URL': os.getenv('AWS_CLOUDFRONT_URL'),
+                'OKTA_RESOURCE_PREFIX': os.getenv('OKTA_RESOURCE_PREFIX', ''),
             })
             return settings_dict
         except Exception as e:
