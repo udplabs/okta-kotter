@@ -1,9 +1,0 @@
-<h2>JSON Web Tokens (JWTs)</h2>
-<p>When a user successfully authenticates with Okta via OpenID Connect (OIDC), an access token and an ID token are issued, which can be viewed by clicking the "Tokens" button here (you'll see both the Base64-encoded token and the decoded JSON object).  Each token contains a set of <a href="https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims">standard claims</a> but can also contain custom claims, which in Okta can map onto a user profile attribute, represent the user's group memberships, etc.</p>
-<p>One important standard claim is the <code>scp</code> or "scopes" claim in the access token.  When a user authenticates, a set of scopes is requested as part of the OIDC transaction.  If that request is successful according to the Access Policy configured on the Authorization Server (i.e. the user belongs to a group permitted to request those scopes), the scopes are populated into the token.  The user will subsequently use that token as the <code>Bearer</code> token in the <code>Authorization</code> HTTP for any request to an Okta-protected API endpoint.  That endpoint is responsible for validating the token as part of the authorization.</p>
-<p>For more see:</p>
-<ul>
-<li><a href="https://developer.okta.com/docs/concepts/auth-overview">OAuth 2.0 Overview</a></li>
-<li><a href="https://developer.okta.com/docs/guides/validate-access-tokens/go/overview/">Validate Access Tokens</a></li>
-<li><a href="https://developer.okta.com/docs/guides/validate-id-tokens/overview/">Validate ID Tokens</a></li>
-</ul>
