@@ -4,7 +4,7 @@
 <div class="card-deck">
 {% for app in apps %}
   {% if app._links.appLinks %}
-  <a href="{{ app._links.appLinks.0.href }}" target="_NEW">
+  <a class="no-loader" href="{{ app._links.appLinks.0.href }}" target="_NEW">
   <span style="display: block;" class="card">
 
     <div class="card-body">

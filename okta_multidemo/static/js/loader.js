@@ -8,7 +8,7 @@ var classes;
 for(var i = 0; i < links.length; i++) {
   var link = links[i];
   classes = Array.from(link.classList);
-  if (!classes.includes('dropdown-toggle')) {
+  if (!classes.includes('dropdown-toggle') && !classes.includes('no-loader')) {
     link.onclick = function() {
       do_loader();
     }
