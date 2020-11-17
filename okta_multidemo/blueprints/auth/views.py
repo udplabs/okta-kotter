@@ -40,6 +40,8 @@ def callback():
     if request.args.get('iss'):
         # TODO: this is for IdP disco - probably should validate the value in 'iss'
         # See https://openid.net/specs/openid-connect-core-1_0.html#ThirdPartyInitiatedLogin
+        # NOTE: requires the "Initiate login URI" within the OIDC config in Okta
+        #   to be set to this path, e.g. http://localhost:5000/authorization-code/callback
         return redirect(url_for('auth.login'))
     settings = app_settings()
     auth_conf = session.pop('auth_conf', 'okta')

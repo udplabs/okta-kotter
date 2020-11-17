@@ -55,6 +55,7 @@ def get_widget_config(app_conf, type_=None):
             widget_conf['authParams']['display'] = 'popup'
     elif type_ == 'idp-disco':
         widget_conf['authParams']['display'] = 'page'
+        widget_conf['authParams']['responseType'] = ['code']
         widget_conf.update({'features': {'idpDiscovery': True}})
         widget_conf.update({'idpDiscovery': {'requestContext': app_conf['OKTA_IDP_REQUEST_CONTEXT']}})
         widget_conf['redirectUri'] = '{}{}'.format(
