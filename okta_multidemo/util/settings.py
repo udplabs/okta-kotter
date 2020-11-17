@@ -154,6 +154,7 @@ def get_settings(env):
             if (req.status_code == 404):
                 logging.warning('404 - no configuration for {}.{}?'.format(
                     subdomain, app_name))
+                session.clear()
                 raise NotFound
             else:
                 logging.error('{} - API error'.format(req.status_code))
