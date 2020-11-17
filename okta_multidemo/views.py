@@ -19,6 +19,7 @@ from .util import (
 )
 from .util.widget import get_widget_config
 from .util.settings import app_settings
+from .util.decorators import login_required
 from .models import get_model, TENANT_MODELS
 
 
@@ -49,6 +50,11 @@ def index():
         config=app_settings()
     ))
     return resp
+
+
+@app.route('/status', methods=['GET'])
+def status():
+    return 'OK'
 
 
 def render_login_template(conf, settings, css=None):
@@ -127,6 +133,7 @@ def subscribe():
 
 
 @app.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
     form = ProfileForm(display_name=session.get('full_name', ''))
     if request.method == 'POST':
@@ -145,6 +152,7 @@ def profile():
 
 
 @app.route('/products', methods=('GET',))
+@login_required
 def products():
     settings = app_settings()
     return render_template('products-rest.html', config=settings)
@@ -170,6 +178,7 @@ def products_mvc(settings):
 
 
 @app.route('/apps', methods=('GET',))
+@login_required
 def apps():
     settings = app_settings()
     okta = OktaAPIClient(
@@ -189,7 +198,9 @@ def apps():
 
 
 @app.route('/_reset', methods=('GET',))
+@login_required
 def reset():
+    # TODO: protect
     env = current_app.config['ENV']
     for model in TENANT_MODELS:
         model = get_model(model)
@@ -203,4 +214,3 @@ def reset():
         return redirect(url_for('auth.logout'))
     else:
         return redirect('/')
-

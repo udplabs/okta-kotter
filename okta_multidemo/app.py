@@ -37,6 +37,8 @@ from . import views  # noqa
 
 @app.before_request
 def before_request():
+    if request.path == '/status':
+        return
     global app
 
     # NOTE: normally excluding static assets would be handled by the webserver,

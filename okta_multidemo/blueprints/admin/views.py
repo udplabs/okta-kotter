@@ -3,6 +3,7 @@ from flask import Blueprint, request, render_template, flash
 from ...models import get_model
 from ...util import APIClient, OktaAPIClient
 from ...util.settings import app_settings
+from ...util.decorators import login_required
 
 from ..developer.util import PolicyResource
 from .util import auth_admin, auth_o4o
@@ -11,6 +12,7 @@ admin_blueprint = Blueprint('admin', 'admin', url_prefix='/admin')
 
 
 @admin_blueprint.route('/', methods=('GET',))
+@login_required
 @auth_admin()
 def index():
     settings = app_settings()
