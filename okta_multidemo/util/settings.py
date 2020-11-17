@@ -26,6 +26,7 @@ BOOLS = [
     'OKTA_SIW_SMSRECOVERY',
     'OKTA_SIW_CALLRECOVERY',
 ]
+UDP_ACCESS_TOKEN_EXPIRATION = 1800  # using 30m instead 60m for now
 
 
 @cache.memoize()
@@ -113,6 +114,26 @@ def _get_local_settings():
     return settings
 
 
+@cache.cached(UDP_ACCESS_TOKEN_EXPIRATION)
+def _get_access_token():
+    # get access token from UDP using client credentials flow
+    url = '{}/v1/token'.format(os.getenv('UDP_ISSUER'))
+    auth = HTTPBasicAuth(
+        os.getenv('UDP_CLIENT_ID'), os.getenv('UDP_CLIENT_SECRET'))
+    headers = {
+        'accept': 'application/json',
+        'content-type': 'application/x-www-form-urlencoded',
+    }
+    data = {
+        'grant_type': 'client_credentials',
+        'scope': 'secrets:read',
+    }
+    req = requests.post(url, headers=headers, data=data, auth=auth)
+    authn_response = json.loads(req.content)
+    access_token = authn_response['access_token']
+    return access_token
+
+
 def get_settings(env):
     if env == 'production':
         # return _get_local_settings()  # local debugging
@@ -120,22 +141,7 @@ def get_settings(env):
         host_parts = urlparse(request.url).hostname.split('.')
         subdomain = host_parts[0]
         app_name = host_parts[1]
-
-        # get access token from UDP using client credentials flow
-        url = '{}/v1/token'.format(os.getenv('UDP_ISSUER'))
-        auth = HTTPBasicAuth(
-            os.getenv('UDP_CLIENT_ID'), os.getenv('UDP_CLIENT_SECRET'))
-        headers = {
-            'accept': 'application/json',
-            'content-type': 'application/x-www-form-urlencoded',
-        }
-        data = {
-            'grant_type': 'client_credentials',
-            'scope': 'secrets:read',
-        }
-        req = requests.post(url, headers=headers, data=data, auth=auth)
-        authn_response = json.loads(req.content)
-        access_token = authn_response['access_token']
+        access_token = _get_access_token()
 
         # get settings from UDP using access token
         url = '{}/api/configs/{}/{}'.format(
