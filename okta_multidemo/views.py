@@ -200,7 +200,6 @@ def apps():
 @app.route('/_reset', methods=('GET',))
 @login_required
 def reset():
-    # TODO: protect
     env = current_app.config['ENV']
     for model in TENANT_MODELS:
         model = get_model(model)
@@ -214,3 +213,11 @@ def reset():
         return redirect(url_for('auth.logout'))
     else:
         return redirect('/')
+
+
+@app.route('/_refresh', methods=('GET',))
+@login_required
+def refresh():
+    env = current_app.config['ENV']
+    init_settings(env)
+    return redirect('/')

@@ -4,7 +4,11 @@
 
 <span id="alert"></span>
 
-<a href="{{ url_for('reset') }}"><button class="btn btn-danger" type="submit">Reset</button></a>
+{% if config.ENV == 'production' %}
+<a href="{{ url_for('refresh') }}"><button class="btn btn-warning" type="submit">UDP Refresh</button></a>
+{% endif %}
+
+<a href="{{ url_for('reset') }}"><button class="btn btn-danger" type="submit">Reset DB</button></a>
 <hr />
 <h3>Resources</h3>
 
