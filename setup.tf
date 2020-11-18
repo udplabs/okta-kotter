@@ -387,3 +387,15 @@ output "issuer" {
 output "okta_app_oauth_id" {
   value = "${okta_app_oauth.kotter.id}"
 }
+# output "ff_event_hook_id" {
+#   value = "${okta_event_hook.hook.id}"
+# }
+output "ff_developer_cc_policy_id" {
+  value = "${okta_auth_server_policy.client_credentials_developer.id}"
+}
+output "ff_developer_pkce_policy_id" {
+  value = "${okta_auth_server_policy.pkce_developer.id}"
+}
+output "ff_portfolio_client_group" {
+  value = "${data.okta_group.all.id}"
+}

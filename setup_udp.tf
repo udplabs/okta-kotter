@@ -6,7 +6,8 @@ variable "demo_app_name" { default = "kotter" }
 variable "udp_subdomain" { default = "local_kotter" }
 
 locals {
-  app_domain       = "${var.udp_subdomain}.${var.demo_app_name}.stg.unidemo.info"  # FIXME: "stg" goes here?
+  app_domain       = "${var.udp_subdomain}.${var.demo_app_name}.unidemo.info"
+  # TODO: account for "stg.unidemo.info" for staging deployment
   nodash_subdomain = replace(var.udp_subdomain, "-", "_")
   local_url = "http://localhost:5000"
   audience = "https://kotter.udp.okta.com"
@@ -386,4 +387,16 @@ output "issuer" {
 }
 output "okta_app_oauth_id" {
   value = "${okta_app_oauth.kotter.id}"
+}
+# output "ff_event_hook_id" {
+#   value = "${okta_event_hook.hook.id}"
+# }
+output "ff_developer_cc_policy_id" {
+  value = "${okta_auth_server_policy.client_credentials_developer.id}"
+}
+output "ff_developer_pkce_policy_id" {
+  value = "${okta_auth_server_policy.pkce_developer.id}"
+}
+output "ff_portfolio_client_group" {
+  value = "${data.okta_group.all.id}"
 }
