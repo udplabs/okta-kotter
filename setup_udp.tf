@@ -23,6 +23,8 @@ provider "okta" {
 data "okta_group" "all" {
   name = "Everyone"
   include_users = true
+  # NOTE: including users can cause trouble for TF when there
+  # are many users in an org
 }
 
 resource "okta_group" "admin" {
