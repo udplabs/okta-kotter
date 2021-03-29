@@ -8,7 +8,7 @@ gunicorn==19.9.0
 jwcrypto==0.6.0
 mistune==0.8.4
 pipdeptree==0.13.2
-Pygments==2.5.2
+Pygments==2.7.4
 PyJWT==1.7.1
 python-dotenv==0.10.3
 pytz==2019.3
