@@ -91,6 +91,8 @@ terraform apply
 
 - Copy the resulting environment variables file: `cp .env.terraformed .env`
 
+> **NOTE:** Because of a bug in the current Terrafrom script, you'll need to manually create a group called "Admin" and assign your user to it in the Okta admin console to access all available Kotter functionality.
+
 ### Run the app
 
 - Run the app: `flask run`
