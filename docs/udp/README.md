@@ -20,6 +20,8 @@ Note that for any changes to the settings in your Kotter app UDP config, you'll 
 
 If you change themes, you may want to go to Tools > Admin > Config in your Kotter app and click the "Reset" button to install the theme's product data.
 
+> **NOTE:** Because of a bug in the current Terrafrom script, you'll also need to manually create a group called "Admin" and assign your user to it in the Okta admin console to access all available Kotter functionality.
+
 ## TODO
 
 - Additional documentation for individual Kotter features.
