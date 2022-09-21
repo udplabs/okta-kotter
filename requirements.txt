@@ -5,7 +5,7 @@ Flask-Cors==3.0.8
 flask-talisman==0.7.0
 Flask-WTF==0.14.2
 gunicorn==19.9.0
-jwcrypto==0.6.0
+jwcrypto==1.4
 mistune==0.8.4
 pipdeptree==0.13.2
 Pygments==2.5.2
